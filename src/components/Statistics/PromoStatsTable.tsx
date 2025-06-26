@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Calendar, TrendingUp, Users, Euro } from 'lucide-react';
-import { PromoStats, StatsPage } from '../../types';
+import {PromoStats} from "../../core/PromoStatistics/api/data.ts";
+
 
 const PromoStatsTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);

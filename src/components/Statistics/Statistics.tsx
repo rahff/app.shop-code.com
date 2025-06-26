@@ -1,7 +1,8 @@
 import React from 'react';
 import ShopMetrics from './ShopMetrics';
 import PromoStatsTable from './PromoStatsTable';
-import { ShopStatisticsState } from '../../types';
+import {ShopStatisticsState} from "../../core/ShopStatistics/api/data.ts";
+
 
 const Statistics: React.FC = () => {
   // Mock shop statistics data

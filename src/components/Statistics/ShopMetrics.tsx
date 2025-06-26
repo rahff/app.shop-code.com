@@ -1,6 +1,7 @@
 import React from 'react';
 import { TrendingUp, Users, Euro, Gift } from 'lucide-react';
-import { ShopStatisticsState } from '../../types';
+import {ShopStatisticsState} from "../../core/ShopStatistics/api/data.ts";
+
 
 interface ShopMetricsProps {
   shopStats: ShopStatisticsState;

@@ -1,18 +1,21 @@
 import React from 'react';
 import { Plus } from 'lucide-react';
 import PromoCard from './PromoCard';
-import { PromoFormData } from '../../types';
+import {PromoData} from "../../core/CreatePromo/api/data.ts";
+
 
 const PromoList: React.FC = () => {
   // Mock data for demonstration
-  const mockPromos: PromoFormData[] = [
+  const mockPromos: PromoData[] = [
     {
       id: '1',
       name: 'Summer Sale 2025',
       description: 'Get 30% off on all summer collection items. Valid for all clothing and accessories.',
       validity_date_start: '2025-06-01',
       validity_date_end: '2025-08-31',
-      file_extension: 'pdf'
+      shop_id: "",
+      coupon_img: "",
+      created_at: ""
     },
     {
       id: '2',
@@ -20,7 +23,9 @@ const PromoList: React.FC = () => {
       description: 'Buy 5 coffees, get the 6th one free. Perfect for our regular customers.',
       validity_date_start: '2025-01-01',
       validity_date_end: '2025-12-31',
-      file_extension: 'jpg'
+      shop_id: "",
+      coupon_img: "",
+      created_at: ""
     },
     {
       id: '3',
@@ -28,7 +33,9 @@ const PromoList: React.FC = () => {
       description: 'Special weekend discounts on selected items every Saturday and Sunday.',
       validity_date_start: '2025-01-15',
       validity_date_end: '2025-03-15',
-      file_extension: 'png'
+      shop_id: "",
+      coupon_img: "",
+      created_at: ""
     }
   ];
 
