@@ -83,12 +83,51 @@ const PromoStatsTable: React.FC = () => {
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="p-6 border-b border-gray-200">
-        <h3 className="text-xl font-semibold text-[#2B2C34] font-['Inter']">Promo Performance</h3>
+      <div className="p-4 sm:p-6 border-b border-gray-200">
+        <h3 className="text-lg sm:text-xl font-semibold text-[#2B2C34] font-['Inter']">Promo Performance</h3>
         <p className="text-[#A0A0A8] text-sm mt-1">Detailed analytics for each promotional campaign</p>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* Mobile Card View */}
+      <div className="block lg:hidden">
+        <div className="divide-y divide-gray-200">
+          {currentData.map((promo) => (
+            <div key={promo.id} className="p-4">
+              <div className="flex justify-between items-start mb-3">
+                <h4 className="font-semibold text-[#2B2C34] flex-1 pr-2">{promo.name}</h4>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 flex-shrink-0">
+                  {promo.nbr_of_issues} issues
+                </span>
+              </div>
+              
+              <div className="flex items-center space-x-2 text-sm text-[#A0A0A8] mb-3">
+                <Calendar className="w-4 h-4 text-[#6C63FF]" />
+                <span className="text-xs">{formatValidityRange(promo.validity_range)}</span>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-center space-x-2">
+                  <Euro className="w-4 h-4 text-green-600" />
+                  <div>
+                    <p className="text-xs text-[#A0A0A8]">Revenue</p>
+                    <p className="font-semibold text-[#2B2C34]">€{promo.total_revenue.toLocaleString()}</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <TrendingUp className="w-4 h-4 text-blue-600" />
+                  <div>
+                    <p className="text-xs text-[#A0A0A8]">Conversions</p>
+                    <p className="font-semibold text-[#2B2C34]">{promo.total_conversion}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden lg:block overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
@@ -155,9 +194,10 @@ const PromoStatsTable: React.FC = () => {
       </div>
 
       {/* Pagination */}
-      <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+      <div className="px-4 sm:px-6 py-4 border-t border-gray-200 flex items-center justify-between">
         <div className="text-sm text-[#A0A0A8]">
-          Showing {startIndex + 1} to {Math.min(startIndex + perPage, mockPromoStats.length)} of {mockPromoStats.length} results
+          <span className="hidden sm:inline">Showing {startIndex + 1} to {Math.min(startIndex + perPage, mockPromoStats.length)} of {mockPromoStats.length} results</span>
+          <span className="sm:hidden">{startIndex + 1}-{Math.min(startIndex + perPage, mockPromoStats.length)} of {mockPromoStats.length}</span>
         </div>
         <div className="flex items-center space-x-2">
           <button
@@ -168,19 +208,25 @@ const PromoStatsTable: React.FC = () => {
             <ChevronLeft className="w-4 h-4" />
           </button>
           
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-150 ${
-                currentPage === page
-                  ? 'bg-[#6C63FF] text-white'
-                  : 'text-[#2B2C34] hover:bg-gray-50'
-              }`}
-            >
-              {page}
-            </button>
-          ))}
+          <div className="hidden sm:flex items-center space-x-2">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-150 ${
+                  currentPage === page
+                    ? 'bg-[#6C63FF] text-white'
+                    : 'text-[#2B2C34] hover:bg-gray-50'
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
+          
+          <div className="sm:hidden flex items-center space-x-2">
+            <span className="text-sm text-[#2B2C34] font-medium">{currentPage} / {totalPages}</span>
+          </div>
           
           <button
             onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}

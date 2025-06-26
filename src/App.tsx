@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import Sidebar from './components/Layout/Sidebar';
+import BottomNavigation from './components/Layout/BottomNavigation';
+import Header from './components/Layout/Header';
 import PromoList from './components/PromoList/PromoList';
 import Statistics from './components/Statistics/Statistics';
 import Settings from './components/Settings/Settings';
@@ -21,11 +22,12 @@ function App() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar activeRoute={activeRoute} onRouteChange={setActiveRoute} />
-      <main className="flex-1 overflow-auto">
+    <div className="flex flex-col h-screen bg-gray-50">
+      <Header />
+      <main className="flex-1 overflow-auto pb-20">
         {renderContent()}
       </main>
+      <BottomNavigation activeRoute={activeRoute} onRouteChange={setActiveRoute} />
     </div>
   );
 }
