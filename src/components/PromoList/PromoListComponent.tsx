@@ -1,43 +1,26 @@
-import React from 'react';
-import { Plus } from 'lucide-react';
+import React, {useEffect, useState} from 'react';
+import {Plus} from 'lucide-react';
 import PromoCard from './PromoCard';
-import {PromoData} from "../../core/CreatePromo/api/data.ts";
+import {HttpPromoListApi} from "../../services/external/HttpPromoListApi.ts";
+import {LocalStorageBrowserApi} from "../../services/browser/LocalStorageBrowserApi.ts";
+import {PromoList, PromoListState} from "../../core/ListPromos/api/PromoList.ts";
 
+const promo_list_api = new HttpPromoListApi();
+const local_storage = new LocalStorageBrowserApi();
+const promo_list = new PromoList(promo_list_api, local_storage);
 
-const PromoList: React.FC = () => {
-  // Mock data for demonstration
-  const mockPromos: PromoData[] = [
-    {
-      id: '1',
-      name: 'Summer Sale 2025',
-      description: 'Get 30% off on all summer collection items. Valid for all clothing and accessories.',
-      validity_date_start: '2025-06-01',
-      validity_date_end: '2025-08-31',
-      shop_id: "",
-      coupon_img: "",
-      created_at: ""
-    },
-    {
-      id: '2',
-      name: 'Coffee Loyalty Program',
-      description: 'Buy 5 coffees, get the 6th one free. Perfect for our regular customers.',
-      validity_date_start: '2025-01-01',
-      validity_date_end: '2025-12-31',
-      shop_id: "",
-      coupon_img: "",
-      created_at: ""
-    },
-    {
-      id: '3',
-      name: 'Weekend Special',
-      description: 'Special weekend discounts on selected items every Saturday and Sunday.',
-      validity_date_start: '2025-01-15',
-      validity_date_end: '2025-03-15',
-      shop_id: "",
-      coupon_img: "",
-      created_at: ""
+const PromoListComponent: React.FC = () => {
+  const [state, set_state] = useState<PromoListState>(promo_list.state);
+  useEffect(() => {
+    const on_init = () => {
+      return promo_list.promo_of_shop("123").subscribe(() => {
+        set_state({...promo_list.state});
+      });
     }
-  ];
+    const subscription = on_init();
+    return () => subscription.unsubscribe();
+
+  },[])
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -52,12 +35,12 @@ const PromoList: React.FC = () => {
       </button>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-        {mockPromos.map((promo) => (
+        {state.promos.map((promo) => (
           <PromoCard key={promo.id} promo={promo} />
         ))}
       </div>
 
-      {mockPromos.length === 0 && (
+      {state.promos.length === 0 && (
         <div className="text-center py-12 sm:py-16">
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Plus className="w-8 h-8 text-gray-400" />
@@ -73,4 +56,4 @@ const PromoList: React.FC = () => {
   );
 };
 
-export default PromoList;
+export default PromoListComponent;

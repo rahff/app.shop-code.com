@@ -23,6 +23,7 @@ export class PromoList {
     const local_promo_list = this.local_storage_api.get_item<PromoData[]>(promo_list_key(shopId));
     if(local_promo_list) {
       this.state.promos = local_promo_list;
+      console.log("core state",  this.state);
       return of(true);
     }
     return this.promo_gateway.get_shop_promos(shopId).pipe(

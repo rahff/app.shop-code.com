@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import BottomNavigation from './components/Layout/BottomNavigation';
 import Header from './components/Layout/Header';
-import PromoList from './components/PromoList/PromoList';
+import PromoListComponent from './components/PromoList/PromoListComponent.tsx';
 import Statistics from './components/Statistics/Statistics';
 import Settings from './components/Settings/Settings';
 
@@ -11,13 +11,13 @@ function App() {
   const renderContent = () => {
     switch (activeRoute) {
       case 'promos':
-        return <PromoList />;
+        return <PromoListComponent />;
       case 'statistics':
         return <Statistics />;
       case 'settings':
         return <Settings />;
       default:
-        return <PromoList />;
+        return <PromoListComponent />;
     }
   };
 
