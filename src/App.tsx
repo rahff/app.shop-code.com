@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import BootstrapComponent from './components/Bootstrap/BootstrapComponent';
 import LoginComponent from './components/Login/LoginComponent';
 import ShopListComponent from './components/ShopList/ShopListComponent';
@@ -8,29 +8,34 @@ import PromoListComponent from './components/PromoList/PromoListComponent.tsx';
 import Statistics from './components/Statistics/Statistics';
 import Settings from './components/Settings/Settings';
 
-type AppState = 'bootstrap' | 'login' | 'shops' | 'dashboard';
+type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error';
 
 function App() {
   const [appState, setAppState] = useState<AppState>('bootstrap');
-  const [errorMessage, setErrorMessage] = useState<string>('');
   const [activeRoute, setActiveRoute] = useState('promos');
 
   // Handle bootstrap completion - determines initial app destination
-  const handleBootstrapComplete = useCallback((destination: string, error?: string) => {
-    if (error) {
-      setErrorMessage(error);
-      setAppState('login');
-    } else if (destination === 'shops') {
-      setAppState('shops');
-    } else {
-      setAppState('login');
+  const handleBootstrapComplete = useCallback((destination: string) => {
+    switch (destination) {
+      case 'login':
+        setAppState('login');
+        break;
+      case 'my-shops':
+        setAppState('my-shops');
+        break;
+      case 'dashboard':
+        setAppState('dashboard');
+        break;
+      case 'error':
+        setAppState('error');
+        break;
+      default: setAppState('login');
     }
   }, []);
 
   // Handle successful login - redirect to shops list
   const handleLoginSuccess = useCallback(() => {
-    setErrorMessage('');
-    setAppState('shops');
+    setAppState('my-shops');
   }, []);
 
   // Handle shop selection - enter main dashboard
@@ -61,13 +66,12 @@ function App() {
     
     case 'login':
       return (
-        <LoginComponent 
-          errorMessage={errorMessage} 
+        <LoginComponent
           onLoginSuccess={handleLoginSuccess} 
         />
       );
     
-    case 'shops':
+    case 'my-shops':
       return <ShopListComponent onShopSelect={handleShopSelect} />;
     
     case 'dashboard':

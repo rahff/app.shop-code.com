@@ -1,57 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import { QrCode } from 'lucide-react';
+import React, {useEffect, useState} from 'react';
+import {QrCode} from 'lucide-react';
+import {AuthenticationProvider} from "../../core/AuthenticationProvider/api/AuthenticationProvider.ts";
+import {local_storage} from "../../services/browser/LocalStorageBrowserApi.ts";
+import {oidc_service} from "../../services/external/OIDCService.ts";
+import {UserSession} from "../../core/UserSession/api/UserSession.ts";
+import {user_profile_api} from "../../services/external/HttpUserProfileApi.ts";
 
 interface BootstrapComponentProps {
   onBootstrapComplete: (destination: string, error?: string) => void;
 }
-
+const authentication_provider = new AuthenticationProvider(local_storage, oidc_service);
+const user_session = new UserSession(local_storage, user_profile_api);
 const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ onBootstrapComplete }) => {
   const [loadingText, setLoadingText] = useState('Initializing...');
 
   useEffect(() => {
-    let isMounted = true;
 
-    const initializeApp = async () => {
-      try {
-        // Simulate authentication provider initialization
-        setLoadingText('Connecting to authentication service...');
-        await new Promise(resolve => setTimeout(resolve, 800));
-
-        if (!isMounted) return;
-
-        // Simulate user session loading
+    const initializeApp = () => {
+      setLoadingText('Loading authentication...');
+      return authentication_provider.auto_login().subscribe(async () => {
         setLoadingText('Loading user session...');
-        await new Promise(resolve => setTimeout(resolve, 600));
-
-        if (!isMounted) return;
-
-        // Simulate session validation
-        setLoadingText('Validating session...');
-        await new Promise(resolve => setTimeout(resolve, 400));
-
-        if (!isMounted) return;
-
-        // For demo purposes, randomly decide between logged in or not
-        // In real implementation, this would be based on actual authentication state
-        const isAuthenticated = Math.random() > 0.5;
-        
-        if (isAuthenticated) {
-          onBootstrapComplete('shops');
-        } else {
-          onBootstrapComplete('login');
-        }
-      } catch (error) {
-        if (!isMounted) return;
-        
-        console.error('Bootstrap initialization failed:', error);
-        onBootstrapComplete('login', 'Unable to initialize session. Please log in.');
-      }
+        user_session.load().then((redirection) => {
+          onBootstrapComplete(redirection.path);
+        })
+      });
     };
 
-    initializeApp();
-
+    const subscription = initializeApp();
     return () => {
-      isMounted = false;
+      subscription.unsubscribe();
     };
   }, [onBootstrapComplete]);
 
@@ -89,7 +66,7 @@ const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ onBootstrapComp
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes progress {
           0% { width: 0%; }
           50% { width: 70%; }

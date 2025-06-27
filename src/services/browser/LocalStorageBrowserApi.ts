@@ -28,3 +28,5 @@ export class LocalStorageBrowserApi implements LocalStorageApi {
     localStorage.clear();
   }
 }
+
+export const local_storage = new LocalStorageBrowserApi();

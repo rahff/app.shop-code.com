@@ -20,3 +20,6 @@ export class HttpUserProfileApi implements UserProfileApi {
   }
 
 }
+
+
+export const user_profile_api = new HttpUserProfileApi();

@@ -52,3 +52,5 @@ export class HttpPromoListApi implements PromoListApi {
     });
   }
 }
+
+export const promo_list_api = new HttpPromoListApi();

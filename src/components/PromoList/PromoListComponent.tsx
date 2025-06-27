@@ -1,12 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {Plus} from 'lucide-react';
 import PromoCard from './PromoCard';
-import {HttpPromoListApi} from "../../services/external/HttpPromoListApi.ts";
-import {LocalStorageBrowserApi} from "../../services/browser/LocalStorageBrowserApi.ts";
+import {promo_list_api} from "../../services/external/HttpPromoListApi.ts";
+import {local_storage} from "../../services/browser/LocalStorageBrowserApi.ts";
 import {PromoList, PromoListState} from "../../core/ListPromos/api/PromoList.ts";
 
-const promo_list_api = new HttpPromoListApi();
-const local_storage = new LocalStorageBrowserApi();
+
 const promo_list = new PromoList(promo_list_api, local_storage);
 
 const PromoListComponent: React.FC = () => {
