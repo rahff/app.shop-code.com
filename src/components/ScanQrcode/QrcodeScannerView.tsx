@@ -82,6 +82,20 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
     }
   };
 
+  const handleClose = () => {
+    stopScanning();
+    if (onClose) {
+      onClose();
+    }
+  };
+
+  const handleCancel = () => {
+    stopScanning();
+    if (onClose) {
+      onClose();
+    }
+  };
+
   useEffect(() => {
     if (isActive) {
       startScanning();
@@ -103,15 +117,13 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
             <QrCode className="w-5 h-5 mr-2 text-[#6C63FF]" />
             Scan QR Code
           </h2>
-          {onClose && (
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              aria-label="Close scanner"
-            >
-              <X className="w-5 h-5 text-[#A0A0A8]" />
-            </button>
-          )}
+          <button
+            onClick={handleClose}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            aria-label="Close scanner"
+          >
+            <X className="w-5 h-5 text-[#A0A0A8]" />
+          </button>
         </div>
 
         {/* Scanner Area */}
@@ -199,14 +211,12 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
               </button>
             )}
             
-            {onClose && (
-              <button
-                onClick={onClose}
-                className="px-6 py-3 border-2 border-[#6C63FF] text-[#6C63FF] rounded-lg font-medium hover:bg-[#6C63FF] hover:text-white transition-all duration-200"
-              >
-                Cancel
-              </button>
-            )}
+            <button
+              onClick={handleCancel}
+              className="px-6 py-3 border-2 border-[#6C63FF] text-[#6C63FF] rounded-lg font-medium hover:bg-[#6C63FF] hover:text-white transition-all duration-200"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       </div>
