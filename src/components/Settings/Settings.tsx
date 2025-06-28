@@ -3,7 +3,7 @@ import { Settings as SettingsIcon, Clock, CreditCard, Shield, HelpCircle, UserPl
 import { ListCashiers } from '../../core/ListCashiers/api/ListCashiers';
 import { CashierData } from '../../core/AddCashier/api/data';
 import { localStorageApi } from '../../services/browser/LocalStorageBrowserApi';
-import { HttpCashierListApi } from '../../services/external/HttpCashierListApi';
+import { HttpCashierListApi } from '../../services/external/HttpCashierListApi.ts';
 
 const Settings: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
