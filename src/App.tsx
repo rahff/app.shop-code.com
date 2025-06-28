@@ -9,11 +9,12 @@ import Statistics from './components/Statistics/Statistics';
 import Settings from './components/Settings/Settings';
 import CreatePromoPage from './components/CreatePromo/CreatePromoPage';
 import CreateShopPage from './components/CreateShop/CreateShopPage';
-import QrcodeScannerPage from './components/ScanQrcode/QrcodeScannerPage';
+import QrcodeScannerView from './components/ScanQrcode/QrcodeScannerView';
 import {userSession} from "./factory/userSessionFactory.ts";
 import {ShopData} from "./core/CreateShop/api/data.ts";
+import { CouponData } from './core/ScanQrcode/api/data';
 
-type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop' | 'scan';
+type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop';
 
 function App() {
   const [appState, setAppState] = useState<AppState>('bootstrap');
@@ -46,7 +47,6 @@ function App() {
   // Handle shop selection - enter main dashboard
   const handleShopSelect = useCallback((shop: ShopData) => {
     userSession.shop_selected(shop)
-    // In a real app, you'd store the selected shop in context/state
     setAppState('dashboard');
   }, []);
 
@@ -57,8 +57,6 @@ function App() {
       setAppState('create-promo');
     } else if (path === '/shop/create') {
       setAppState('create-shop');
-    } else if (path === '/scan') {
-      setAppState('scan');
     }
   };
 
@@ -69,6 +67,27 @@ function App() {
     return () => window.removeEventListener('popstate', checkRoute);
   });
 
+  // Handle scan success - stay in dashboard
+  const handleScanSuccess = (coupon: CouponData) => {
+    console.log('Scanned coupon:', coupon);
+    // Show success message and return to promos view
+    setTimeout(() => {
+      setActiveRoute('promos');
+    }, 2000);
+  };
+
+  // Handle scan error
+  const handleScanError = (error: string) => {
+    console.error('Scan error:', error);
+    // Return to promos view on error
+    setActiveRoute('promos');
+  };
+
+  // Handle scan close/cancel - return to promos
+  const handleScanClose = () => {
+    setActiveRoute('promos');
+  };
+
   // Render dashboard content based on active route
   const renderDashboardContent = () => {
     switch (activeRoute) {
@@ -76,6 +95,17 @@ function App() {
         return <PromoListComponent />;
       case 'statistics':
         return <Statistics />;
+      case 'scan':
+        return (
+          <div className="h-full">
+            <QrcodeScannerView
+              onScanSuccess={handleScanSuccess}
+              onScanError={handleScanError}
+              isActive={true}
+              onClose={handleScanClose}
+            />
+          </div>
+        );
       case 'settings':
         return <Settings />;
       default:
@@ -103,9 +133,6 @@ function App() {
     
     case 'create-shop':
       return <CreateShopPage />;
-    
-    case 'scan':
-      return <QrcodeScannerPage />;
     
     case 'dashboard':
       return (
