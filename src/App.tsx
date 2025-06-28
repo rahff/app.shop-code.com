@@ -14,11 +14,12 @@ import RedeemCouponView from './components/RedeemCoupon/RedeemCouponView.tsx';
 import UpgradePlanView from './components/Subscription/UpgradePlanView';
 import AddCashierView from './components/AddCashier/AddCashierView.tsx';
 import HelpSupportView from './components/HelpSupport/HelpSupportView.tsx';
+import StripeSuccessPage from './components/Stripe/StripeSuccessPage.tsx';
 import {userSession} from "./factory/userSessionFactory.ts";
 import {ShopData} from "./core/CreateShop/api/data.ts";
 import { CouponData } from './core/ScanQrcode/api/data';
 
-type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop' | 'redeem-coupon' | 'upgrade-plan' | 'add-cashier' | 'help-support';
+type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop' | 'redeem-coupon' | 'upgrade-plan' | 'add-cashier' | 'help-support' | 'stripe-success';
 
 function App() {
   const [appState, setAppState] = useState<AppState>('bootstrap');
@@ -68,6 +69,8 @@ function App() {
       setAppState('add-cashier');
     } else if (path === '/help-support') {
       setAppState('help-support');
+    } else if (path === '/stripe/success') {
+      setAppState('stripe-success');
     }
   };
 
@@ -216,6 +219,9 @@ function App() {
           onCancel={handleHelpSupportCancel}
         />
       );
+    
+    case 'stripe-success':
+      return <StripeSuccessPage />;
     
     case 'dashboard':
       return (
