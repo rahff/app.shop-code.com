@@ -1,36 +1,38 @@
 import React, {useEffect, useState} from 'react';
 import {QrCode} from 'lucide-react';
 import {AuthenticationProvider} from "../../core/AuthenticationProvider/api/AuthenticationProvider.ts";
-import {local_storage} from "../../services/browser/LocalStorageBrowserApi.ts";
-import {oidc_service} from "../../services/external/OIDCService.ts";
+import {localStorageApi} from "../../services/browser/LocalStorageBrowserApi.ts";
+import {OidcService} from "../../services/external/OIDCService.ts";
 import {UserSession} from "../../core/UserSession/api/UserSession.ts";
-import {user_profile_api} from "../../services/external/HttpUserProfileApi.ts";
+import {userProfileApi} from "../../services/external/HttpUserProfileApi.ts";
 
 interface BootstrapComponentProps {
-  onBootstrapComplete: (destination: string, error?: string) => void;
+  redirectUser: (destination: string, error?: string) => void;
 }
-const authentication_provider = new AuthenticationProvider(local_storage, oidc_service);
-const user_session = new UserSession(local_storage, user_profile_api);
-const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ onBootstrapComplete }) => {
+
+const authentication_provider = new AuthenticationProvider(localStorageApi, OidcService);
+const user_session = new UserSession(localStorageApi, userProfileApi);
+
+const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser }) => {
   const [loadingText, setLoadingText] = useState('Initializing...');
 
   useEffect(() => {
 
-    const initializeApp = () => {
+    const onInit = () => {
       setLoadingText('Loading authentication...');
       return authentication_provider.auto_login().subscribe(async () => {
         setLoadingText('Loading user session...');
         user_session.load().then((redirection) => {
-          onBootstrapComplete(redirection.path);
+          redirectUser(redirection.path);
         })
       });
     };
 
-    const subscription = initializeApp();
+    const subscription = onInit();
     return () => {
       subscription.unsubscribe();
     };
-  }, [onBootstrapComplete]);
+  }, [redirectUser]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#6C63FF] to-[#5845E9] flex items-center justify-center">

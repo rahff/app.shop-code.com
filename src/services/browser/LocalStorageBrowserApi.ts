@@ -29,4 +29,4 @@ export class LocalStorageBrowserApi implements LocalStorageApi {
   }
 }
 
-export const local_storage = new LocalStorageBrowserApi();
+export const localStorageApi = new LocalStorageBrowserApi();

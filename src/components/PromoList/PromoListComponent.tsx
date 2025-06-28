@@ -1,24 +1,22 @@
 import React, {useEffect, useState} from 'react';
 import {Plus} from 'lucide-react';
 import PromoCard from './PromoCard';
-import {promo_list_api} from "../../services/external/HttpPromoListApi.ts";
-import {local_storage} from "../../services/browser/LocalStorageBrowserApi.ts";
-import {PromoList, PromoListState} from "../../core/ListPromos/api/PromoList.ts";
+import {PromoListState} from "../../core/ListPromos/api/PromoList.ts";
+import {promoList} from "../../factory/promoListFactory.ts";
 
 
-const promo_list = new PromoList(promo_list_api, local_storage);
+
 
 const PromoListComponent: React.FC = () => {
-  const [state, set_state] = useState<PromoListState>(promo_list.state);
+  const [state, setState] = useState<PromoListState>(promoList.state);
   useEffect(() => {
     const on_init = () => {
-      return promo_list.promo_of_shop("123").subscribe(() => {
-        set_state({...promo_list.state});
+      return promoList.promo_of_shop("123").subscribe(() => {
+        setState({...promoList.state});
       });
     }
     const subscription = on_init();
     return () => subscription.unsubscribe();
-
   },[])
 
   return (

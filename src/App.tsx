@@ -15,7 +15,7 @@ function App() {
   const [activeRoute, setActiveRoute] = useState('promos');
 
   // Handle bootstrap completion - determines initial app destination
-  const handleBootstrapComplete = useCallback((destination: string) => {
+  const redirectUser = useCallback((destination: string) => {
     switch (destination) {
       case 'login':
         setAppState('login');
@@ -62,7 +62,7 @@ function App() {
   // Main app rendering logic
   switch (appState) {
     case 'bootstrap':
-      return <BootstrapComponent onBootstrapComplete={handleBootstrapComplete} />;
+      return <BootstrapComponent redirectUser={redirectUser} />;
     
     case 'login':
       return (
@@ -86,7 +86,7 @@ function App() {
       );
     
     default:
-      return <BootstrapComponent onBootstrapComplete={handleBootstrapComplete} />;
+      return <BootstrapComponent redirectUser={redirectUser} />;
   }
 }
 
