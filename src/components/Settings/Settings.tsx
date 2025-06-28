@@ -109,35 +109,7 @@ const Settings: React.FC = () => {
       </div>
 
       <div className="max-w-2xl">
-        {/* Settings Options */}
-        <div className="space-y-3 sm:space-y-4 mb-8">
-          {settingsOptions.map((option, index) => {
-            const Icon = option.icon;
-            return (
-              <div key={index} className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:border-[#6C63FF]/20">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className={`w-12 h-12 ${option.bgColor} rounded-lg flex items-center justify-center`}>
-                      <Icon className={`w-6 h-6 ${option.color}`} />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-[#2B2C34] font-['Inter']">{option.title}</h3>
-                      <p className="text-[#A0A0A8] text-sm">{option.description}</p>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={option.onClick}
-                    className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm"
-                  >
-                    {option.action}
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Cashier Management Section - positioned after Add Cashier */}
+        {/* Cashier Management Section - positioned first */}
         <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:border-[#6C63FF]/20 mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -218,6 +190,34 @@ const Settings: React.FC = () => {
               )}
             </div>
           )}
+        </div>
+
+        {/* Settings Options */}
+        <div className="space-y-3 sm:space-y-4 mb-8">
+          {settingsOptions.map((option, index) => {
+            const Icon = option.icon;
+            return (
+              <div key={index} className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:border-[#6C63FF]/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className={`w-12 h-12 ${option.bgColor} rounded-lg flex items-center justify-center`}>
+                      <Icon className={`w-6 h-6 ${option.color}`} />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-[#2B2C34] font-['Inter']">{option.title}</h3>
+                      <p className="text-[#A0A0A8] text-sm">{option.description}</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={option.onClick}
+                    className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm"
+                  >
+                    {option.action}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {/* Coming Soon Section */}
