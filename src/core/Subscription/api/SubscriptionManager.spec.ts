@@ -16,7 +16,7 @@ describe('SubscriptionManager: A business User upgrade its subscription', () => 
   it("Authenticated user should be redirected to the payment processor url", async () => {
     payment_gateway.create_subscription.and.returnValue(of(STRIPE_URL));
     const subscription = new SubscriptionManager(payment_gateway);
-   subscription.initiate_subscription().subscribe(redirect => {
+   subscription.initiate_subscription("").subscribe(redirect => {
      expect(redirect).toEqual(STRIPE_URL);
    });
 
@@ -25,7 +25,7 @@ describe('SubscriptionManager: A business User upgrade its subscription', () => 
   it("Unauthenticated user should be redirected to the login page", async () => {
     payment_gateway.create_subscription.and.returnValue(throwError(() => new UnauthenticatedUser()))
     const subscription = new SubscriptionManager(payment_gateway);
-    subscription.initiate_subscription().subscribe((redirect)=> {
+    subscription.initiate_subscription("").subscribe((redirect)=> {
       expect(redirect).toEqual(LOGIN_URL);
     })
   });
