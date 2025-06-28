@@ -7,8 +7,10 @@ import Header from './components/Layout/Header';
 import PromoListComponent from './components/PromoList/PromoListComponent.tsx';
 import Statistics from './components/Statistics/Statistics';
 import Settings from './components/Settings/Settings';
+import CreatePromoPage from './components/CreatePromo/CreatePromoPage';
+import CreateShopPage from './components/CreateShop/CreateShopPage';
 
-type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error';
+type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop';
 
 function App() {
   const [appState, setAppState] = useState<AppState>('bootstrap');
@@ -45,6 +47,23 @@ function App() {
     setAppState('dashboard');
   }, []);
 
+  // Check for route changes based on URL
+  const checkRoute = () => {
+    const path = window.location.pathname;
+    if (path === '/promo/create') {
+      setAppState('create-promo');
+    } else if (path === '/shop/create') {
+      setAppState('create-shop');
+    }
+  };
+
+  // Listen for route changes
+  useState(() => {
+    checkRoute();
+    window.addEventListener('popstate', checkRoute);
+    return () => window.removeEventListener('popstate', checkRoute);
+  });
+
   // Render dashboard content based on active route
   const renderDashboardContent = () => {
     switch (activeRoute) {
@@ -73,6 +92,12 @@ function App() {
     
     case 'my-shops':
       return <ShopListComponent onShopSelect={handleShopSelect} />;
+    
+    case 'create-promo':
+      return <CreatePromoPage />;
+    
+    case 'create-shop':
+      return <CreateShopPage />;
     
     case 'dashboard':
       return (

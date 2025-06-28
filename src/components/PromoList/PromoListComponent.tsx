@@ -4,11 +4,9 @@ import PromoCard from './PromoCard';
 import {PromoListState} from "../../core/ListPromos/api/PromoList.ts";
 import {promoList} from "../../factory/promoListFactory.ts";
 
-
-
-
 const PromoListComponent: React.FC = () => {
   const [state, setState] = useState<PromoListState>(promoList.state);
+  
   useEffect(() => {
     const on_init = () => {
       return promoList.promo_of_shop("123").subscribe(() => {
@@ -19,6 +17,11 @@ const PromoListComponent: React.FC = () => {
     return () => subscription.unsubscribe();
   },[])
 
+  const handleCreatePromo = () => {
+    // Navigate to create promo page
+    window.location.href = '/promo/create';
+  };
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <div className="mb-6">
@@ -26,7 +29,10 @@ const PromoListComponent: React.FC = () => {
         <p className="text-[#A0A0A8] text-sm sm:text-base">Manage your promotional campaigns and track their performance</p>
       </div>
 
-      <button className="w-full bg-[#6C63FF] hover:bg-[#5845E9] text-white px-6 py-4 rounded-xl font-medium flex items-center justify-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl mb-6 sm:w-auto sm:mb-8">
+      <button 
+        onClick={handleCreatePromo}
+        className="w-full bg-[#6C63FF] hover:bg-[#5845E9] text-white px-6 py-4 rounded-xl font-medium flex items-center justify-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl mb-6 sm:w-auto sm:mb-8"
+      >
         <Plus className="w-5 h-5" />
         <span>Create New Promo</span>
       </button>
@@ -44,7 +50,10 @@ const PromoListComponent: React.FC = () => {
           </div>
           <h3 className="text-lg font-semibold text-[#2B2C34] mb-2">No promos yet</h3>
           <p className="text-[#A0A0A8] mb-6 px-4">Create your first promotional campaign to get started</p>
-          <button className="w-full bg-[#6C63FF] hover:bg-[#5845E9] text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 max-w-xs mx-auto sm:w-auto">
+          <button 
+            onClick={handleCreatePromo}
+            className="w-full bg-[#6C63FF] hover:bg-[#5845E9] text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 max-w-xs mx-auto sm:w-auto"
+          >
             Create Your First Promo
           </button>
         </div>

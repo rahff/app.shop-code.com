@@ -47,6 +47,11 @@ const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect }) =
     onShopSelect(shopId);
   };
 
+  const handleCreateShop = () => {
+    // Navigate to create shop page
+    window.location.href = '/shop/create';
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -57,7 +62,10 @@ const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect }) =
               <h1 className="text-3xl font-bold text-[#2B2C34] font-['Inter']">My Shops</h1>
               <p className="text-[#A0A0A8] mt-1">Select a shop to manage your promotional campaigns</p>
             </div>
-            <button className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-6 py-3 rounded-xl font-medium flex items-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl">
+            <button 
+              onClick={handleCreateShop}
+              className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-6 py-3 rounded-xl font-medium flex items-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
               <Plus className="w-5 h-5" />
               <span className="hidden sm:inline">Create New Shop</span>
               <span className="sm:hidden">New</span>
@@ -125,7 +133,10 @@ const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect }) =
             <p className="text-[#A0A0A8] mb-8 max-w-md mx-auto">
               Create your first shop to start managing promotional campaigns and engaging with customers.
             </p>
-            <button className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-8 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+            <button 
+              onClick={handleCreateShop}
+              className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-8 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
               Create Your First Shop
             </button>
           </div>
