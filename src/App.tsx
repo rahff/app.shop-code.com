@@ -10,7 +10,7 @@ import Settings from './components/Settings/Settings';
 import CreatePromoPage from './components/CreatePromo/CreatePromoPage';
 import CreateShopPage from './components/CreateShop/CreateShopPage';
 import QrcodeScannerView from './components/ScanQrcode/QrcodeScannerView';
-import RedeemCouponView from './components/RedeemCoupon/RedeemCouponView';
+import RedeemCouponView from './components/RedeemCoupon/RedeemCouponView.tsx';
 import {userSession} from "./factory/userSessionFactory.ts";
 import {ShopData} from "./core/CreateShop/api/data.ts";
 import { CouponData } from './core/ScanQrcode/api/data';
