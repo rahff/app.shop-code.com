@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import { Settings as SettingsIcon, Clock, CreditCard, Shield, HelpCircle, UserPlus, Users, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Settings as SettingsIcon, CreditCard, Shield, HelpCircle, UserPlus, Users, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { ListCashiers } from '../../core/ListCashiers/api/ListCashiers';
 import { CashierData } from '../../core/AddCashier/api/data';
 import { localStorageApi } from '../../services/browser/LocalStorageBrowserApi';
-import {cashierListApi} from '../../services/external/HttpCashierListApi.ts';
-import {CASHIER_LIST_KEY} from "../../core/Common/constants.ts";
+import { HttpCashierListApi } from '../../services/external/HttpCashierListApi.ts';
 
 const Settings: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -13,6 +12,7 @@ const Settings: React.FC = () => {
   const [cashierError, setCashierError] = useState<string | null>(null);
 
   // Initialize cashier list service
+  const cashierListApi = new HttpCashierListApi();
   const listCashiers = new ListCashiers(cashierListApi, localStorageApi);
 
   const handleUpgradePlan = () => {
@@ -23,6 +23,11 @@ const Settings: React.FC = () => {
   const handleAddCashier = () => {
     // Navigate to add cashier page
     window.location.href = '/add-cashier';
+  };
+
+  const handleHelpSupport = () => {
+    // Navigate to help support page
+    window.location.href = '/help-support';
   };
 
   const toggleDropdown = () => {
@@ -39,14 +44,12 @@ const Settings: React.FC = () => {
     listCashiers.account_cashier().subscribe({
       next: (success) => {
         if (success) {
-          setCashiers([...listCashiers.state.cashier_list]);
-          console.log("setCashier", [...listCashiers.state.cashier_list]);
+          setCashiers(listCashiers.state.cashier_list);
           setCashierError(listCashiers.state.error?.message || null);
         }
         setIsLoadingCashiers(false);
       },
-      error: (error: unknown) => {
-        console.log(error);
+      error: (error) => {
         setCashierError('Failed to load cashiers');
         setIsLoadingCashiers(false);
       }
@@ -62,7 +65,7 @@ const Settings: React.FC = () => {
     
     // Update local storage
     const updatedCashiers = cashiers.filter(cashier => cashier.id !== cashierId);
-    localStorageApi.set_item(CASHIER_LIST_KEY, updatedCashiers);
+    localStorageApi.set_item('cashier_list', updatedCashiers);
   };
 
   // Reordered settings options according to specified order
@@ -99,7 +102,8 @@ const Settings: React.FC = () => {
       description: 'Get help and contact our support team',
       action: 'Get Help',
       color: 'text-indigo-600',
-      bgColor: 'bg-indigo-50'
+      bgColor: 'bg-indigo-50',
+      onClick: handleHelpSupport
     }
   ];
 
@@ -195,7 +199,7 @@ const Settings: React.FC = () => {
         </div>
 
         {/* Settings Options */}
-        <div className="space-y-3 sm:space-y-4 mb-8">
+        <div className="space-y-3 sm:space-y-4">
           {settingsOptions.map((option, index) => {
             const Icon = option.icon;
             return (
@@ -220,24 +224,6 @@ const Settings: React.FC = () => {
               </div>
             );
           })}
-        </div>
-
-        {/* Coming Soon Section */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 sm:p-8 text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-[#6C63FF] to-[#5845E9] rounded-full flex items-center justify-center mx-auto mb-6">
-            <SettingsIcon className="w-8 h-8 text-white" />
-          </div>
-          
-          <h2 className="text-xl sm:text-2xl font-semibold text-[#2B2C34] font-['Inter'] mb-3">More Settings Coming Soon</h2>
-          <p className="text-[#A0A0A8] mb-6 leading-relaxed text-sm sm:text-base">
-            We're continuously improving your Shop-Code experience. Advanced settings for analytics, 
-            integrations, and team management will be available in upcoming updates.
-          </p>
-          
-          <div className="flex items-center justify-center space-x-2 text-sm text-[#6C63FF] bg-[#6C63FF]/10 px-4 py-2 rounded-lg inline-flex">
-            <Clock className="w-4 h-4" />
-            <span className="font-medium">Expected in next update</span>
-          </div>
         </div>
       </div>
     </div>

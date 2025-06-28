@@ -13,11 +13,12 @@ import QrcodeScannerView from './components/ScanQrcode/QrcodeScannerView';
 import RedeemCouponView from './components/RedeemCoupon/RedeemCouponView.tsx';
 import UpgradePlanView from './components/Subscription/UpgradePlanView';
 import AddCashierView from './components/AddCashier/AddCashierView.tsx';
+import HelpSupportView from './components/HelpSupport/HelpSupportView.tsx';
 import {userSession} from "./factory/userSessionFactory.ts";
 import {ShopData} from "./core/CreateShop/api/data.ts";
 import { CouponData } from './core/ScanQrcode/api/data';
 
-type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop' | 'redeem-coupon' | 'upgrade-plan' | 'add-cashier';
+type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop' | 'redeem-coupon' | 'upgrade-plan' | 'add-cashier' | 'help-support';
 
 function App() {
   const [appState, setAppState] = useState<AppState>('bootstrap');
@@ -65,6 +66,8 @@ function App() {
       setAppState('upgrade-plan');
     } else if (path === '/add-cashier') {
       setAppState('add-cashier');
+    } else if (path === '/help-support') {
+      setAppState('help-support');
     }
   };
 
@@ -126,6 +129,12 @@ function App() {
   };
 
   const handleAddCashierCancel = () => {
+    setAppState('dashboard');
+    setActiveRoute('settings');
+  };
+
+  // Handle help support actions
+  const handleHelpSupportCancel = () => {
     setAppState('dashboard');
     setActiveRoute('settings');
   };
@@ -198,6 +207,13 @@ function App() {
         <AddCashierView 
           onComplete={handleAddCashierComplete}
           onCancel={handleAddCashierCancel}
+        />
+      );
+    
+    case 'help-support':
+      return (
+        <HelpSupportView 
+          onCancel={handleHelpSupportCancel}
         />
       );
     
