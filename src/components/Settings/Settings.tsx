@@ -117,7 +117,7 @@ const Settings: React.FC = () => {
       {/* Responsive centering wrapper - centers on desktop, left-aligned on mobile */}
       <div className="flex justify-start md:justify-center">
         <div className="w-full max-w-2xl">
-          {/* Cashier Management Section - positioned first */}
+          {/* Cashier List Section - positioned first */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:border-[#6C63FF]/20 mb-8">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
@@ -125,7 +125,7 @@ const Settings: React.FC = () => {
                   <Users className="w-6 h-6 text-purple-600" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-[#2B2C34] font-['Inter']">Cashier Management</h3>
+                  <h3 className="text-lg font-semibold text-[#2B2C34] font-['Inter']">Cashier List</h3>
                   <p className="text-[#A0A0A8] text-sm">View and manage your cashier accounts</p>
                 </div>
               </div>
@@ -133,7 +133,6 @@ const Settings: React.FC = () => {
                 onClick={toggleDropdown}
                 className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm flex items-center space-x-2"
               >
-                <span>List Cashiers</span>
                 {isDropdownOpen ? (
                   <ChevronUp className="w-4 h-4" />
                 ) : (
