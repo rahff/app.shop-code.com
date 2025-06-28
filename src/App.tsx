@@ -9,10 +9,11 @@ import Statistics from './components/Statistics/Statistics';
 import Settings from './components/Settings/Settings';
 import CreatePromoPage from './components/CreatePromo/CreatePromoPage';
 import CreateShopPage from './components/CreateShop/CreateShopPage';
+import QrcodeScannerPage from './components/ScanQrcode/QrcodeScannerPage';
 import {userSession} from "./factory/userSessionFactory.ts";
 import {ShopData} from "./core/CreateShop/api/data.ts";
 
-type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop';
+type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop' | 'scan';
 
 function App() {
   const [appState, setAppState] = useState<AppState>('bootstrap');
@@ -56,6 +57,8 @@ function App() {
       setAppState('create-promo');
     } else if (path === '/shop/create') {
       setAppState('create-shop');
+    } else if (path === '/scan') {
+      setAppState('scan');
     }
   };
 
@@ -100,6 +103,9 @@ function App() {
     
     case 'create-shop':
       return <CreateShopPage />;
+    
+    case 'scan':
+      return <QrcodeScannerPage />;
     
     case 'dashboard':
       return (
