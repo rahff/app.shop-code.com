@@ -34,4 +34,4 @@ export class OIDCService implements AuthenticationApi {
     }
 }
 
-export const OidcService = new OIDCService();
+export const authenticationApi = new OIDCService();

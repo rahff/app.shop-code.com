@@ -1,17 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {QrCode} from 'lucide-react';
-import {AuthenticationProvider} from "../../core/AuthenticationProvider/api/AuthenticationProvider.ts";
-import {localStorageApi} from "../../services/browser/LocalStorageBrowserApi.ts";
-import {OidcService} from "../../services/external/OIDCService.ts";
-import {UserSession} from "../../core/UserSession/api/UserSession.ts";
-import {userProfileApi} from "../../services/external/HttpUserProfileApi.ts";
+import {authenticationProvider} from "../../factory/authenticationServiceFactory.ts";
+import {userSession} from "../../factory/userSessionFactory.ts";
+
 
 interface BootstrapComponentProps {
   redirectUser: (destination: string, error?: string) => void;
 }
 
-const authentication_provider = new AuthenticationProvider(localStorageApi, OidcService);
-const user_session = new UserSession(localStorageApi, userProfileApi);
+
 
 const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser }) => {
   const [loadingText, setLoadingText] = useState('Initializing...');
@@ -20,9 +17,9 @@ const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser })
 
     const onInit = () => {
       setLoadingText('Loading authentication...');
-      return authentication_provider.auto_login().subscribe(async () => {
+      return authenticationProvider.auto_login().subscribe(async () => {
         setLoadingText('Loading user session...');
-        user_session.load().then((redirection) => {
+        userSession.load().then((redirection) => {
           redirectUser(redirection.path);
         })
       });
