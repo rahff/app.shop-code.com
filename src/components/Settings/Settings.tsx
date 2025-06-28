@@ -1,10 +1,15 @@
 import React from 'react';
-import { Settings as SettingsIcon, Clock, CreditCard, Palette, Bell, Shield, HelpCircle } from 'lucide-react';
+import { Settings as SettingsIcon, Clock, CreditCard, Palette, Bell, Shield, HelpCircle, UserPlus } from 'lucide-react';
 
 const Settings: React.FC = () => {
   const handleUpgradePlan = () => {
     // Navigate to upgrade plan page
     window.location.href = '/upgrade-plan';
+  };
+
+  const handleAddCashier = () => {
+    // Navigate to add cashier page
+    window.location.href = '/add-cashier';
   };
 
   const settingsOptions = [
@@ -18,20 +23,21 @@ const Settings: React.FC = () => {
       onClick: handleUpgradePlan
     },
     {
+      icon: UserPlus,
+      title: 'Add Cashier',
+      description: 'Create cashier accounts for your staff',
+      action: 'Add Cashier',
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50',
+      onClick: handleAddCashier
+    },
+    {
       icon: Palette,
       title: 'Change Theme',
       description: 'Customize your dashboard appearance',
       action: 'Customize',
       color: 'text-purple-600',
       bgColor: 'bg-purple-50'
-    },
-    {
-      icon: Bell,
-      title: 'Notifications',
-      description: 'Manage your notification preferences',
-      action: 'Configure',
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50'
     },
     {
       icon: Shield,

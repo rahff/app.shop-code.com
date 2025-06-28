@@ -12,11 +12,12 @@ import CreateShopPage from './components/CreateShop/CreateShopPage';
 import QrcodeScannerView from './components/ScanQrcode/QrcodeScannerView';
 import RedeemCouponView from './components/RedeemCoupon/RedeemCouponView.tsx';
 import UpgradePlanView from './components/Subscription/UpgradePlanView';
+import AddCashierView from './components/AddCashier/AddCashierView';
 import {userSession} from "./factory/userSessionFactory.ts";
 import {ShopData} from "./core/CreateShop/api/data.ts";
 import { CouponData } from './core/ScanQrcode/api/data';
 
-type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop' | 'redeem-coupon' | 'upgrade-plan';
+type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop' | 'redeem-coupon' | 'upgrade-plan' | 'add-cashier';
 
 function App() {
   const [appState, setAppState] = useState<AppState>('bootstrap');
@@ -62,6 +63,8 @@ function App() {
       setAppState('create-shop');
     } else if (path === '/upgrade-plan') {
       setAppState('upgrade-plan');
+    } else if (path === '/add-cashier') {
+      setAppState('add-cashier');
     }
   };
 
@@ -112,6 +115,17 @@ function App() {
   };
 
   const handleUpgradeCancel = () => {
+    setAppState('dashboard');
+    setActiveRoute('settings');
+  };
+
+  // Handle add cashier actions
+  const handleAddCashierComplete = () => {
+    setAppState('dashboard');
+    setActiveRoute('settings');
+  };
+
+  const handleAddCashierCancel = () => {
     setAppState('dashboard');
     setActiveRoute('settings');
   };
@@ -176,6 +190,14 @@ function App() {
         <UpgradePlanView 
           onUpgrade={handleUpgradeComplete}
           onCancel={handleUpgradeCancel}
+        />
+      );
+    
+    case 'add-cashier':
+      return (
+        <AddCashierView 
+          onComplete={handleAddCashierComplete}
+          onCancel={handleAddCashierCancel}
         />
       );
     
