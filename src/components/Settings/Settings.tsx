@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, CreditCard, Shield, HelpCircle, UserPlus, Users, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState } from 'react';
+import { CreditCard, Shield, HelpCircle, UserPlus, Users, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { ListCashiers } from '../../core/ListCashiers/api/ListCashiers';
 import { CashierData } from '../../core/AddCashier/api/data';
 import { localStorageApi } from '../../services/browser/LocalStorageBrowserApi';
@@ -49,7 +49,8 @@ const Settings: React.FC = () => {
         }
         setIsLoadingCashiers(false);
       },
-      error: (error) => {
+      error: (error: unknown) => {
+        console.log(error);
         setCashierError('Failed to load cashiers');
         setIsLoadingCashiers(false);
       }
