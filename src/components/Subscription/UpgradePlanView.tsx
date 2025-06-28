@@ -1,6 +1,7 @@
 // src/components/Subscription/UpgradePlanView.tsx
 import React from 'react';
 import { Crown, Check, ArrowRight, AlertCircle, ArrowLeft } from 'lucide-react';
+import { subscriptionManager } from '../../factory/subscriptionManagerFactory';
 
 interface PlanFeature {
   name: string;
@@ -94,7 +95,24 @@ const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({
       console.log('Contact sales for personalized plan');
       return;
     }
-    onUpgrade(planId);
+
+    // Use the subscription manager to create Stripe checkout session
+    subscriptionManager.initiate_subscription(planId).subscribe({
+      next: (checkoutUrl) => {
+        if (checkoutUrl.includes('stripe.com')) {
+          // Redirect to Stripe checkout
+          window.location.href = checkoutUrl;
+        } else {
+          // Handle error or redirect to login
+          console.error('Invalid checkout URL received');
+          onUpgrade(planId);
+        }
+      },
+      error: (error) => {
+        console.error('Failed to initiate subscription:', error);
+        onUpgrade(planId);
+      }
+    });
   };
 
   const handleGoBack = () => {
