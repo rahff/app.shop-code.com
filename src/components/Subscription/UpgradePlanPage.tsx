@@ -22,6 +22,7 @@ const UpgradePlanPage: React.FC<UpgradePlanPageProps> = ({
 
   const handleGoBack = () => {
     // Navigate back to dashboard instead of previous page
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     onCancel ? onCancel() : navigateToDashboard();
   };
 
@@ -34,6 +35,7 @@ const UpgradePlanPage: React.FC<UpgradePlanPageProps> = ({
       console.log('Upgrading to plan:', planId);
       setIsLoading(false);
       // Navigate back to dashboard on success
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       onUpgrade ? onUpgrade() : navigateToDashboard();
     }, 2000);
   };
