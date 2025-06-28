@@ -63,6 +63,7 @@ const Settings: React.FC = () => {
     localStorageApi.set_item('cashier_list', updatedCashiers);
   };
 
+  // Reordered settings options according to specified order
   const settingsOptions = [
     {
       icon: CreditCard,
@@ -136,8 +137,8 @@ const Settings: React.FC = () => {
           })}
         </div>
 
-        {/* List Cashiers Section */}
-        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:border-[#6C63FF]/20">
+        {/* Cashier Management Section - positioned after Add Cashier */}
+        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:border-[#6C63FF]/20 mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center">
@@ -220,7 +221,7 @@ const Settings: React.FC = () => {
         </div>
 
         {/* Coming Soon Section */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 sm:p-8 text-center mt-8">
+        <div className="bg-white rounded-xl border border-gray-200 p-6 sm:p-8 text-center">
           <div className="w-16 h-16 bg-gradient-to-br from-[#6C63FF] to-[#5845E9] rounded-full flex items-center justify-center mx-auto mb-6">
             <SettingsIcon className="w-8 h-8 text-white" />
           </div>
