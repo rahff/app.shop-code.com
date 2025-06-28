@@ -15,13 +15,25 @@ const CreateShopPage: React.FC = () => {
     setTimeout(() => {
       console.log('Creating shop:', formData);
       setIsLoading(false);
-      // Navigate back to shops list
-      window.location.href = '/';
+      // Always navigate back to dashboard
+      navigateToDashboard();
     }, 2000);
   };
 
+  const navigateToDashboard = () => {
+    // Clear any route-specific state and navigate to dashboard
+    window.history.pushState(null, '', '/');
+    window.location.reload();
+  };
+
   const handleGoBack = () => {
-    window.history.back();
+    // Navigate back to dashboard instead of previous page
+    navigateToDashboard();
+  };
+
+  const handleCancel = () => {
+    // Always navigate to dashboard on cancel
+    navigateToDashboard();
   };
 
   return (
@@ -32,7 +44,7 @@ const CreateShopPage: React.FC = () => {
           <button
             onClick={handleGoBack}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            aria-label="Go back"
+            aria-label="Go back to dashboard"
           >
             <ArrowLeft className="w-5 h-5 text-[#A0A0A8]" />
           </button>
@@ -49,6 +61,7 @@ const CreateShopPage: React.FC = () => {
           onSubmit={handleSubmit}
           isLoading={isLoading}
           error={error}
+          onCancel={handleCancel}
         />
       </main>
     </div>

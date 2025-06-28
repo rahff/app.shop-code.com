@@ -11,7 +11,11 @@ const QrcodeScannerPage: React.FC = () => {
     setScannedCoupon(coupon);
     setScanError(null);
     console.log('Scanned coupon:', coupon);
-    // Here you could navigate to a coupon details page or redeem page
+    
+    // After successful scan, navigate back to dashboard after a brief delay
+    setTimeout(() => {
+      navigateToDashboard();
+    }, 2000);
   };
 
   const handleScanError = (error: string) => {
@@ -19,12 +23,25 @@ const QrcodeScannerPage: React.FC = () => {
     setScannedCoupon(null);
   };
 
+  const navigateToDashboard = () => {
+    // Clear any route-specific state and navigate to dashboard
+    window.history.pushState(null, '', '/');
+    window.location.reload();
+  };
+
   const handleGoBack = () => {
-    window.history.back();
+    // Navigate back to dashboard instead of previous page
+    navigateToDashboard();
   };
 
   const handleClose = () => {
-    window.location.href = '/';
+    // Always navigate to dashboard on close
+    navigateToDashboard();
+  };
+
+  const handleCancel = () => {
+    // Always navigate to dashboard on cancel
+    navigateToDashboard();
   };
 
   return (
@@ -35,7 +52,7 @@ const QrcodeScannerPage: React.FC = () => {
           <button
             onClick={handleGoBack}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            aria-label="Go back"
+            aria-label="Go back to dashboard"
           >
             <ArrowLeft className="w-5 h-5 text-[#A0A0A8]" />
           </button>
@@ -60,6 +77,7 @@ const QrcodeScannerPage: React.FC = () => {
           <div className="absolute top-4 left-4 right-4 bg-green-50 border border-green-200 rounded-lg p-4 z-10">
             <h3 className="font-semibold text-green-800">Coupon Scanned Successfully!</h3>
             <p className="text-green-700 text-sm mt-1">{scannedCoupon.name}</p>
+            <p className="text-green-600 text-xs mt-2">Returning to dashboard...</p>
           </div>
         )}
 
@@ -67,6 +85,12 @@ const QrcodeScannerPage: React.FC = () => {
           <div className="absolute top-4 left-4 right-4 bg-red-50 border border-red-200 rounded-lg p-4 z-10">
             <h3 className="font-semibold text-red-800">Scan Error</h3>
             <p className="text-red-700 text-sm mt-1">{scanError}</p>
+            <button 
+              onClick={handleCancel}
+              className="mt-2 text-xs text-red-600 underline"
+            >
+              Return to Dashboard
+            </button>
           </div>
         )}
       </main>

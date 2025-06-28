@@ -9,6 +9,7 @@ interface CreatePromoFormProps {
   error?: string | null;
   onFileUpload?: (file: File) => void;
   uploadProgress?: number;
+  onCancel?: () => void;
 }
 
 const CreatePromoForm: React.FC<CreatePromoFormProps> = ({
@@ -16,7 +17,8 @@ const CreatePromoForm: React.FC<CreatePromoFormProps> = ({
   isLoading = false,
   error,
   onFileUpload,
-  uploadProgress = 0
+  uploadProgress = 0,
+  onCancel
 }) => {
   const [formData, setFormData] = useState<Partial<PromoFormData>>({
     name: '',
@@ -278,8 +280,8 @@ const CreatePromoForm: React.FC<CreatePromoFormProps> = ({
         <div className="flex justify-end space-x-4 pt-6">
           <button
             type="button"
+            onClick={onCancel}
             className="px-6 py-3 border-2 border-[#6C63FF] text-[#6C63FF] rounded-lg font-medium hover:bg-[#6C63FF] hover:text-white transition-all duration-200"
-            onClick={() => window.history.back()}
           >
             Cancel
           </button>
