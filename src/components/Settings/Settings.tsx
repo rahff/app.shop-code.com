@@ -2,6 +2,11 @@ import React from 'react';
 import { Settings as SettingsIcon, Clock, CreditCard, Palette, Bell, Shield, HelpCircle } from 'lucide-react';
 
 const Settings: React.FC = () => {
+  const handleUpgradePlan = () => {
+    // Navigate to upgrade plan page
+    window.location.href = '/upgrade-plan';
+  };
+
   const settingsOptions = [
     {
       icon: CreditCard,
@@ -9,7 +14,8 @@ const Settings: React.FC = () => {
       description: 'Unlock premium features and increase limits',
       action: 'Upgrade',
       color: 'text-green-600',
-      bgColor: 'bg-green-50'
+      bgColor: 'bg-green-50',
+      onClick: handleUpgradePlan
     },
     {
       icon: Palette,
@@ -69,7 +75,10 @@ const Settings: React.FC = () => {
                       <p className="text-[#A0A0A8] text-sm">{option.description}</p>
                     </div>
                   </div>
-                  <button className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm">
+                  <button 
+                    onClick={option.onClick}
+                    className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm"
+                  >
                     {option.action}
                   </button>
                 </div>

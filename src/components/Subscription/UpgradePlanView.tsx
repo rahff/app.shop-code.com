@@ -8,6 +8,7 @@ interface PlanFeature {
 }
 
 interface Plan {
+  id: string;
   name: string;
   price: string;
   period: string;
@@ -18,6 +19,7 @@ interface Plan {
 
 interface UpgradePlanViewProps {
   onUpgrade: (planId: string) => void;
+  onCancel?: () => void;
   isLoading?: boolean;
   error?: string | null;
   currentPlan?: string;
@@ -25,61 +27,75 @@ interface UpgradePlanViewProps {
 
 const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({
   onUpgrade,
+  onCancel,
   isLoading = false,
   error,
   currentPlan = 'basic'
 }) => {
+  // Plans based on the pricing.md file
   const plans: Plan[] = [
     {
+      id: 'basic',
       name: 'Basic',
-      price: 'Free',
-      period: 'forever',
-      description: 'Perfect for getting started with promotional campaigns',
+      price: '$5',
+      period: 'per month',
+      description: 'Perfect for solo shop owners or early-stage testers',
       features: [
-        { name: 'Up to 2 shops', included: true },
-        { name: 'Up to 20 promos per month', included: true },
-        { name: 'Basic analytics', included: true },
-        { name: '2 staff users', included: true },
-        { name: 'Email support', included: true },
-        { name: 'Advanced analytics', included: false },
-        { name: 'Priority support', included: false },
-        { name: 'Custom branding', included: false }
+        { name: '2 Shops', included: true },
+        { name: '20 Promos per month', included: true },
+        { name: 'Basic dashboard analytics', included: true },
+        { name: 'Support via chat', included: true },
+        { name: 'Advanced analytics dashboard', included: false },
+        { name: 'Retargeting tools', included: false },
+        { name: 'Priority email support', included: false },
+        { name: 'Dedicated success manager', included: false }
       ]
     },
     {
+      id: 'pro',
       name: 'Pro',
-      price: '€29',
+      price: '$20',
       period: 'per month',
-      description: 'Scale your business with advanced features and analytics',
+      description: 'For growing businesses running frequent promotions',
       recommended: true,
       features: [
-        { name: 'Unlimited shops', included: true },
-        { name: 'Unlimited promos', included: true },
-        { name: 'Advanced analytics', included: true },
-        { name: 'Up to 10 staff users', included: true },
-        { name: 'Priority support', included: true },
-        { name: 'Custom branding', included: true },
-        { name: 'API access', included: true },
-        { name: 'White-label solution', included: false }
+        { name: '10 Shops', included: true },
+        { name: '200 Promos per month', included: true },
+        { name: 'Advanced analytics dashboard', included: true },
+        { name: 'Retargeting tools included', included: true },
+        { name: 'Priority email support', included: true },
+        { name: 'Basic dashboard analytics', included: true },
+        { name: 'Support via chat', included: true },
+        { name: 'Dedicated success manager', included: false }
       ]
     },
     {
-      name: 'Enterprise',
+      id: 'personalized',
+      name: 'Personalized',
       price: 'Custom',
       period: 'pricing',
-      description: 'Tailored solution for large businesses and franchises',
+      description: 'Custom features and volume-based pricing',
       features: [
-        { name: 'Everything in Pro', included: true },
-        { name: 'Unlimited staff users', included: true },
-        { name: 'White-label solution', included: true },
-        { name: 'Dedicated account manager', included: true },
-        { name: 'Custom integrations', included: true },
-        { name: 'SLA guarantee', included: true },
-        { name: 'On-premise deployment', included: true },
-        { name: 'Custom training', included: true }
+        { name: 'Unlimited shops', included: true },
+        { name: 'Custom promo capacity', included: true },
+        { name: 'Dedicated success manager', included: true },
+        { name: 'Integrations with your marketing stack', included: true },
+        { name: 'Live support options', included: true },
+        { name: 'Advanced analytics dashboard', included: true },
+        { name: 'Retargeting tools included', included: true },
+        { name: 'Priority email support', included: true }
       ]
     }
   ];
+
+  const handlePlanSelect = (planId: string) => {
+    if (planId === 'personalized') {
+      // For personalized plan, could open contact form or redirect to sales
+      console.log('Contact sales for personalized plan');
+      return;
+    }
+    onUpgrade(planId);
+  };
 
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
@@ -105,14 +121,14 @@ const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({
 
       {/* Plans Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-        {plans.map((plan, index) => (
+        {plans.map((plan) => (
           <div
-            key={plan.name}
+            key={plan.id}
             className={`relative bg-white rounded-xl border-2 p-6 sm:p-8 transition-all duration-300 hover:shadow-xl ${
               plan.recommended
                 ? 'border-[#6C63FF] shadow-lg scale-105'
                 : 'border-gray-200 hover:border-[#6C63FF]/30'
-            } ${currentPlan.toLowerCase() === plan.name.toLowerCase() ? 'ring-2 ring-[#6C63FF]/20' : ''}`}
+            } ${currentPlan.toLowerCase() === plan.id ? 'ring-2 ring-[#6C63FF]/20' : ''}`}
           >
             {/* Recommended Badge */}
             {plan.recommended && (
@@ -124,7 +140,7 @@ const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({
             )}
 
             {/* Current Plan Badge */}
-            {currentPlan.toLowerCase() === plan.name.toLowerCase() && (
+            {currentPlan.toLowerCase() === plan.id && (
               <div className="absolute top-4 right-4">
                 <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">
                   Current Plan
@@ -172,10 +188,10 @@ const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({
 
             {/* Action Button */}
             <button
-              onClick={() => onUpgrade(plan.name.toLowerCase())}
-              disabled={isLoading || currentPlan.toLowerCase() === plan.name.toLowerCase()}
+              onClick={() => handlePlanSelect(plan.id)}
+              disabled={isLoading || currentPlan.toLowerCase() === plan.id}
               className={`w-full py-3 px-6 rounded-lg font-medium transition-all duration-200 flex items-center justify-center space-x-2 ${
-                currentPlan.toLowerCase() === plan.name.toLowerCase()
+                currentPlan.toLowerCase() === plan.id
                   ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
                   : plan.recommended
                   ? 'bg-[#6C63FF] text-white hover:bg-[#5845E9] shadow-lg hover:shadow-xl'
@@ -187,9 +203,9 @@ const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({
                   <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                   <span>Processing...</span>
                 </>
-              ) : currentPlan.toLowerCase() === plan.name.toLowerCase() ? (
+              ) : currentPlan.toLowerCase() === plan.id ? (
                 <span>Current Plan</span>
-              ) : plan.name === 'Enterprise' ? (
+              ) : plan.id === 'personalized' ? (
                 <>
                   <span>Contact Sales</span>
                   <ArrowRight className="w-4 h-4" />
@@ -205,6 +221,31 @@ const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({
         ))}
       </div>
 
+      {/* All Plans Include Section */}
+      <div className="mt-12 sm:mt-16 bg-white rounded-xl border border-gray-200 p-6 sm:p-8">
+        <h2 className="text-2xl font-bold text-[#2B2C34] font-['Inter'] mb-6 text-center">
+          ✨ All Plans Include:
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+          <div className="flex items-center space-x-3">
+            <Check className="w-5 h-5 text-green-600" />
+            <span className="text-[#2B2C34]">Smart QR code generation</span>
+          </div>
+          <div className="flex items-center space-x-3">
+            <Check className="w-5 h-5 text-green-600" />
+            <span className="text-[#2B2C34]">Customer profile creation via social login</span>
+          </div>
+          <div className="flex items-center space-x-3">
+            <Check className="w-5 h-5 text-green-600" />
+            <span className="text-[#2B2C34]">In-store redemption tracking</span>
+          </div>
+          <div className="flex items-center space-x-3">
+            <Check className="w-5 h-5 text-green-600" />
+            <span className="text-[#2B2C34]">Feedback collection tools</span>
+          </div>
+        </div>
+      </div>
+
       {/* FAQ Section */}
       <div className="mt-12 sm:mt-16 text-center">
         <h2 className="text-2xl font-bold text-[#2B2C34] font-['Inter'] mb-4">
@@ -213,9 +254,26 @@ const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({
         <p className="text-[#A0A0A8] mb-6">
           Our team is here to help you choose the right plan for your business
         </p>
-        <button className="bg-white border-2 border-[#6C63FF] text-[#6C63FF] px-6 py-3 rounded-lg font-medium hover:bg-[#6C63FF] hover:text-white transition-all duration-200">
-          Contact Support
-        </button>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <button className="bg-white border-2 border-[#6C63FF] text-[#6C63FF] px-6 py-3 rounded-lg font-medium hover:bg-[#6C63FF] hover:text-white transition-all duration-200">
+            Contact Support
+          </button>
+          {onCancel && (
+            <button 
+              onClick={onCancel}
+              className="bg-gray-100 text-gray-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-200 transition-all duration-200"
+            >
+              Back to Settings
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Footer Note */}
+      <div className="mt-8 text-center">
+        <p className="text-sm text-[#A0A0A8]">
+          📌 Cancel anytime. No long-term commitment. Your success drives our roadmap.
+        </p>
       </div>
     </div>
   );

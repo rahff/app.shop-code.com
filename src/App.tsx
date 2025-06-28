@@ -11,11 +11,12 @@ import CreatePromoPage from './components/CreatePromo/CreatePromoPage';
 import CreateShopPage from './components/CreateShop/CreateShopPage';
 import QrcodeScannerView from './components/ScanQrcode/QrcodeScannerView';
 import RedeemCouponView from './components/RedeemCoupon/RedeemCouponView.tsx';
+import UpgradePlanView from './components/Subscription/UpgradePlanView';
 import {userSession} from "./factory/userSessionFactory.ts";
 import {ShopData} from "./core/CreateShop/api/data.ts";
 import { CouponData } from './core/ScanQrcode/api/data';
 
-type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop' | 'redeem-coupon';
+type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop' | 'redeem-coupon' | 'upgrade-plan';
 
 function App() {
   const [appState, setAppState] = useState<AppState>('bootstrap');
@@ -59,6 +60,8 @@ function App() {
       setAppState('create-promo');
     } else if (path === '/shop/create') {
       setAppState('create-shop');
+    } else if (path === '/upgrade-plan') {
+      setAppState('upgrade-plan');
     }
   };
 
@@ -100,6 +103,17 @@ function App() {
     setScannedCoupon(null);
     setAppState('dashboard');
     setActiveRoute('promos');
+  };
+
+  // Handle upgrade plan actions
+  const handleUpgradeComplete = () => {
+    setAppState('dashboard');
+    setActiveRoute('settings');
+  };
+
+  const handleUpgradeCancel = () => {
+    setAppState('dashboard');
+    setActiveRoute('settings');
   };
 
   // Render dashboard content based on active route
@@ -154,6 +168,14 @@ function App() {
           couponData={scannedCoupon}
           onComplete={handleRedeemComplete}
           onCancel={handleRedeemCancel}
+        />
+      );
+    
+    case 'upgrade-plan':
+      return (
+        <UpgradePlanView 
+          onUpgrade={handleUpgradeComplete}
+          onCancel={handleUpgradeCancel}
         />
       );
     
