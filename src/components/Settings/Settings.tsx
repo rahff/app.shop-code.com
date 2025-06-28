@@ -115,116 +115,118 @@ const Settings: React.FC = () => {
         <p className="text-[#A0A0A8] text-sm sm:text-base">Manage your account preferences and shop configuration</p>
       </div>
 
-      <div className="max-w-2xl">
-        {/* Cashier Management Section - positioned first */}
-        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:border-[#6C63FF]/20 mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-purple-600" />
+      {/* Responsive centering wrapper - centers on desktop, left-aligned on mobile */}
+      <div className="flex justify-start md:justify-center">
+        <div className="w-full max-w-2xl">
+          {/* Cashier List Section - positioned first */}
+          <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:border-[#6C63FF]/20 mb-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center">
+                  <Users className="w-6 h-6 text-purple-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-[#2B2C34] font-['Inter']">Cashier List</h3>
+                  <p className="text-[#A0A0A8] text-sm">View and manage your cashier accounts</p>
+                </div>
               </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-[#2B2C34] font-['Inter']">Cashier Management</h3>
-                <p className="text-[#A0A0A8] text-sm">View and manage your cashier accounts</p>
-              </div>
+              <button 
+                onClick={toggleDropdown}
+                className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm flex items-center space-x-2"
+              >
+                {isDropdownOpen ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </button>
             </div>
-            <button 
-              onClick={toggleDropdown}
-              className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm flex items-center space-x-2"
-            >
-              <span>List Cashiers</span>
-              {isDropdownOpen ? (
-                <ChevronUp className="w-4 h-4" />
-              ) : (
-                <ChevronDown className="w-4 h-4" />
-              )}
-            </button>
+
+            {/* Dropdown Content */}
+            {isDropdownOpen && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                {isLoadingCashiers ? (
+                  <div className="flex items-center justify-center py-4">
+                    <div className="w-6 h-6 border-2 border-[#6C63FF]/30 border-t-[#6C63FF] rounded-full animate-spin"></div>
+                    <span className="ml-2 text-[#A0A0A8]">Loading cashiers...</span>
+                  </div>
+                ) : cashierError ? (
+                  <div className="text-center py-4">
+                    <p className="text-red-600 text-sm">{cashierError}</p>
+                    <button 
+                      onClick={loadCashiers}
+                      className="mt-2 text-[#6C63FF] hover:text-[#5845E9] text-sm font-medium"
+                    >
+                      Try again
+                    </button>
+                  </div>
+                ) : cashiers.length > 0 ? (
+                  <div className="space-y-2">
+                    {cashiers.map((cashier) => (
+                      <div key={cashier.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-[#6C63FF] rounded-full flex items-center justify-center">
+                            <span className="text-white text-sm font-semibold">
+                              {cashier.username.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-[#2B2C34] font-medium">{cashier.username}</span>
+                            <p className="text-xs text-[#A0A0A8]">ID: {cashier.id.slice(0, 8)}...</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => deleteCashier(cashier.id)}
+                          className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all duration-200"
+                          aria-label={`Delete cashier ${cashier.username}`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-4">
+                    <p className="text-[#A0A0A8] text-sm mb-2">No cashiers found</p>
+                    <button 
+                      onClick={handleAddCashier}
+                      className="text-[#6C63FF] hover:text-[#5845E9] text-sm font-medium"
+                    >
+                      Add your first cashier
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Dropdown Content */}
-          {isDropdownOpen && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              {isLoadingCashiers ? (
-                <div className="flex items-center justify-center py-4">
-                  <div className="w-6 h-6 border-2 border-[#6C63FF]/30 border-t-[#6C63FF] rounded-full animate-spin"></div>
-                  <span className="ml-2 text-[#A0A0A8]">Loading cashiers...</span>
-                </div>
-              ) : cashierError ? (
-                <div className="text-center py-4">
-                  <p className="text-red-600 text-sm">{cashierError}</p>
-                  <button 
-                    onClick={loadCashiers}
-                    className="mt-2 text-[#6C63FF] hover:text-[#5845E9] text-sm font-medium"
-                  >
-                    Try again
-                  </button>
-                </div>
-              ) : cashiers.length > 0 ? (
-                <div className="space-y-2">
-                  {cashiers.map((cashier) => (
-                    <div key={cashier.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-[#6C63FF] rounded-full flex items-center justify-center">
-                          <span className="text-white text-sm font-semibold">
-                            {cashier.username.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-[#2B2C34] font-medium">{cashier.username}</span>
-                          <p className="text-xs text-[#A0A0A8]">ID: {cashier.id.slice(0, 8)}...</p>
-                        </div>
+          {/* Settings Options */}
+          <div className="space-y-3 sm:space-y-4">
+            {settingsOptions.map((option, index) => {
+              const Icon = option.icon;
+              return (
+                <div key={index} className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:border-[#6C63FF]/20">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className={`w-12 h-12 ${option.bgColor} rounded-lg flex items-center justify-center`}>
+                        <Icon className={`w-6 h-6 ${option.color}`} />
                       </div>
-                      <button
-                        onClick={() => deleteCashier(cashier.id)}
-                        className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all duration-200"
-                        aria-label={`Delete cashier ${cashier.username}`}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-[#2B2C34] font-['Inter']">{option.title}</h3>
+                        <p className="text-[#A0A0A8] text-sm">{option.description}</p>
+                      </div>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-4">
-                  <p className="text-[#A0A0A8] text-sm mb-2">No cashiers found</p>
-                  <button 
-                    onClick={handleAddCashier}
-                    className="text-[#6C63FF] hover:text-[#5845E9] text-sm font-medium"
-                  >
-                    Add your first cashier
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Settings Options */}
-        <div className="space-y-3 sm:space-y-4">
-          {settingsOptions.map((option, index) => {
-            const Icon = option.icon;
-            return (
-              <div key={index} className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:border-[#6C63FF]/20">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className={`w-12 h-12 ${option.bgColor} rounded-lg flex items-center justify-center`}>
-                      <Icon className={`w-6 h-6 ${option.color}`} />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-[#2B2C34] font-['Inter']">{option.title}</h3>
-                      <p className="text-[#A0A0A8] text-sm">{option.description}</p>
-                    </div>
+                    <button 
+                      onClick={option.onClick}
+                      className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm"
+                    >
+                      {option.action}
+                    </button>
                   </div>
-                  <button 
-                    onClick={option.onClick}
-                    className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm"
-                  >
-                    {option.action}
-                  </button>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
