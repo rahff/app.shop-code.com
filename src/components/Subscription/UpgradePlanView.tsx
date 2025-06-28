@@ -1,6 +1,6 @@
 // src/components/Subscription/UpgradePlanView.tsx
 import React from 'react';
-import { Crown, Check, ArrowRight, AlertCircle } from 'lucide-react';
+import { Crown, Check, ArrowRight, AlertCircle, ArrowLeft } from 'lucide-react';
 
 interface PlanFeature {
   name: string;
@@ -97,8 +97,28 @@ const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({
     onUpgrade(planId);
   };
 
+  const handleGoBack = () => {
+    if (onCancel) {
+      onCancel();
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+      {/* Back Arrow - Top Left */}
+      {onCancel && (
+        <div className="mb-6">
+          <button
+            onClick={handleGoBack}
+            className="flex items-center space-x-2 text-[#A0A0A8] hover:text-[#6C63FF] transition-colors duration-200 group"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-200" />
+            <span className="text-sm font-medium">Back to Settings</span>
+          </button>
+        </div>
+      )}
+
       <div className="text-center mb-8 sm:mb-12">
         <div className="w-16 h-16 bg-gradient-to-br from-[#6C63FF] to-[#5845E9] rounded-xl flex items-center justify-center mx-auto mb-6">
           <Crown className="w-8 h-8 text-white" />
@@ -258,14 +278,6 @@ const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({
           <button className="bg-white border-2 border-[#6C63FF] text-[#6C63FF] px-6 py-3 rounded-lg font-medium hover:bg-[#6C63FF] hover:text-white transition-all duration-200">
             Contact Support
           </button>
-          {onCancel && (
-            <button 
-              onClick={onCancel}
-              className="bg-gray-100 text-gray-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-200 transition-all duration-200"
-            >
-              Back to Settings
-            </button>
-          )}
         </div>
       </div>
 
