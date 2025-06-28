@@ -9,6 +9,8 @@ import Statistics from './components/Statistics/Statistics';
 import Settings from './components/Settings/Settings';
 import CreatePromoPage from './components/CreatePromo/CreatePromoPage';
 import CreateShopPage from './components/CreateShop/CreateShopPage';
+import {userSession} from "./factory/userSessionFactory.ts";
+import {ShopData} from "./core/CreateShop/api/data.ts";
 
 type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop';
 
@@ -41,8 +43,8 @@ function App() {
   }, []);
 
   // Handle shop selection - enter main dashboard
-  const handleShopSelect = useCallback((shopId: string) => {
-    console.log('Selected shop:', shopId);
+  const handleShopSelect = useCallback((shop: ShopData) => {
+    userSession.shop_selected(shop)
     // In a real app, you'd store the selected shop in context/state
     setAppState('dashboard');
   }, []);

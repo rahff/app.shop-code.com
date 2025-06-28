@@ -60,7 +60,8 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
         stopScanning();
       }, 3000);
 
-    } catch (err) {
+    } catch (err: unknown) {
+      console.error(err);
       const errorMessage = "Camera access denied or not available";
       setError(errorMessage);
       onScanError(errorMessage);

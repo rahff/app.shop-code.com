@@ -4,6 +4,8 @@ export interface ShopData {
   name: string;
   location: string;
   logo: string;
+  createdAt: string;
+  promoCount: number;
 }
 
 export interface ShopFormData {

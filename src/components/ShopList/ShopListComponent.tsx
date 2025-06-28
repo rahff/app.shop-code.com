@@ -1,29 +1,23 @@
 import React, { useState } from 'react';
 import { Plus, MapPin, Calendar, ArrowRight } from 'lucide-react';
+import {ShopData} from "../../core/CreateShop/api/data.ts";
 
-interface Shop {
-  id: string;
-  name: string;
-  location: string;
-  logo: string;
-  createdAt: string;
-  promoCount: number;
-}
 
 interface ShopListComponentProps {
-  onShopSelect: (shopId: string) => void;
+  onShopSelect: (shop: ShopData) => void;
 }
 
 const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect }) => {
   // Mock shop data
-  const [shops] = useState<Shop[]>([
+  const [shops] = useState<ShopData[]>([
     {
       id: '1',
       name: "Joe's Coffee Shop",
       location: 'Paris 15ème',
       logo: '/logo.png',
       createdAt: '2025-01-15',
-      promoCount: 8
+      promoCount: 8,
+      account_ref: ''
     },
     {
       id: '2',
@@ -31,7 +25,8 @@ const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect }) =
       location: 'Paris 4ème',
       logo: '/logo.png',
       createdAt: '2025-01-10',
-      promoCount: 12
+      promoCount: 12,
+      account_ref: ''
     }
   ]);
 
@@ -43,8 +38,8 @@ const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect }) =
     });
   };
 
-  const handleShopClick = (shopId: string) => {
-    onShopSelect(shopId);
+  const handleShopClick = (shop: ShopData) => {
+    onShopSelect(shop);
   };
 
   const handleCreateShop = () => {
@@ -81,7 +76,7 @@ const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect }) =
             {shops.map((shop) => (
               <div
                 key={shop.id}
-                onClick={() => handleShopClick(shop.id)}
+                onClick={() => handleShopClick(shop)}
                 className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 hover:border-[#6C63FF]/20 cursor-pointer group"
               >
                 <div className="flex items-start justify-between mb-4">
