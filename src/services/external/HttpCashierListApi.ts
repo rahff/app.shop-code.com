@@ -1,4 +1,4 @@
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { CashierListApi } from '../../core/ListCashiers/spi/CashierListApi';
 import { CashierData } from '../../core/AddCashier/api/data';
 

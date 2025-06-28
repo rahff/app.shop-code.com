@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Settings as SettingsIcon, Clock, CreditCard, Shield, HelpCircle, UserPlus, Users, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { ListCashiers } from '../../core/ListCashiers/api/ListCashiers';
 import { CashierData } from '../../core/AddCashier/api/data';
 import { localStorageApi } from '../../services/browser/LocalStorageBrowserApi';
-import { HttpCashierListApi } from '../../services/external/HttpCashierListApi.ts';
+import {cashierListApi} from '../../services/external/HttpCashierListApi.ts';
+import {CASHIER_LIST_KEY} from "../../core/Common/constants.ts";
 
 const Settings: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -12,7 +13,6 @@ const Settings: React.FC = () => {
   const [cashierError, setCashierError] = useState<string | null>(null);
 
   // Initialize cashier list service
-  const cashierListApi = new HttpCashierListApi();
   const listCashiers = new ListCashiers(cashierListApi, localStorageApi);
 
   const handleUpgradePlan = () => {
@@ -39,12 +39,14 @@ const Settings: React.FC = () => {
     listCashiers.account_cashier().subscribe({
       next: (success) => {
         if (success) {
-          setCashiers(listCashiers.state.cashier_list);
+          setCashiers([...listCashiers.state.cashier_list]);
+          console.log("setCashier", [...listCashiers.state.cashier_list]);
           setCashierError(listCashiers.state.error?.message || null);
         }
         setIsLoadingCashiers(false);
       },
-      error: (error) => {
+      error: (error: unknown) => {
+        console.log(error);
         setCashierError('Failed to load cashiers');
         setIsLoadingCashiers(false);
       }
@@ -60,7 +62,7 @@ const Settings: React.FC = () => {
     
     // Update local storage
     const updatedCashiers = cashiers.filter(cashier => cashier.id !== cashierId);
-    localStorageApi.set_item('cashier_list', updatedCashiers);
+    localStorageApi.set_item(CASHIER_LIST_KEY, updatedCashiers);
   };
 
   // Reordered settings options according to specified order

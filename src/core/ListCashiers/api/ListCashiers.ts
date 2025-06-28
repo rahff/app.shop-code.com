@@ -11,22 +11,23 @@ export interface CashierListState {
   error: {message: string} | null
 }
 
-const cashier_list_initial_state: CashierListState = {
-  cashier_list: [],
-  error: null
-}
-
 
 
 export class ListCashiers {
 
   public constructor(private cashier_list_api: CashierListApi, private local_storage: LocalStorageApi) {}
 
-  public state: CashierListState = {...cashier_list_initial_state};
+  public state: CashierListState = {
+    cashier_list: [],
+    error: null
+  };
 
   public account_cashier(): Observable<boolean> {
     const local_cashier_list = this.local_storage.get_item<CashierData[]>(CASHIER_LIST_KEY);
-    if(local_cashier_list) return of(true);
+    if(local_cashier_list?.length) {
+      this.state.cashier_list = [...local_cashier_list];
+      return of(true)
+    };
     const {account_ref} = this.local_storage.get_item<Authentication>(AUTHENTICATION)!;
     return this.cashier_list_api.get_cashier_list(account_ref!)
       .pipe(first(), map(this.set_state.bind(this)));

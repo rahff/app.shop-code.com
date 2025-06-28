@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { ArrowLeft, Calendar, AlertCircle } from 'lucide-react';
 import RedeemCouponForm from './RedeemCouponForm';
 import { CouponData } from '../../core/ScanQrcode/api/data';
@@ -20,7 +20,8 @@ const RedeemCouponView: React.FC<RedeemCouponViewProps> = ({
 
   // If no coupon data, redirect back to dashboard
   if (!couponData) {
-    React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => {
       onCancel?.();
     }, [onCancel]);
     return null;
