@@ -10,15 +10,17 @@ import Settings from './components/Settings/Settings';
 import CreatePromoPage from './components/CreatePromo/CreatePromoPage';
 import CreateShopPage from './components/CreateShop/CreateShopPage';
 import QrcodeScannerView from './components/ScanQrcode/QrcodeScannerView';
+import RedeemCouponView from './components/RedeemCoupon/RedeemCouponView';
 import {userSession} from "./factory/userSessionFactory.ts";
 import {ShopData} from "./core/CreateShop/api/data.ts";
 import { CouponData } from './core/ScanQrcode/api/data';
 
-type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop';
+type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop' | 'redeem-coupon';
 
 function App() {
   const [appState, setAppState] = useState<AppState>('bootstrap');
   const [activeRoute, setActiveRoute] = useState('promos');
+  const [scannedCoupon, setScannedCoupon] = useState<CouponData | null>(null);
 
   // Handle bootstrap completion - determines initial app destination
   const redirectUser = useCallback((destination: string) => {
@@ -67,13 +69,11 @@ function App() {
     return () => window.removeEventListener('popstate', checkRoute);
   });
 
-  // Handle scan success - stay in dashboard
+  // Handle scan success - navigate to redeem coupon
   const handleScanSuccess = (coupon: CouponData) => {
     console.log('Scanned coupon:', coupon);
-    // Show success message and return to promos view
-    setTimeout(() => {
-      setActiveRoute('promos');
-    }, 2000);
+    setScannedCoupon(coupon);
+    setAppState('redeem-coupon');
   };
 
   // Handle scan error
@@ -85,6 +85,20 @@ function App() {
 
   // Handle scan close/cancel - return to promos
   const handleScanClose = () => {
+    setActiveRoute('promos');
+  };
+
+  // Handle redeem completion - return to dashboard
+  const handleRedeemComplete = () => {
+    setScannedCoupon(null);
+    setAppState('dashboard');
+    setActiveRoute('promos');
+  };
+
+  // Handle redeem cancel - return to dashboard
+  const handleRedeemCancel = () => {
+    setScannedCoupon(null);
+    setAppState('dashboard');
     setActiveRoute('promos');
   };
 
@@ -133,6 +147,15 @@ function App() {
     
     case 'create-shop':
       return <CreateShopPage />;
+    
+    case 'redeem-coupon':
+      return (
+        <RedeemCouponView 
+          couponData={scannedCoupon}
+          onComplete={handleRedeemComplete}
+          onCancel={handleRedeemCancel}
+        />
+      );
     
     case 'dashboard':
       return (
