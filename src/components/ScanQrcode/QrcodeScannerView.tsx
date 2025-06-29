@@ -1,7 +1,7 @@
 // src/components/ScanQrcode/QrcodeScannerView.tsx
 import React, { useState } from 'react';
 import { Camera, AlertCircle, CheckCircle, QrCode, X } from 'lucide-react';
-import { QrReader } from 'react-qr-reader';
+import { Scanner } from '@yudiel/react-qr-scanner';
 import { CouponData } from '../../core/ScanQrcode/api/data';
 
 interface QrcodeScannerViewProps {
@@ -22,56 +22,40 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const handleScanResult = (result: any, error: any) => {
-    if (result) {
-      const scannedText = result?.text || result;
-      setScanResult(scannedText);
-      setSuccess("QR Code scanned successfully!");
-      setError(null);
-      
-      // Try to parse as coupon data and call success handler
-      try {
-        const couponData = JSON.parse(scannedText);
-        // Mock coupon data structure for demo - in real app this would be the actual scanned data
-        const mockCoupon: CouponData = {
-          name: couponData.name || "Scanned Promo",
-          customer_id: couponData.customer_id || "customer_123",
-          shop_id: couponData.shop_id || "shop_456",
-          promo_id: couponData.promo_id || "promo_789",
-          coupon_img: couponData.coupon_img || "https://example.com/coupon.jpg",
-          validity_date_range: couponData.validity_date_range || {
-            start: "2025-01-01",
-            end: "2025-12-31"
-          }
-        };
-        
-        setTimeout(() => {
-          onScanSuccess(mockCoupon);
-        }, 1500);
-      } catch (parseError) {
-        // If not valid JSON, still show the raw result
-        console.log('Scanned non-JSON QR code:', scannedText);
-      }
-    }
+  const handleScanResult = (result: string) => {
+    setScanResult(result);
+    setSuccess("QR Code scanned successfully!");
+    setError(null);
     
-    if (error) {
-      // Check if this is a critical error or just "no QR code found"
-      const isCriticalError = error instanceof DOMException || 
-                             (error.name && error.name !== 'NotFoundException') ||
-                             (error.message && !error.message.includes('No MultiFormat Readers were able to detect the code'));
+    // Try to parse as coupon data and call success handler
+    try {
+      const couponData = JSON.parse(result);
+      // Mock coupon data structure for demo - in real app this would be the actual scanned data
+      const mockCoupon: CouponData = {
+        name: couponData.name || "Scanned Promo",
+        customer_id: couponData.customer_id || "customer_123",
+        shop_id: couponData.shop_id || "shop_456",
+        promo_id: couponData.promo_id || "promo_789",
+        coupon_img: couponData.coupon_img || "https://example.com/coupon.jpg",
+        validity_date_range: couponData.validity_date_range || {
+          start: "2025-01-01",
+          end: "2025-12-31"
+        }
+      };
       
-      if (isCriticalError) {
-        // Critical error - log as error and close scanner
-        console.error('Critical QR Scan Error:', error);
-        setError("Camera error occurred. Please check permissions and try again.");
-        onScanError(error.message || "Critical scan error");
-      } else {
-        // Non-critical error (no QR code found) - just log for debugging
-        console.log('QR Scanner: No QR code detected in frame');
-        // Don't set error state or call onScanError for normal "no code found" situations
-        // This allows the scanner to keep running
-      }
+      setTimeout(() => {
+        onScanSuccess(mockCoupon);
+      }, 1500);
+    } catch (parseError) {
+      // If not valid JSON, still show the raw result
+      console.log('Scanned non-JSON QR code:', result);
     }
+  };
+
+  const handleScanError = (error: Error) => {
+    console.error('QR Scan Error:', error);
+    setError("Scan failed. Please try again.");
+    onScanError(error.message || "Scan failed");
   };
 
   const startScanning = () => {
@@ -121,20 +105,23 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
         <div className="p-4">
           <div className="relative bg-gray-900 rounded-lg overflow-hidden aspect-square mb-4">
             {isScanning ? (
-              <div className="w-full h-full">
-                <QrReader
+              <div className="w-full h-full relative">
+                <Scanner
                   onResult={handleScanResult}
+                  onError={handleScanError}
                   constraints={{
                     facingMode: 'environment' // Use back camera on mobile
                   }}
-                  containerStyle={{
-                    width: '100%',
-                    height: '100%'
-                  }}
-                  videoContainerStyle={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover'
+                  styles={{
+                    container: {
+                      width: '100%',
+                      height: '100%'
+                    },
+                    video: {
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover'
+                    }
                   }}
                 />
                 
