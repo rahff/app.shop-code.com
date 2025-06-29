@@ -23,7 +23,8 @@ const LoginComponent: React.FC<LoginComponentProps> = ({ errorMessage, onLoginSu
       
       // Simulate successful login
       onLoginSuccess();
-    } catch (error) {
+    } catch (error: unknown) {
+      console.log(error);
       setLoginError('Invalid credentials. Please try again.');
     } finally {
       setIsLoading(false);
