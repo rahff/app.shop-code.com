@@ -1,6 +1,7 @@
 // src/components/ScanQrcode/QrcodeScannerView.tsx
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Camera, AlertCircle, CheckCircle, QrCode, X } from 'lucide-react';
+import { QrReader } from 'react-qr-reader';
 import { CouponData } from '../../core/ScanQrcode/api/data';
 
 interface QrcodeScannerViewProps {
@@ -16,70 +17,59 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
   isActive = false,
   onClose
 }) => {
+  const [scanResult, setScanResult] = useState('');
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
 
-  // Simulate QR code scanning (in real implementation, would use a QR code library)
-  const startScanning = async () => {
-    try {
+  const handleScanResult = (result: any, error: any) => {
+    if (result) {
+      const scannedText = result?.text || result;
+      setScanResult(scannedText);
+      setSuccess("QR Code scanned successfully!");
       setError(null);
-      setSuccess(null);
-      setIsScanning(true);
-
-      // Request camera access
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: 'environment' } // Use back camera on mobile
-      });
       
-      streamRef.current = stream;
-      
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-
-      // Simulate scanning process
-      setTimeout(() => {
-        // Mock successful scan
+      // Try to parse as coupon data and call success handler
+      try {
+        const couponData = JSON.parse(scannedText);
+        // Mock coupon data structure for demo - in real app this would be the actual scanned data
         const mockCoupon: CouponData = {
-          name: "Summer Sale 2025",
-          customer_id: "customer_123",
-          shop_id: "shop_456",
-          promo_id: "promo_789",
-          coupon_img: "https://example.com/coupon.jpg",
-          validity_date_range: {
-            start: "2025-06-01",
-            end: "2025-08-31"
+          name: couponData.name || "Scanned Promo",
+          customer_id: couponData.customer_id || "customer_123",
+          shop_id: couponData.shop_id || "shop_456",
+          promo_id: couponData.promo_id || "promo_789",
+          coupon_img: couponData.coupon_img || "https://example.com/coupon.jpg",
+          validity_date_range: couponData.validity_date_range || {
+            start: "2025-01-01",
+            end: "2025-12-31"
           }
         };
         
-        setSuccess("QR Code scanned successfully!");
-        onScanSuccess(mockCoupon);
-        stopScanning();
-      }, 3000);
-
-    } catch (err: unknown) {
-      console.error(err);
-      const errorMessage = "Camera access denied or not available";
-      setError(errorMessage);
-      onScanError(errorMessage);
-      setIsScanning(false);
+        setTimeout(() => {
+          onScanSuccess(mockCoupon);
+        }, 1500);
+      } catch (parseError) {
+        // If not valid JSON, still show the raw result
+        console.log('Scanned non-JSON QR code:', scannedText);
+      }
     }
+    
+    if (error) {
+      console.error('QR Scan Error:', error);
+      setError("Failed to scan QR code. Please try again.");
+      onScanError(error.message || "Scan failed");
+    }
+  };
+
+  const startScanning = () => {
+    setIsScanning(true);
+    setError(null);
+    setSuccess(null);
+    setScanResult('');
   };
 
   const stopScanning = () => {
     setIsScanning(false);
-    
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
-    }
-    
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
-    }
   };
 
   const handleClose = () => {
@@ -95,18 +85,6 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
       onClose();
     }
   };
-
-  useEffect(() => {
-    if (isActive) {
-      startScanning();
-    } else {
-      stopScanning();
-    }
-
-    return () => {
-      stopScanning();
-    };
-  }, [isActive]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="scanner-title">
@@ -130,18 +108,25 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
         <div className="p-4">
           <div className="relative bg-gray-900 rounded-lg overflow-hidden aspect-square mb-4">
             {isScanning ? (
-              <>
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="w-full h-full object-cover"
-                  aria-label="Camera feed for QR code scanning"
+              <div className="w-full h-full">
+                <QrReader
+                  onResult={handleScanResult}
+                  constraints={{
+                    facingMode: 'environment' // Use back camera on mobile
+                  }}
+                  containerStyle={{
+                    width: '100%',
+                    height: '100%'
+                  }}
+                  videoContainerStyle={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }}
                 />
                 
                 {/* Scanning Overlay */}
-                <div className="absolute inset-0 flex items-center justify-center">
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div className="w-48 h-48 border-2 border-[#6C63FF] rounded-lg relative">
                     <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-[#6C63FF] rounded-tl-lg"></div>
                     <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-[#6C63FF] rounded-tr-lg"></div>
@@ -153,14 +138,14 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
                   </div>
                 </div>
                 
-                {/* Loading Indicator */}
+                {/* Scanning Status */}
                 <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
                   <div className="flex items-center space-x-2 bg-black bg-opacity-50 text-white px-3 py-2 rounded-lg">
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                     <span className="text-sm">Scanning...</span>
                   </div>
                 </div>
-              </>
+              </div>
             ) : (
               <div className="flex items-center justify-center h-full">
                 <div className="text-center text-white">
@@ -183,6 +168,14 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
             <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-2" role="alert">
               <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
               <p className="text-green-800 text-sm">{success}</p>
+            </div>
+          )}
+
+          {/* Scan Result Display */}
+          {scanResult && (
+            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-blue-800 text-sm font-medium mb-1">Scanned result:</p>
+              <p className="text-blue-700 text-xs break-all">{scanResult}</p>
             </div>
           )}
 
