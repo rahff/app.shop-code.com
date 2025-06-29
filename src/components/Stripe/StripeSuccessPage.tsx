@@ -1,29 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle, ArrowRight, Loader } from 'lucide-react';
-import { subscriptionManager } from '../../factory/subscriptionManagerFactory';
+import {authenticationProvider} from "../../factory/authenticationServiceFactory.ts";
+import {Exception} from "../../core/Common/api/Exception.ts";
+
+
 
 const StripeSuccessPage: React.FC = () => {
-  const [isConfirming, setIsConfirming] = useState(true);
   const [confirmationSuccess, setConfirmationSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Confirm the subscription with the backend
-    subscriptionManager.handle_stripe_success().subscribe({
-      next: (success) => {
-        setIsConfirming(false);
-        setConfirmationSuccess(success);
-        if (!success) {
-          setError('Failed to confirm your subscription. Please contact support.');
+    const subscription = authenticationProvider.refresh_session().subscribe(
+        {
+          next: () => setConfirmationSuccess(true),
+          error: (error: Exception) => setError(error.message)
         }
-      },
-      error: (err) => {
-        setIsConfirming(false);
-        setConfirmationSuccess(false);
-        setError('An error occurred while confirming your subscription.');
-        console.error('Subscription confirmation error:', err);
-      }
-    });
+    );
+    return () => subscription.unsubscribe();
   }, []);
 
   const handleContinue = () => {
@@ -31,7 +24,7 @@ const StripeSuccessPage: React.FC = () => {
     window.location.href = '/';
   };
 
-  if (isConfirming) {
+  if (confirmationSuccess) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white rounded-xl border border-gray-200 p-8 max-w-md w-full mx-4 text-center">
