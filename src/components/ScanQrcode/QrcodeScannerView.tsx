@@ -55,9 +55,22 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
     }
     
     if (error) {
-      console.error('QR Scan Error:', error);
-      setError("Failed to scan QR code. Please try again.");
-      onScanError(error.message || "Scan failed");
+      // Check if this is a critical error or just "no QR code found"
+      const isCriticalError = error instanceof DOMException || 
+                             (error.name && error.name !== 'NotFoundException') ||
+                             (error.message && !error.message.includes('No MultiFormat Readers were able to detect the code'));
+      
+      if (isCriticalError) {
+        // Critical error - log as error and close scanner
+        console.error('Critical QR Scan Error:', error);
+        setError("Camera error occurred. Please check permissions and try again.");
+        onScanError(error.message || "Critical scan error");
+      } else {
+        // Non-critical error (no QR code found) - just log for debugging
+        console.log('QR Scanner: No QR code detected in frame');
+        // Don't set error state or call onScanError for normal "no code found" situations
+        // This allows the scanner to keep running
+      }
     }
   };
 
