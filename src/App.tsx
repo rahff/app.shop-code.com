@@ -183,10 +183,10 @@ function App() {
       return <ShopListComponent onShopSelect={handleShopSelect} />;
     
     case 'create-promo':
-      return <CreatePromoPage />;
+      return <CreatePromoPage redirectUser={redirectUser} />;
     
     case 'create-shop':
-      return <CreateShopPage />;
+      return <CreateShopPage redirectUser={ redirectUser} />;
     
     case 'redeem-coupon':
       return (

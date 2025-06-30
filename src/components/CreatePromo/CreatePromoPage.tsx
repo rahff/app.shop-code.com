@@ -2,22 +2,27 @@ import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import CreatePromoForm from './CreatePromoForm';
 import { PromoFormData } from '../../core/CreatePromo/api/data';
+import {createPromoFactory} from "../../factory/createPromoFactory.ts";
 
-const CreatePromoPage: React.FC = () => {
+
+interface CreatePromoPageProps {
+  redirectUser: (destination: string, error?: string) => void;
+
+}
+
+const createPromo = createPromoFactory();
+
+const CreatePromoPage: React.FC<CreatePromoPageProps> = ({redirectUser}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (formData: PromoFormData) => {
     setIsLoading(true);
     setError(null);
-    
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Creating promo:', formData);
+    createPromo.create(formData).subscribe((redirection) => {
       setIsLoading(false);
-      // Always navigate back to dashboard
-      navigateToDashboard();
-    }, 2000);
+      redirectUser(redirection.path);
+    })
   };
 
   const navigateToDashboard = () => {

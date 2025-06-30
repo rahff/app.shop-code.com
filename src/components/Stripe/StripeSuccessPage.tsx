@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle, ArrowRight, Loader } from 'lucide-react';
-import {authenticationProvider} from "../../factory/authenticationServiceFactory.ts";
+import {authenticationProviderFactory} from "../../factory/authenticationServiceFactory.ts";
 import {Exception} from "../../core/Common/api/Exception.ts";
 
 
@@ -10,7 +10,7 @@ const StripeSuccessPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const subscription = authenticationProvider.refresh_session().subscribe(
+    const subscription = authenticationProviderFactory.refresh_session().subscribe(
         {
           next: () => setConfirmationSuccess(true),
           error: (error: Exception) => setError(error.message)

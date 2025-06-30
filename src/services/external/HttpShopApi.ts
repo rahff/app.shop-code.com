@@ -13,8 +13,9 @@ export class HttpShopApi implements ShopApi {
       setTimeout(() => {
         subscriber.next(shop_data);
         subscriber.complete();
-      }, 200)
+      }, 1000)
     });
   }
-
 }
+
+export const createShopApi = new HttpShopApi();

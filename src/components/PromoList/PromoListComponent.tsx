@@ -2,7 +2,10 @@ import React, {useEffect, useState} from 'react';
 import {Plus} from 'lucide-react';
 import PromoCard from './PromoCard';
 import {PromoListState} from "../../core/ListPromos/api/PromoList.ts";
-import {promoList} from "../../factory/promoListFactory.ts";
+import {promoListFactory} from "../../factory/promoListFactory.ts";
+
+
+const promoList = promoListFactory();
 
 const PromoListComponent: React.FC = () => {
   const [state, setState] = useState<PromoListState>(promoList.state);

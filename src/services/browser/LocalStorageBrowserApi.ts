@@ -9,7 +9,7 @@ export class LocalStorageBrowserApi implements LocalStorageApi {
       if (!value) return null;
       return JSON.parse(value);
     }catch (_: unknown) {
-      console.log(_)
+      console.log(_);
       localStorage.removeItem(key);
       return null;
     }

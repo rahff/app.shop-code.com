@@ -1,42 +1,29 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Plus, MapPin, Calendar, ArrowRight } from 'lucide-react';
 import {ShopData} from "../../core/CreateShop/api/data.ts";
+import {shopListFactory} from "../../factory/shopListFactory.ts";
+import {ShopListState} from "../../core/ListShops/api/ShopList.ts";
 
 
 interface ShopListComponentProps {
   onShopSelect: (shop: ShopData) => void;
 }
 
-const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect }) => {
-  // Mock shop data
-  const [shops] = useState<ShopData[]>([
-    {
-      id: '1',
-      name: "Joe's Coffee Shop",
-      location: 'Paris 15ème',
-      logo: '/logo.png',
-      createdAt: '2025-01-15',
-      promoCount: 8,
-      account_ref: ''
-    },
-    {
-      id: '2',
-      name: 'Quick du Marais',
-      location: 'Paris 4ème',
-      logo: '/logo.png',
-      createdAt: '2025-01-10',
-      promoCount: 12,
-      account_ref: ''
-    }
-  ]);
+const shopList = shopListFactory();
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
-  };
+const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect }) => {
+  const [state, setState] = useState<ShopListState>(shopList.state);
+  useEffect(() => {
+    const onInit = () => {
+      return shopList.shops().subscribe({
+        next: () => setState({...shopList.state}),
+      })
+    }
+    const subscription = onInit();
+    return () => subscription.unsubscribe();
+  }, [])
+
+
 
   const handleShopClick = (shop: ShopData) => {
     onShopSelect(shop);
@@ -71,9 +58,9 @@ const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect }) =
 
       {/* Shop List */}
       <main className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        {shops.length > 0 ? (
+        {state.shops.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {shops.map((shop) => (
+            {state.shops.map((shop) => (
               <div
                 key={shop.id}
                 onClick={() => handleShopClick(shop)}
@@ -108,7 +95,7 @@ const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect }) =
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                   <div className="flex items-center space-x-2 text-sm text-[#A0A0A8]">
                     <Calendar className="w-4 h-4" />
-                    <span>Created {formatDate(shop.createdAt)}</span>
+                    <span>Created {shop.createdAt}</span>
                   </div>
                   <div className="text-sm">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#6C63FF]/10 text-[#6C63FF]">

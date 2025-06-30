@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {QrCode} from 'lucide-react';
-import {authenticationProvider} from "../../factory/authenticationServiceFactory.ts";
+import {authenticationProviderFactory} from "../../factory/authenticationServiceFactory.ts";
 import {userSession} from "../../factory/userSessionFactory.ts";
 
 
@@ -8,6 +8,7 @@ interface BootstrapComponentProps {
   redirectUser: (destination: string, error?: string) => void;
 }
 
+const authenticationProvider = authenticationProviderFactory();
 
 
 const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser }) => {

@@ -22,6 +22,7 @@ const AddCashierView: React.FC<AddCashierViewProps> = ({
 
   const handleGoBack = () => {
     // Navigate back to dashboard instead of previous page
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     onCancel ? onCancel() : navigateToDashboard();
   };
 
@@ -34,6 +35,7 @@ const AddCashierView: React.FC<AddCashierViewProps> = ({
       console.log('Adding cashier:', credentials);
       setIsLoading(false);
       // Navigate back to dashboard on success
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       onComplete ? onComplete() : navigateToDashboard();
     }, 2000);
   };

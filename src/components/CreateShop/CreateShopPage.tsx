@@ -2,22 +2,26 @@ import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import CreateShopForm from './CreateShopForm';
 import { ShopFormData } from '../../core/CreateShop/api/data';
+import {createShopFactory} from "../../factory/createShopFactory.ts";
 
-const CreateShopPage: React.FC = () => {
+
+interface CreateShopPageProps {
+  redirectUser: (destination: string, error?: string) => void;
+}
+
+const createShop = createShopFactory();
+
+const CreateShopPage: React.FC<CreateShopPageProps> = ({redirectUser}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (formData: ShopFormData) => {
     setIsLoading(true);
     setError(null);
-    
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Creating shop:', formData);
+    createShop.create(formData).subscribe(redirection => {
       setIsLoading(false);
-      // Always navigate back to dashboard
-      navigateToDashboard();
-    }, 2000);
+      redirectUser(redirection.path);
+    })
   };
 
   const navigateToDashboard = () => {

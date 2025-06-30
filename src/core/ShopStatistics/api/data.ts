@@ -1,6 +1,6 @@
 export interface ShopStatisticsState {
   name: string,
-  convertion_rate: number,
+  conversion_rate: number,
   collected_customers: number,
   collected_revenue: number,
   nbr_of_promo: number

@@ -18,5 +18,6 @@ export class HttpShopListApi implements ShopListApi {
       }, 200)
     })
   }
-
 }
+
+export const shopListApi = new HttpShopListApi();

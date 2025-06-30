@@ -8,7 +8,7 @@ const Statistics: React.FC = () => {
   // Mock shop statistics data
   const mockShopStats: ShopStatisticsState = {
     name: "Joe's Coffee Shop",
-    convertion_rate: 28.5,
+    conversion_rate: 28.5,
     collected_customers: 1247,
     collected_revenue: 45680,
     nbr_of_promo: 8

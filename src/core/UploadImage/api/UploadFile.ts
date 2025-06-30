@@ -12,7 +12,7 @@ export interface UploadState {
 }
 
 export const image_uri = (id: string, ext: string): string => {
-  return `https://images.shop-code.com/${id}.${ext}`
+  return `https://images.shop-code.com/${id}.${ext}`;
 }
 
 const upload_initial_state: UploadState = {signed_url: null, error: null, upload_status: "None", file_identifier: null};

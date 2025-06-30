@@ -57,7 +57,9 @@ export const fake_shop_data: ShopData = {
   account_ref: user_id,
   logo: image_uri("shop_id", "png"),
   id: "shop_id",
-  location: "Paris 15eme"
+  location: "Paris 15eme",
+  createdAt: '2025-06-12',
+  promoCount: 4
 }
 
 export const fake_promo_data: PromoData = {
@@ -89,7 +91,9 @@ export const user_signed_up: Authentication = {user_id: user_id, token: "jwt123_
 export const accounts_shops: ShopData[] = [{
   account_ref: user_id, id: "shop_id", name: "shop_name",
   location: 'Paris 16ème',
-  logo: 'http://localhost:8000/s3.account_ref/shop/logo.png'
+  logo: 'http://localhost:8000/s3.account_ref/shop/logo.png',
+  createdAt: "2025-06-12",
+  promoCount: 4
 }]
 
 
@@ -167,14 +171,14 @@ export const fake_shop_stats: ShopStatisticsState = {
   name: "Quick de la Violette",
   collected_customers: 789,
   collected_revenue: 8560,
-  convertion_rate: 94,
+  conversion_rate: 94,
   nbr_of_promo: 12
 }
 
 export const fake_shop_statistics: ShopStatisticsState = {
   name: "Quick",
   nbr_of_promo: 22,
-  convertion_rate: 95,
+  conversion_rate: 95,
   collected_revenue: 1589,
   collected_customers: 124
 }

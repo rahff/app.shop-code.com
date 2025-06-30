@@ -21,7 +21,7 @@ export class OIDCService implements AuthenticationApi {
     }
 
     public logout(): Observable<void> {
-        return of()
+        return of();
     }
 
     public refresh_session(): Observable<Authentication | null> {

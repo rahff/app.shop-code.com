@@ -30,6 +30,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
     // Try to parse as coupon data and call success handler
     try {
       const couponData = JSON.parse(result);
+      console.log("scanned result: ", result);
       // Mock coupon data structure for demo - in real app this would be the actual scanned data
       const mockCoupon: CouponData = {
         name: couponData.name || "Scanned Promo",
@@ -46,15 +47,17 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
       setTimeout(() => {
         onScanSuccess(mockCoupon);
       }, 1500);
-    } catch (parseError) {
+    } catch (parseError: any) {
       // If not valid JSON, still show the raw result
-      console.log('Scanned non-JSON QR code:', result);
+      console.log('Scanned non-JSON QR code:', parseError);
     }
   };
 
-  const handleScanError = (error: Error) => {
+  const handleScanError = (error: unknown) => {
     console.error('QR Scan Error:', error);
     setError("Scan failed. Please try again.");
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     onScanError(error.message || "Scan failed");
   };
 

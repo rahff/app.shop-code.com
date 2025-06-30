@@ -4,4 +4,4 @@ import {authenticationApi} from "../services/external/OIDCService.ts";
 
 
 
-export const authenticationProvider = new AuthenticationProvider(localStorageApi, authenticationApi);
+export const authenticationProviderFactory = () => new AuthenticationProvider(localStorageApi, authenticationApi);

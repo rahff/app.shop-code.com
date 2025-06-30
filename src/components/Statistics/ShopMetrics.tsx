@@ -11,7 +11,7 @@ const ShopMetrics: React.FC<ShopMetricsProps> = ({ shopStats }) => {
   const metrics = [
     {
       label: 'Conversion Rate',
-      value: `${shopStats.convertion_rate}%`,
+      value: `${shopStats.conversion_rate}%`,
       icon: TrendingUp,
       color: 'text-green-600',
       bgColor: 'bg-green-50'
