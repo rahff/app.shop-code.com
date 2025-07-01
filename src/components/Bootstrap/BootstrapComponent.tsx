@@ -35,6 +35,7 @@ const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser })
     if(auth.isAuthenticated){
       setLoadingText('Loading user session...');
       userSession.load(authentication).then((redirection) => {
+        console.log("Redirection", redirection);
         redirectUser(redirection.path);
       })
       return;

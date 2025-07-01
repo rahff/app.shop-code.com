@@ -19,7 +19,7 @@ import {userSession} from "./factory/userSessionFactory.ts";
 import {ShopData} from "./core/CreateShop/api/data.ts";
 import { CouponData } from './core/ScanQrcode/api/data';
 
-type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop' | 'redeem-coupon' | 'upgrade-plan' | 'add-cashier' | 'help-support' | 'stripe-success';
+type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'refresh-session' | 'create-promo' | 'create-shop' | 'redeem-coupon' | 'upgrade-plan' | 'add-cashier' | 'help-support' | 'stripe-success';
 
 function App() {
   const [appState, setAppState] = useState<AppState>('bootstrap');
@@ -31,6 +31,9 @@ function App() {
     switch (destination) {
       case 'login':
         setAppState('login');
+        break;
+      case 'refresh-session':
+        setAppState('refresh-session');
         break;
       case 'my-shops':
         setAppState('my-shops');
