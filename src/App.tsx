@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 import BootstrapComponent from './components/Bootstrap/BootstrapComponent';
-import RefreshSessionComponent from './components/RefreshSession/RefreshSessionComponent';
 import LoginComponent from './components/Login/LoginComponent';
 import ShopListComponent from './components/ShopList/ShopListComponent';
 import BottomNavigation from './components/Layout/BottomNavigation';
@@ -20,7 +19,7 @@ import {userSession} from "./factory/userSessionFactory.ts";
 import {ShopData} from "./core/CreateShop/api/data.ts";
 import { CouponData } from './core/ScanQrcode/api/data';
 
-type AppState = 'bootstrap' | 'refresh-session' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop' | 'redeem-coupon' | 'upgrade-plan' | 'add-cashier' | 'help-support' | 'stripe-success';
+type AppState = 'bootstrap' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop' | 'redeem-coupon' | 'upgrade-plan' | 'add-cashier' | 'help-support' | 'stripe-success';
 
 function App() {
   const [appState, setAppState] = useState<AppState>('bootstrap');
@@ -30,12 +29,6 @@ function App() {
   // Handle bootstrap completion - determines initial app destination
   const redirectUser = useCallback((destination: string) => {
     switch (destination) {
-      case 'refresh-session':
-        setAppState('refresh-session');
-        break;
-      case 'bootstrap':
-        setAppState('bootstrap');
-        break;
       case 'login':
         setAppState('login');
         break;
@@ -178,9 +171,6 @@ function App() {
   switch (appState) {
     case 'bootstrap':
       return <BootstrapComponent redirectUser={redirectUser} />;
-    
-    case 'refresh-session':
-      return <RefreshSessionComponent redirectUser={redirectUser} />;
     
     case 'login':
       return (
