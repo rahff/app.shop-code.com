@@ -3,6 +3,7 @@ import {Authentication} from "../../core/AuthenticationProvider/api/data.ts";
 import {Observable, of} from "rxjs";
 import {user_logged_in} from "../../core/Common/test-utils/fixture.spec.ts";
 
+
 export class OIDCService implements AuthenticationApi {
     public constructor() {}
 

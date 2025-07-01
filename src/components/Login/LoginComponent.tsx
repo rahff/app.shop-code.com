@@ -1,6 +1,7 @@
 import React from 'react';
 import { QrCode, Mail, ArrowRight } from 'lucide-react';
 
+
 interface LoginComponentProps {
   errorMessage?: string;
   onLoginSuccess: () => void;
