@@ -1,36 +1,49 @@
 import React, {useEffect, useState} from 'react';
 import {QrCode} from 'lucide-react';
-import {authenticationProviderFactory} from "../../factory/authenticationServiceFactory.ts";
 import {userSession} from "../../factory/userSessionFactory.ts";
+import {useAuth} from "react-oidc-context";
+import {User} from "oidc-client-ts";
+import {Authentication} from "../../core/AuthenticationProvider/api/data.ts";
+
 
 
 interface BootstrapComponentProps {
   redirectUser: (destination: string, error?: string) => void;
 }
 
-const authenticationProvider = authenticationProviderFactory();
-
+const getAuthentication = (user: User | null): Authentication | null => {
+  if(user) {
+    return  {
+      user_id: user.profile.sub,
+      role: user.profile['custom:role'] as string || null,
+      account_ref: user.profile['custom:account_ref'] as string | null,
+      token: user.access_token
+    }
+  }
+  return null
+}
 
 const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser }) => {
   const [loadingText, setLoadingText] = useState('Initializing...');
-
+  const auth = useAuth();
   useEffect(() => {
-
-    const onInit = () => {
+    const authentication = getAuthentication(auth.user || null)
+    if(auth.isLoading){
       setLoadingText('Loading authentication...');
-      return authenticationProvider.auto_login().subscribe(async () => {
-        setLoadingText('Loading user session...');
-        userSession.load().then((redirection) => {
-          redirectUser(redirection.path);
-        })
+      return;
+    }
+    if(auth.isAuthenticated){
+      setLoadingText('Loading user session...');
+      userSession.load(authentication).then((redirection) => {
+        redirectUser(redirection.path);
+      })
+      return;
+    }else {
+      auth.signinRedirect().catch((error) => {
+        console.error("Signin redirect failed:", error);
       });
-    };
-
-    const subscription = onInit();
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [redirectUser]);
+    }
+  }, [auth.isAuthenticated, auth.isLoading, auth.user, redirectUser]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#6C63FF] to-[#5845E9] flex items-center justify-center">

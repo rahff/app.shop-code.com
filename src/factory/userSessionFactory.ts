@@ -4,5 +4,5 @@ import {userProfileApi} from "../services/external/HttpUserProfileApi.ts";
 
 
 
-export const userSessionFactory = () => new UserSession(localStorageApi, userProfileApi);
+const userSessionFactory = () => new UserSession(localStorageApi, userProfileApi);
 export const userSession = userSessionFactory();
