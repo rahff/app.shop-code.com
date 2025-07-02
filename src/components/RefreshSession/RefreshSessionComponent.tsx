@@ -1,48 +1,43 @@
 import React, { useEffect, useState } from 'react';
 import { QrCode } from 'lucide-react';
 import { useAuth } from 'react-oidc-context';
+import {Authentication} from "../../core/AuthenticationProvider/api/data.ts";
+import {getAuthentication} from "../../functions.ts";
 
 interface RefreshSessionComponentProps {
   redirectUser: (destination: string, error?: string) => void;
-  onAuthentication: (userId: string) => void;
+  onAuthentication: (authentication: Authentication) => void;
 }
 
 const RefreshSessionComponent: React.FC<RefreshSessionComponentProps> = ({ redirectUser, onAuthentication }) => {
   const [loadingText, setLoadingText] = useState('Refreshing session...');
   const auth = useAuth();
-
-  console.log("refreshing session...");
   useEffect(() => {
-    const refreshSession = async () => {
-      try {
-        setLoadingText('Refreshing authentication...');
-        auth.signinSilent().then((user) => {
-          if(user){
-            onAuthentication(user?.profile.sub);
-            return;
-          }else {
-            redirectUser('bootstrap')
-          }
-        })
-        
+    const refreshSession = () => {
+    setLoadingText('Refreshing authentication...');
+    auth.signinSilent().then((user) => {
+      if(user){
+        const authentication: Authentication = getAuthentication(user)!;
+        onAuthentication(authentication);
         setLoadingText('Session refreshed successfully...');
-        
         // Small delay for UX, then redirect to bootstrap
         setTimeout(() => {
           redirectUser('bootstrap');
         }, 100);
-        
-      } catch (error) {
+        return;
+      }else {
+        redirectUser('bootstrap')
+      }
+    }).catch((error) => {
         console.error("Session refresh failed:", error);
         setLoadingText('Session refresh failed...');
         setTimeout(() => {
           redirectUser('bootstrap');
         }, 100);
-      }
+      })
     };
-
     refreshSession();
-  }, [redirectUser]);
+  }, [redirectUser, onAuthentication]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#6C63FF] to-[#5845E9] flex items-center justify-center">

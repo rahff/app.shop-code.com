@@ -2,27 +2,17 @@ import React, {useEffect, useState} from 'react';
 import {QrCode} from 'lucide-react';
 import {userSession} from "../../factory/userSessionFactory.ts";
 import {useAuth} from "react-oidc-context";
-import {User} from "oidc-client-ts";
 import {Authentication} from "../../core/AuthenticationProvider/api/data.ts";
+import {getAuthentication} from "../../functions.ts";
 
 
 
 interface BootstrapComponentProps {
   redirectUser: (destination: string, error?: string) => void;
-  onAuthentication: (userId: string) => void;
+  onAuthentication: (authentication: Authentication) => void;
 }
 
-const getAuthentication = (user: User | null): Authentication | null => {
-  if(user) {
-    return  {
-      user_id: user.profile.sub,
-      role: user.profile['custom:role'] as string || null,
-      account_ref: user.profile['custom:account_ref'] as string | null,
-      token: user.access_token
-    }
-  }
-  return null
-}
+
 
 const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser, onAuthentication }) => {
   const [loadingText, setLoadingText] = useState('Initializing...');
@@ -33,12 +23,10 @@ const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser, o
       return;
     }
     if(auth.isAuthenticated && !auth.isLoading) {
-      const authentication = getAuthentication(auth.user || null);
-      if(authentication) onAuthentication(authentication?.user_id);
-      console.log("authentication", authentication);
+      const authentication: Authentication = getAuthentication(auth.user!)!;
+      if(authentication) onAuthentication(authentication);
       setLoadingText('Loading user session...');
       userSession.load(authentication).then((redirection) => {
-        console.log("Redirection", redirection);
         redirectUser(redirection.path);
       })
       return;

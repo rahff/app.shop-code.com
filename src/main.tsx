@@ -9,6 +9,7 @@ const cognitoAuthConfig = {
   redirect_uri: "http://localhost:5173/",
   response_type: "code",
   scope: "email openid profile",
+  silent_renew: true
 };
 
 createRoot(document.getElementById('root')!).render(
