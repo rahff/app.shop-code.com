@@ -2,7 +2,7 @@ import {err, ok, Result} from '../../Common/api/CommonTypes';
 import {Coupon} from '../../Model/Coupon';
 import {LocalStorageApi} from '../../Common/spi/LocalStorageApi';
 import {DateProvider} from '../../Common/spi/DateProvider';
-import {Exception, NotRecognized, PromoExpired, PromoNotYetStarted, WrongShop} from '../../Common/api/Exception';
+import {NotRecognized, PromoExpired, PromoNotYetStarted, WrongShop} from '../../Common/api/Exception';
 import {CouponData} from '../api/data';
 import {SELECTED_SHOP_KEY} from '../../Common/constants';
 
@@ -19,7 +19,8 @@ export class QrcodeVerifier {
       const shop_id = this.local_storage.get_item<string>(SELECTED_SHOP_KEY);
       const today = this.date_provider.today().getTime();
       return this.check_coupon_validity(coupon, today, shop_id!);
-    }catch (_: any) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    }catch (_: unknown) {
       return err(new NotRecognized());
     }
   }
