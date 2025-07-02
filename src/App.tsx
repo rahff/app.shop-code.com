@@ -71,9 +71,6 @@ function App() {
       case 'help-support':
         setAppState('help-support');
         break;
-      case 'stripe-success':
-        setAppState('stripe-success');
-        break;
       default: setAppState('login');
     }
   }, []);
@@ -88,7 +85,7 @@ function App() {
 
   // Handle shop selection - enter main dashboard
   const handleShopSelect = useCallback((shop: ShopData) => {
-    userSession.shop_selected(shop)
+    userSession.shop_selected(shop);
     setAppState('dashboard');
   }, []);
 
@@ -238,9 +235,6 @@ function App() {
           onCancel={handleHelpSupportCancel}
         />
       );
-    
-    case 'stripe-success':
-      return <StripeSuccessPage redirectUser={redirectUser} />;
     
     case 'dashboard':
       return (

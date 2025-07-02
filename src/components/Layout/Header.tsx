@@ -28,7 +28,7 @@ const Header: React.FC<HeaderProps> = ({ onChooseAnotherShop }) => {
             >
               <ArrowLeft className="w-4 h-4" />
               <span className="hidden sm:inline">Choose another shop</span>
-              <span className="sm:hidden">Switch</span>
+              <span className="sm:hidden">My shops</span>
             </button>
           )}
           
