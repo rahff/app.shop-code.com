@@ -86,6 +86,10 @@ function App() {
     setAppState('dashboard');
   }, []);
 
+  // Handle choose another shop - return to shop list
+  const handleChooseAnotherShop = useCallback(() => {
+    setAppState('my-shops');
+  }, []);
 
   // Handle scan success - navigate to redeem coupon
   const handleScanSuccess = (coupon: CouponData) => {
@@ -235,7 +239,7 @@ function App() {
     case 'dashboard':
       return (
         <div className="flex flex-col h-screen bg-gray-50">
-          <Header />
+          <Header onChooseAnotherShop={handleChooseAnotherShop} />
           <main className="flex-1 overflow-auto pb-20">
             {renderDashboardContent()}
           </main>
