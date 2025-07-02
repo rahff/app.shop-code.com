@@ -86,30 +86,6 @@ function App() {
     setAppState('dashboard');
   }, []);
 
-  // Check for route changes based on URL
-  const checkRoute = () => {
-    const path = window.location.pathname;
-    if (path === '/promo/create') {
-      setAppState('create-promo');
-    } else if (path === '/shop/create') {
-      setAppState('create-shop');
-    } else if (path === '/upgrade-plan') {
-      setAppState('upgrade-plan');
-    } else if (path === '/add-cashier') {
-      setAppState('add-cashier');
-    } else if (path === '/help-support') {
-      setAppState('help-support');
-    } else if (path === '/stripe/success') {
-      setAppState('stripe-success');
-    }
-  };
-
-  // Listen for route changes
-  useState(() => {
-    checkRoute();
-    window.addEventListener('popstate', checkRoute);
-    return () => window.removeEventListener('popstate', checkRoute);
-  });
 
   // Handle scan success - navigate to redeem coupon
   const handleScanSuccess = (coupon: CouponData) => {
@@ -191,7 +167,7 @@ function App() {
           </div>
         );
       case 'settings':
-        return <Settings redirectUser={redirectUser} />;
+        return <Settings redirectUser={redirectUser} account_ref={authentication!.account_ref!} />;
       default:
         return <PromoListComponent redirectUser={redirectUser} />;
     }

@@ -7,9 +7,10 @@ import { HttpCashierListApi } from '../../services/external/HttpCashierListApi.t
 
 interface SettingsProps {
   redirectUser: (destination: string) => void;
+  account_ref: string;
 }
 
-const Settings: React.FC<SettingsProps> = ({ redirectUser }) => {
+const Settings: React.FC<SettingsProps> = ({ redirectUser, account_ref }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [cashiers, setCashiers] = useState<CashierData[]>([]);
   const [isLoadingCashiers, setIsLoadingCashiers] = useState(false);
@@ -45,7 +46,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser }) => {
     setIsLoadingCashiers(true);
     setCashierError(null);
     
-    listCashiers.account_cashier().subscribe({
+    listCashiers.account_cashier(account_ref).subscribe({
       next: (success) => {
         if (success) {
           setCashiers(listCashiers.state.cashier_list);

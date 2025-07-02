@@ -2,8 +2,8 @@ import {first, map, Observable, of} from 'rxjs';
 import {CashierListApi} from '../spi/CashierListApi';
 import {CashierData} from '../../AddCashier/api/data';
 import {LocalStorageApi} from '../../Common/spi/LocalStorageApi';
-import {AUTHENTICATION, CASHIER_LIST_KEY} from '../../Common/constants';
-import {Authentication} from '../../AuthenticationProvider/api/data';
+import {CASHIER_LIST_KEY} from '../../Common/constants';
+
 
 
 export interface CashierListState {
@@ -22,13 +22,12 @@ export class ListCashiers {
     error: null
   };
 
-  public account_cashier(): Observable<boolean> {
+  public account_cashier(account_ref: string): Observable<boolean> {
     const local_cashier_list = this.local_storage.get_item<CashierData[]>(CASHIER_LIST_KEY);
     if(local_cashier_list?.length) {
       this.state.cashier_list = [...local_cashier_list];
       return of(true)
     };
-    const {account_ref} = this.local_storage.get_item<Authentication>(AUTHENTICATION)!;
     return this.cashier_list_api.get_cashier_list(account_ref!)
       .pipe(first(), map(this.set_state.bind(this)));
   }
