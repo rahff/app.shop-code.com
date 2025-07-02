@@ -4,12 +4,14 @@ import {
   MY_SHOPS_ROUTE, REFRESH_SESSION_ROUTE,
   SELECTED_SHOP_KEY, SET_CONFIG_ROUTE,
 } from '../../Common/constants';
-import {Authentication} from '../../AuthenticationProvider/api/data';
 import {Redirection} from '../../Common/api/CommonTypes';
 import {UserProfile} from './data';
 import {UserProfileApi} from '../spi/UserProfileApi';
 import {firstValueFrom} from 'rxjs';
 import {ShopData} from '../../CreateShop/api/data';
+import {Authentication} from "../../Model/Authentication.ts";
+
+
 
 const is_signup = (authentication: Authentication | null): boolean => {
   if (!authentication) { return false; }

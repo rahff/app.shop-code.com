@@ -18,13 +18,8 @@ import HelpSupportView from './components/HelpSupport/HelpSupportView.tsx';
 import {userSession} from "./factory/userSessionFactory.ts";
 import {ShopData} from "./core/CreateShop/api/data.ts";
 import { CouponData } from './core/ScanQrcode/api/data';
+import {Authentication} from "./core/Model/Authentication.ts";
 
-export interface Authentication {
-  user_id: string;
-  token: string;
-  role: string | null;
-  account_ref: string | null
-}
 
 
 type AppState = 'bootstrap' | 'refresh-session' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop' | 'redeem-coupon' | 'upgrade-plan' | 'add-cashier' | 'help-support';
