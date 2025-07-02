@@ -9,6 +9,7 @@ import {Authentication} from "../../core/AuthenticationProvider/api/data.ts";
 
 interface BootstrapComponentProps {
   redirectUser: (destination: string, error?: string) => void;
+  onAuthentication: (userId: string) => void;
 }
 
 const getAuthentication = (user: User | null): Authentication | null => {
@@ -23,16 +24,18 @@ const getAuthentication = (user: User | null): Authentication | null => {
   return null
 }
 
-const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser }) => {
+const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser, onAuthentication }) => {
   const [loadingText, setLoadingText] = useState('Initializing...');
   const auth = useAuth();
   useEffect(() => {
-    const authentication = getAuthentication(auth.user || null)
     if(auth.isLoading){
       setLoadingText('Loading authentication...');
       return;
     }
-    if(auth.isAuthenticated){
+    if(auth.isAuthenticated && !auth.isLoading) {
+      const authentication = getAuthentication(auth.user || null);
+      if(authentication) onAuthentication(authentication?.user_id);
+      console.log("authentication", authentication);
       setLoadingText('Loading user session...');
       userSession.load(authentication).then((redirection) => {
         console.log("Redirection", redirection);
@@ -44,7 +47,7 @@ const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser })
         console.error("Signin redirect failed:", error);
       });
     }
-  }, [auth.isAuthenticated, auth.isLoading, auth.user, redirectUser]);
+  }, [auth.isAuthenticated, auth.isLoading, auth.user]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#6C63FF] to-[#5845E9] flex items-center justify-center">

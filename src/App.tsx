@@ -26,6 +26,7 @@ function App() {
   const [appState, setAppState] = useState<AppState>('bootstrap');
   const [activeRoute, setActiveRoute] = useState('promos');
   const [scannedCoupon, setScannedCoupon] = useState<CouponData | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   // Handle bootstrap completion - determines initial app destination
   const redirectUser = useCallback((destination: string) => {
@@ -52,6 +53,9 @@ function App() {
     }
   }, []);
 
+  const onAuthentication = useCallback((userId: string) => {
+    setUserId(userId);
+  }, [])
   // Handle successful login - redirect to shops list
   const handleLoginSuccess = useCallback(() => {
     setAppState('my-shops');
@@ -177,10 +181,10 @@ function App() {
   // Main app rendering logic
   switch (appState) {
     case 'bootstrap':
-      return <BootstrapComponent redirectUser={redirectUser} />;
+      return <BootstrapComponent redirectUser={redirectUser} onAuthentication={onAuthentication} />;
     
     case 'refresh-session':
-      return <RefreshSessionComponent redirectUser={redirectUser} />;
+      return <RefreshSessionComponent redirectUser={redirectUser} onAuthentication={onAuthentication} />;
     
     case 'login':
       return (
@@ -190,7 +194,7 @@ function App() {
       );
     
     case 'my-shops':
-      return <ShopListComponent onShopSelect={handleShopSelect} />;
+      return <ShopListComponent onShopSelect={handleShopSelect} userId={userId!} />;
     
     case 'create-promo':
       return <CreatePromoPage redirectUser={redirectUser} />;
@@ -245,7 +249,7 @@ function App() {
       );
     
     default:
-      return <BootstrapComponent redirectUser={redirectUser} />;
+      return <BootstrapComponent redirectUser={redirectUser} onAuthentication={onAuthentication} />;
   }
 }
 

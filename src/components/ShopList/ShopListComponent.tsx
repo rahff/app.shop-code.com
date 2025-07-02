@@ -7,15 +7,16 @@ import {ShopListState} from "../../core/ListShops/api/ShopList.ts";
 
 interface ShopListComponentProps {
   onShopSelect: (shop: ShopData) => void;
+  userId: string;
 }
 
 const shopList = shopListFactory();
 
-const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect }) => {
+const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect, userId }) => {
   const [state, setState] = useState<ShopListState>(shopList.state);
   useEffect(() => {
     const onInit = () => {
-      return shopList.shops().subscribe({
+      return shopList.shops(userId).subscribe({
         next: () => setState({...shopList.state}),
       })
     }

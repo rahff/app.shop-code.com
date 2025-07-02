@@ -4,40 +4,45 @@ import { useAuth } from 'react-oidc-context';
 
 interface RefreshSessionComponentProps {
   redirectUser: (destination: string, error?: string) => void;
+  onAuthentication: (userId: string) => void;
 }
 
-const RefreshSessionComponent: React.FC<RefreshSessionComponentProps> = ({ redirectUser }) => {
+const RefreshSessionComponent: React.FC<RefreshSessionComponentProps> = ({ redirectUser, onAuthentication }) => {
   const [loadingText, setLoadingText] = useState('Refreshing session...');
   const auth = useAuth();
 
+  console.log("refreshing session...");
   useEffect(() => {
     const refreshSession = async () => {
       try {
         setLoadingText('Refreshing authentication...');
-        
-        // Force refresh the session using the auth context
-        await auth.signinSilent();
+        auth.signinSilent().then((user) => {
+          if(user){
+            onAuthentication(user?.profile.sub);
+            return;
+          }else {
+            redirectUser('bootstrap')
+          }
+        })
         
         setLoadingText('Session refreshed successfully...');
         
         // Small delay for UX, then redirect to bootstrap
         setTimeout(() => {
           redirectUser('bootstrap');
-        }, 1000);
+        }, 100);
         
       } catch (error) {
         console.error("Session refresh failed:", error);
         setLoadingText('Session refresh failed...');
-        
-        // Redirect to login on failure
         setTimeout(() => {
-          redirectUser('login');
-        }, 2000);
+          redirectUser('bootstrap');
+        }, 100);
       }
     };
 
     refreshSession();
-  }, [auth, redirectUser]);
+  }, [redirectUser]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#6C63FF] to-[#5845E9] flex items-center justify-center">
