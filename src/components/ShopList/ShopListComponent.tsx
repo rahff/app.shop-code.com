@@ -8,11 +8,12 @@ import {ShopListState} from "../../core/ListShops/api/ShopList.ts";
 interface ShopListComponentProps {
   onShopSelect: (shop: ShopData) => void;
   userId: string;
+  redirectUser: (destination: string) => void;
 }
 
 const shopList = shopListFactory();
 
-const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect, userId }) => {
+const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect, userId, redirectUser }) => {
   const [state, setState] = useState<ShopListState>(shopList.state);
   useEffect(() => {
     const onInit = () => {
@@ -31,8 +32,8 @@ const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect, use
   };
 
   const handleCreateShop = () => {
-    // Navigate to create shop page
-    window.location.href = '/shop/create';
+    // Navigate to create shop page using redirectUser
+    redirectUser('create-shop');
   };
 
   return (

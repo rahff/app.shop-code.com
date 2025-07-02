@@ -3,9 +3,11 @@ import { CheckCircle, ArrowRight, Loader } from 'lucide-react';
 import {authenticationProviderFactory} from "../../factory/authenticationServiceFactory.ts";
 import {Exception} from "../../core/Common/api/Exception.ts";
 
+interface StripeSuccessPageProps {
+  redirectUser: (destination: string) => void;
+}
 
-
-const StripeSuccessPage: React.FC = () => {
+const StripeSuccessPage: React.FC<StripeSuccessPageProps> = ({ redirectUser }) => {
   const [confirmationSuccess, setConfirmationSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,8 +22,8 @@ const StripeSuccessPage: React.FC = () => {
   }, []);
 
   const handleContinue = () => {
-    // Navigate back to dashboard
-    window.location.href = '/';
+    // Navigate back to dashboard using redirectUser
+    redirectUser('dashboard');
   };
 
   if (confirmationSuccess) {
@@ -70,7 +72,7 @@ const StripeSuccessPage: React.FC = () => {
               Return to Dashboard
             </button>
             <button
-              onClick={() => window.location.href = '/help-support'}
+              onClick={() => redirectUser('help-support')}
               className="w-full border-2 border-[#6C63FF] text-[#6C63FF] py-3 px-6 rounded-lg font-medium hover:bg-[#6C63FF] hover:text-white transition-all duration-200"
             >
               Contact Support

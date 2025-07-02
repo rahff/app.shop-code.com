@@ -50,6 +50,24 @@ function App() {
       case 'error':
         setAppState('error');
         break;
+      case 'create-promo':
+        setAppState('create-promo');
+        break;
+      case 'create-shop':
+        setAppState('create-shop');
+        break;
+      case 'upgrade-plan':
+        setAppState('upgrade-plan');
+        break;
+      case 'add-cashier':
+        setAppState('add-cashier');
+        break;
+      case 'help-support':
+        setAppState('help-support');
+        break;
+      case 'stripe-success':
+        setAppState('stripe-success');
+        break;
       default: setAppState('login');
     }
   }, []);
@@ -158,7 +176,7 @@ function App() {
   const renderDashboardContent = () => {
     switch (activeRoute) {
       case 'promos':
-        return <PromoListComponent />;
+        return <PromoListComponent redirectUser={redirectUser} />;
       case 'statistics':
         return <Statistics />;
       case 'scan':
@@ -173,9 +191,9 @@ function App() {
           </div>
         );
       case 'settings':
-        return <Settings />;
+        return <Settings redirectUser={redirectUser} />;
       default:
-        return <PromoListComponent />;
+        return <PromoListComponent redirectUser={redirectUser} />;
     }
   };
 
@@ -195,13 +213,13 @@ function App() {
       );
     
     case 'my-shops':
-      return <ShopListComponent onShopSelect={handleShopSelect} userId={authentication!.user_id} />;
+      return <ShopListComponent onShopSelect={handleShopSelect} userId={authentication!.user_id} redirectUser={redirectUser} />;
     
     case 'create-promo':
       return <CreatePromoPage redirectUser={redirectUser} />;
     
     case 'create-shop':
-      return <CreateShopPage redirectUser={ redirectUser} />;
+      return <CreateShopPage redirectUser={redirectUser} />;
     
     case 'redeem-coupon':
       return (
@@ -236,7 +254,7 @@ function App() {
       );
     
     case 'stripe-success':
-      return <StripeSuccessPage />;
+      return <StripeSuccessPage redirectUser={redirectUser} />;
     
     case 'dashboard':
       return (

@@ -7,7 +7,11 @@ import {promoListFactory} from "../../factory/promoListFactory.ts";
 
 const promoList = promoListFactory();
 
-const PromoListComponent: React.FC = () => {
+interface PromoListComponentProps {
+  redirectUser: (destination: string) => void;
+}
+
+const PromoListComponent: React.FC<PromoListComponentProps> = ({ redirectUser }) => {
   const [state, setState] = useState<PromoListState>(promoList.state);
   
   useEffect(() => {
@@ -21,8 +25,8 @@ const PromoListComponent: React.FC = () => {
   },[])
 
   const handleCreatePromo = () => {
-    // Navigate to create promo page
-    window.location.href = '/promo/create';
+    // Navigate to create promo page using redirectUser
+    redirectUser('create-promo');
   };
 
   return (

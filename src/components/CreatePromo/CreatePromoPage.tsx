@@ -26,9 +26,8 @@ const CreatePromoPage: React.FC<CreatePromoPageProps> = ({redirectUser}) => {
   };
 
   const navigateToDashboard = () => {
-    // Clear any route-specific state and navigate to dashboard
-    window.history.pushState(null, '', '/');
-    window.location.reload();
+    // Navigate to dashboard using redirectUser
+    redirectUser('dashboard');
   };
 
   const handleGoBack = () => {

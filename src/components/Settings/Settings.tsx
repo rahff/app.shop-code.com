@@ -5,7 +5,11 @@ import { CashierData } from '../../core/AddCashier/api/data';
 import { localStorageApi } from '../../services/browser/LocalStorageBrowserApi';
 import { HttpCashierListApi } from '../../services/external/HttpCashierListApi.ts';
 
-const Settings: React.FC = () => {
+interface SettingsProps {
+  redirectUser: (destination: string) => void;
+}
+
+const Settings: React.FC<SettingsProps> = ({ redirectUser }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [cashiers, setCashiers] = useState<CashierData[]>([]);
   const [isLoadingCashiers, setIsLoadingCashiers] = useState(false);
@@ -16,18 +20,18 @@ const Settings: React.FC = () => {
   const listCashiers = new ListCashiers(cashierListApi, localStorageApi);
 
   const handleUpgradePlan = () => {
-    // Navigate to upgrade plan page
-    window.location.href = '/upgrade-plan';
+    // Navigate to upgrade plan page using redirectUser
+    redirectUser('upgrade-plan');
   };
 
   const handleAddCashier = () => {
-    // Navigate to add cashier page
-    window.location.href = '/add-cashier';
+    // Navigate to add cashier page using redirectUser
+    redirectUser('add-cashier');
   };
 
   const handleHelpSupport = () => {
-    // Navigate to help support page
-    window.location.href = '/help-support';
+    // Navigate to help support page using redirectUser
+    redirectUser('help-support');
   };
 
   const toggleDropdown = () => {
