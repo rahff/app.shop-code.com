@@ -4,7 +4,7 @@ import {ShopData} from "../../core/CreateShop/api/data.ts";
 
 
 
-export class HttpShopApi implements ShopApi {
+export class InMemoryShopApi implements ShopApi {
 
   public constructor() {}
 
@@ -18,4 +18,4 @@ export class HttpShopApi implements ShopApi {
   }
 }
 
-export const createShopApi = new HttpShopApi();
+export const inMemoryCreateShopApi = new InMemoryShopApi();

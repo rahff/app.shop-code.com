@@ -3,10 +3,11 @@ import { ArrowLeft } from 'lucide-react';
 import CreateShopForm from './CreateShopForm';
 import { ShopFormData } from '../../core/CreateShop/api/data';
 import {createShopFactory} from "../../factory/createShopFactory.ts";
+import {AppRoute} from "../../App.tsx";
 
 
 interface CreateShopPageProps {
-  redirectUser: (destination: string, error?: string) => void;
+  redirectUser: (destination: AppRoute, error?: string) => void;
 }
 
 const createShop = createShopFactory();
@@ -20,7 +21,7 @@ const CreateShopPage: React.FC<CreateShopPageProps> = ({redirectUser}) => {
     setError(null);
     createShop.create(formData).subscribe(redirection => {
       setIsLoading(false);
-      redirectUser(redirection.path);
+      redirectUser(redirection.path as AppRoute);
     })
   };
 

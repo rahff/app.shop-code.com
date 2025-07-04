@@ -1,5 +1,7 @@
-import {AddCashier} from "../core/AddCashier/api/AddCashier.ts";
+import {AddCashierModule} from "../core/AddCashier/api/AddCashier.ts";
 import {localStorageApi} from "../services/browser/LocalStorageBrowserApi.ts";
-import {httpAddCashierApi} from "../services/external/HttpAddCashierApi.ts";
+import {inMemoryAddCashierApi} from "../services/inMemory/InMemoryAddCashierApi.ts";
 
-export const addCashierFactory = () => new AddCashier(httpAddCashierApi, localStorageApi)
+export const addCashierFactory = () => {
+    return AddCashierModule(inMemoryAddCashierApi, localStorageApi);
+}

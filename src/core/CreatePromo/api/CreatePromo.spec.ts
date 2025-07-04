@@ -9,7 +9,6 @@ import {
   form_data_with_invalid_date_range
 } from '../../Common/test-utils/fixture.spec';
 import {InternalServerError, InvalidDateRange, UpgradedPlanRequired} from '../../Common/api/Exception';
-import {IdGenerator} from '../../Common/spi/IdGenerator';
 import {DateProvider} from '../../Common/spi/DateProvider';
 import {PromoValidation} from '../rules/PromoValidation';
 import {LocalStorageApi} from '../../Common/spi/LocalStorageApi';
@@ -29,7 +28,7 @@ import {promo_list_key} from '../../ListPromos/api/PromoList';
 describe('CreatePromo: A Business user create a promo with a name, description, an already uploaded coupon image and a promo validity date range', () => {
 
   let promo_repository: SpyObj<PromoApi>;
-  let id_generator: IdGenerator;
+
   let date_provider: DateProvider;
   let promo_validator: PromoValidation;
   let local_storage: SpyObj<LocalStorageApi>;
@@ -41,7 +40,6 @@ describe('CreatePromo: A Business user create a promo with a name, description, 
 
   beforeEach(() => {
     promo_repository = jasmine.createSpyObj("PromoApi", ["save_promo"]);
-    id_generator = new FakeIdGenerator();
     date_provider = new FakeDateProvider();
     promo_validator = new PromoValidation(date_provider);
     local_storage = jasmine.createSpyObj("LocalStorageApi", ["get_item", "add_item"]);
@@ -87,12 +85,10 @@ describe('CreatePromo: A Business user create a promo with a name, description, 
 });
 
 
-class FakeIdGenerator implements IdGenerator {
-  public generate(): string {
-    return fake_promo_data.id;
-  }
-}
 class FakeDateProvider implements DateProvider {
+  todayString(): string {
+      return this.today().toLocaleDateString()
+  }
   public today(): Date {
     return new Date(fake_promo_data.created_at);
   }

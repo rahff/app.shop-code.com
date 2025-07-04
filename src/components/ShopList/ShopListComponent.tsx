@@ -3,12 +3,14 @@ import { Plus, MapPin, Calendar, ArrowRight } from 'lucide-react';
 import {ShopData} from "../../core/CreateShop/api/data.ts";
 import {shopListFactory} from "../../factory/shopListFactory.ts";
 import {ShopListState} from "../../core/ListShops/api/ShopList.ts";
+import {AppRoute} from "../../App.tsx";
+import {CREATE_SHOP_ROUTE} from "../../core/Common/constants.ts";
 
 
 interface ShopListComponentProps {
   onShopSelect: (shop: ShopData) => void;
   userId: string;
-  redirectUser: (destination: string) => void;
+  redirectUser: (destination: AppRoute) => void;
 }
 
 const shopList = shopListFactory();
@@ -33,7 +35,7 @@ const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect, use
 
   const handleCreateShop = () => {
     // Navigate to create shop page using redirectUser
-    redirectUser('create-shop');
+    redirectUser(CREATE_SHOP_ROUTE);
   };
 
   return (

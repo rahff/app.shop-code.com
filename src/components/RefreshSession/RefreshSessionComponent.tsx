@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { QrCode } from 'lucide-react';
 import { useAuth } from 'react-oidc-context';
-import {Authentication} from "../../core/AuthenticationProvider/api/data.ts";
 import {getAuthentication} from "../../functions.ts";
+import {AppRoute} from "../../App.tsx";
+import {Authentication} from "../../core/Model/Authentication.ts";
 
 interface RefreshSessionComponentProps {
-  redirectUser: (destination: string, error?: string) => void;
+  redirectUser: (destination: AppRoute, error?: string) => void;
   onAuthentication: (authentication: Authentication) => void;
 }
 

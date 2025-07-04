@@ -1,14 +1,17 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import { ArrowLeft, Calendar, AlertCircle } from 'lucide-react';
 import RedeemCouponForm from './RedeemCouponForm';
 import { CouponData } from '../../core/ScanQrcode/api/data';
 import { TransactionInfo } from '../../core/RedeemCoupon/api/data';
+import {redeemCouponFactory} from "../../factory/redeemCouponFactory.ts";
 
 interface RedeemCouponViewProps {
-  couponData: CouponData | null;
-  onComplete?: () => void;
-  onCancel?: () => void;
+  couponData: CouponData;
+  onComplete: () => void;
+  onCancel: () => void;
 }
+
+const redeemCoupon = redeemCouponFactory();
 
 const RedeemCouponView: React.FC<RedeemCouponViewProps> = ({
   couponData,
@@ -18,34 +21,22 @@ const RedeemCouponView: React.FC<RedeemCouponViewProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // If no coupon data, redirect back to dashboard
-  if (!couponData) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useEffect(() => {
-      onCancel?.();
-    }, [onCancel]);
-    return null;
-  }
 
   const handleSubmit = (transactionInfo: TransactionInfo) => {
     setIsLoading(true);
     setError(null);
-    
-    // Simulate API call to redeem coupon
-    setTimeout(() => {
-      console.log('Redeeming coupon:', { couponData, transactionInfo });
+    redeemCoupon.redeem(couponData, transactionInfo).subscribe(() => {
       setIsLoading(false);
-      // Navigate back to dashboard on success
-      onComplete?.();
-    }, 2000);
+      onComplete();
+    })
   };
 
   const handleGoBack = () => {
-    onCancel?.();
+    onCancel();
   };
 
   const handleFormCancel = () => {
-    onCancel?.();
+    onCancel();
   };
 
   const formatDate = (dateString: string) => {

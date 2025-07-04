@@ -4,7 +4,7 @@ import {PromoStatisticsState} from "../../core/PromoStatistics/api/data.ts";
 import {fake_promo_stats_state} from "../../core/Common/test-utils/fixture.spec.ts";
 
 
-export class HttpPromoStatisticApi implements PromoStatisticApi {
+export class InMemoryPromoStatisticApi implements PromoStatisticApi {
 
   public constructor() {}
 
@@ -18,3 +18,6 @@ export class HttpPromoStatisticApi implements PromoStatisticApi {
     })
   }
 }
+
+
+export const inMemoryPromoStatisticApi = new InMemoryPromoStatisticApi();

@@ -1,14 +1,14 @@
 import { Observable, of } from 'rxjs';
-import { PaymentGateway } from '../../core/Subscription/spi/PaymentGateway';
+import { PaymentGateway } from '../../core/Subscription/spi/PaymentGateway.ts';
 
 
-export class StripePaymentGateway implements PaymentGateway {
+export class FakePaymentGateway implements PaymentGateway {
 
 
   public constructor() {}
 
   public create_subscription(planId: string): Observable<string> {
-    console.log('StripePaymentGateway.create_subscription', planId);
+    console.log('FakePaymentGateway.create_subscription', planId);
       return of("https://stripe.com");
   }
 
@@ -21,4 +21,4 @@ export class StripePaymentGateway implements PaymentGateway {
   }
 }
 
-export const stripePaymentGateway = new StripePaymentGateway();
+export const fakePaymentGateway = new FakePaymentGateway();

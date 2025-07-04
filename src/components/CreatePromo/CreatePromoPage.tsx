@@ -3,10 +3,12 @@ import { ArrowLeft } from 'lucide-react';
 import CreatePromoForm from './CreatePromoForm';
 import { PromoFormData } from '../../core/CreatePromo/api/data';
 import {createPromoFactory} from "../../factory/createPromoFactory.ts";
+import {DASHBOARD_ROUTE} from "../../core/Common/constants.ts";
+import {AppRoute} from "../../App.tsx";
 
 
 interface CreatePromoPageProps {
-  redirectUser: (destination: string, error?: string) => void;
+  redirectUser: (destination: AppRoute, error?: string) => void;
 
 }
 
@@ -21,13 +23,13 @@ const CreatePromoPage: React.FC<CreatePromoPageProps> = ({redirectUser}) => {
     setError(null);
     createPromo.create(formData).subscribe((redirection) => {
       setIsLoading(false);
-      redirectUser(redirection.path);
+      redirectUser(redirection.path as AppRoute);
     })
   };
 
   const navigateToDashboard = () => {
     // Navigate to dashboard using redirectUser
-    redirectUser('dashboard');
+    redirectUser(DASHBOARD_ROUTE);
   };
 
   const handleGoBack = () => {

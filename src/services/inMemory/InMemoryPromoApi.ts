@@ -4,7 +4,7 @@ import {PromoApi} from "../../core/CreatePromo/spi/PromoApi.ts";
 import {PromoData} from "../../core/CreatePromo/api/data.ts";
 
 
-export class HttpPromoApi implements PromoApi {
+export class InMemoryPromoApi implements PromoApi {
 
   constructor() { }
 
@@ -17,3 +17,5 @@ export class HttpPromoApi implements PromoApi {
     })
   }
 }
+
+export const inMemoryPromoApi = new InMemoryPromoApi();

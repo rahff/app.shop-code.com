@@ -1,43 +1,32 @@
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import AddCashierForm from './AddCashierForm';
+import {addCashierFactory} from "../../factory/addCashierFactory.ts";
 
+
+const addCashierModule = addCashierFactory()
 interface AddCashierViewProps {
-  onComplete?: () => void;
-  onCancel?: () => void;
+  onComplete: () => void;
+  onCancel: () => void;
 }
 
-const AddCashierView: React.FC<AddCashierViewProps> = ({
-  onComplete,
-  onCancel
-}) => {
+const AddCashierView: React.FC<AddCashierViewProps> = ({onComplete, onCancel}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const navigateToDashboard = () => {
-    // Clear any route-specific state and navigate to dashboard
-    window.history.pushState(null, '', '/');
-    window.location.reload();
-  };
 
   const handleGoBack = () => {
-    // Navigate back to dashboard instead of previous page
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    onCancel ? onCancel() : navigateToDashboard();
+    onCancel();
   };
 
   const handleSubmit = (credentials: { username: string; password: string }) => {
     setIsLoading(true);
     setError(null);
     
-    // Simulate API call for adding cashier
-    setTimeout(() => {
-      console.log('Adding cashier:', credentials);
+    addCashierModule.add_cashier(credentials).then(() => {
       setIsLoading(false);
-      // Navigate back to dashboard on success
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      onComplete ? onComplete() : navigateToDashboard();
-    }, 2000);
+      onComplete();
+    });
   };
 
   return (

@@ -3,10 +3,11 @@ import { CreditCard, Shield, HelpCircle, UserPlus, Users, Trash2, ChevronDown, C
 import { ListCashiers } from '../../core/ListCashiers/api/ListCashiers';
 import { CashierData } from '../../core/AddCashier/api/data';
 import { localStorageApi } from '../../services/browser/LocalStorageBrowserApi';
-import { HttpCashierListApi } from '../../services/external/HttpCashierListApi.ts';
+import { InMemoryCashierListApi } from '../../services/inMemory/InMemoryCashierListApi.ts';
+import {AppRoute} from "../../App.tsx";
 
 interface SettingsProps {
-  redirectUser: (destination: string) => void;
+  redirectUser: (destination: AppRoute) => void;
   account_ref: string;
 }
 
@@ -17,7 +18,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, account_ref }) => {
   const [cashierError, setCashierError] = useState<string | null>(null);
 
   // Initialize cashier list service
-  const cashierListApi = new HttpCashierListApi();
+  const cashierListApi = new InMemoryCashierListApi();
   const listCashiers = new ListCashiers(cashierListApi, localStorageApi);
 
   const handleUpgradePlan = () => {

@@ -1,74 +1,24 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { ChevronLeft, ChevronRight, Calendar, TrendingUp, Users, Euro } from 'lucide-react';
-import {PromoStats} from "../../core/PromoStatistics/api/data.ts";
+import {promoStatisticsFactory} from "../../factory/promoStatisticsFactory.ts";
+import {PromoStatisticsState} from "../../core/PromoStatistics/api/data.ts";
+
+const promoStatistics = promoStatisticsFactory();
 
 
 const PromoStatsTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  
-  // Mock data for demonstration
-  const mockPromoStats: PromoStats[] = [
-    {
-      id: '1',
-      shop_id: 'shop1',
-      name: 'Summer Sale 2025',
-      created_at: '2025-01-15T10:00:00Z',
-      validity_range: { start: '2025-06-01', end: '2025-08-31' },
-      nbr_of_issues: 245,
-      total_conversion: 89,
-      total_revenue: 15420,
-      collected_customers: 156
-    },
-    {
-      id: '2',
-      shop_id: 'shop1',
-      name: 'Coffee Loyalty Program',
-      created_at: '2025-01-01T09:00:00Z',
-      validity_range: { start: '2025-01-01', end: '2025-12-31' },
-      nbr_of_issues: 1200,
-      total_conversion: 340,
-      total_revenue: 8900,
-      collected_customers: 280
-    },
-    {
-      id: '3',
-      shop_id: 'shop1',
-      name: 'Weekend Special',
-      created_at: '2025-01-10T14:30:00Z',
-      validity_range: { start: '2025-01-15', end: '2025-03-15' },
-      nbr_of_issues: 89,
-      total_conversion: 23,
-      total_revenue: 2340,
-      collected_customers: 45
-    },
-    {
-      id: '4',
-      shop_id: 'shop1',
-      name: 'New Year Blast',
-      created_at: '2024-12-28T16:00:00Z',
-      validity_range: { start: '2025-01-01', end: '2025-01-07' },
-      nbr_of_issues: 567,
-      total_conversion: 123,
-      total_revenue: 12800,
-      collected_customers: 98
-    },
-    {
-      id: '5',
-      shop_id: 'shop1',
-      name: 'Valentine Special',
-      created_at: '2025-02-01T11:00:00Z',
-      validity_range: { start: '2025-02-10', end: '2025-02-16' },
-      nbr_of_issues: 234,
-      total_conversion: 67,
-      total_revenue: 5600,
-      collected_customers: 78
-    }
-  ];
+  const [state, setState] = useState<PromoStatisticsState>(promoStatistics.state);
 
-  const perPage = 5;
-  const totalPages = Math.ceil(mockPromoStats.length / perPage);
-  const startIndex = (currentPage - 1) * perPage;
-  const currentData = mockPromoStats.slice(startIndex, startIndex + perPage);
+  useEffect(() => {
+    const onInit = () => {
+      return promoStatistics.get_promo_statistics().subscribe(() => {
+        setState({...promoStatistics.state});
+      })
+    }
+    const subscription = onInit();
+    return () => subscription.unsubscribe();
+  }, [])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -92,7 +42,7 @@ const PromoStatsTable: React.FC = () => {
       {/* Mobile Card View */}
       <div className="block lg:hidden">
         <div className="divide-y divide-gray-200">
-          {currentData.map((promo) => (
+          {state.promo_stats.data.map((promo) => (
             <div key={promo.id} className="p-4">
               <div className="flex justify-between items-start mb-3">
                 <h4 className="font-semibold text-[#2B2C34] flex-1 pr-2">{promo.name}</h4>
@@ -153,7 +103,7 @@ const PromoStatsTable: React.FC = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {currentData.map((promo) => (
+            {state.promo_stats.data.map((promo) => (
               <tr key={promo.id} className="hover:bg-gray-50 transition-colors duration-150">
                 <td className="px-6 py-4">
                   <div className="font-medium text-[#2B2C34]">{promo.name}</div>
@@ -197,12 +147,12 @@ const PromoStatsTable: React.FC = () => {
       {/* Pagination */}
       <div className="px-4 sm:px-6 py-4 border-t border-gray-200 flex items-center justify-between">
         <div className="text-sm text-[#A0A0A8]">
-          <span className="hidden sm:inline">Showing {startIndex + 1} to {Math.min(startIndex + perPage, mockPromoStats.length)} of {mockPromoStats.length} results</span>
-          <span className="sm:hidden">{startIndex + 1}-{Math.min(startIndex + perPage, mockPromoStats.length)} of {mockPromoStats.length}</span>
+          <span className="hidden sm:inline">Showing {state.promo_stats.page + 1} to {Math.min(1 + state.promo_stats.per_page, state.promo_stats.data.length)} of {state.promo_stats.data.length} results</span>
+          <span className="sm:hidden">{1}-{Math.min(1 + state.promo_stats.per_page, state.promo_stats.data.length)} of {state.promo_stats.data.length}</span>
         </div>
         <div className="flex items-center space-x-2">
           <button
-            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+            onClick={() => setCurrentPage(state.promo_stats.page)}
             disabled={currentPage === 1}
             className="p-2 rounded-lg border border-gray-300 text-[#2B2C34] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
           >
@@ -210,7 +160,7 @@ const PromoStatsTable: React.FC = () => {
           </button>
           
           <div className="hidden sm:flex items-center space-x-2">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            {Array.from({ length: state.promo_stats.nbr_of_page }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
@@ -226,12 +176,12 @@ const PromoStatsTable: React.FC = () => {
           </div>
           
           <div className="sm:hidden flex items-center space-x-2">
-            <span className="text-sm text-[#2B2C34] font-medium">{currentPage} / {totalPages}</span>
+            <span className="text-sm text-[#2B2C34] font-medium">{currentPage} / {state.promo_stats.nbr_of_page}</span>
           </div>
           
           <button
-            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-            disabled={currentPage === totalPages}
+            onClick={() => promoStatistics.get_promo_statistics(++state.promo_stats.page)}
+            disabled={currentPage === state.promo_stats.nbr_of_page}
             className="p-2 rounded-lg border border-gray-300 text-[#2B2C34] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
           >
             <ChevronRight className="w-4 h-4" />

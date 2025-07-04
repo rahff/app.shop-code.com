@@ -1,7 +1,7 @@
 // src/components/ScanQrcode/QrcodeScannerView.tsx
 import React, { useState } from 'react';
 import { Camera, AlertCircle, CheckCircle, QrCode, X } from 'lucide-react';
-import { Scanner } from '@yudiel/react-qr-scanner';
+import {IDetectedBarcode, Scanner} from '@yudiel/react-qr-scanner';
 import { CouponData } from '../../core/ScanQrcode/api/data';
 
 interface QrcodeScannerViewProps {
@@ -14,7 +14,6 @@ interface QrcodeScannerViewProps {
 const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
   onScanSuccess,
   onScanError,
-  isActive = false,
   onClose
 }) => {
   const [scanResult, setScanResult] = useState('');
@@ -22,33 +21,17 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const handleScanResult = (result: string) => {
-    setScanResult(result);
+  const handleScanResult = (result: IDetectedBarcode[]) => {
+    setScanResult(result.map((r) => r.rawValue).join(''));
     setSuccess("QR Code scanned successfully!");
     setError(null);
     
     // Try to parse as coupon data and call success handler
     try {
-      const couponData = JSON.parse(result);
-      console.log("scanned result: ", result);
-      // Mock coupon data structure for demo - in real app this would be the actual scanned data
-      const mockCoupon: CouponData = {
-        name: couponData.name || "Scanned Promo",
-        customer_id: couponData.customer_id || "customer_123",
-        shop_id: couponData.shop_id || "shop_456",
-        promo_id: couponData.promo_id || "promo_789",
-        coupon_img: couponData.coupon_img || "https://example.com/coupon.jpg",
-        validity_date_range: couponData.validity_date_range || {
-          start: "2025-01-01",
-          end: "2025-12-31"
-        }
-      };
-      
-      setTimeout(() => {
-        onScanSuccess(mockCoupon);
-      }, 1500);
-    } catch (parseError: any) {
-      // If not valid JSON, still show the raw result
+      const couponData = JSON.parse(scanResult);
+      onScanSuccess(couponData);
+    } catch (parseError: unknown) {
+      setError("Invalid qrcode!")
       console.log('Scanned non-JSON QR code:', parseError);
     }
   };
@@ -110,7 +93,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
             {isScanning ? (
               <div className="w-full h-full relative">
                 <Scanner
-                  onResult={handleScanResult}
+                  onScan={handleScanResult}
                   onError={handleScanError}
                   constraints={{
                     facingMode: 'environment' // Use back camera on mobile

@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
-import { CashierListApi } from '../../core/ListCashiers/spi/CashierListApi';
-import { CashierData } from '../../core/AddCashier/api/data';
+import { CashierListApi } from '../../core/ListCashiers/spi/CashierListApi.ts';
+import { CashierData } from '../../core/AddCashier/api/data.ts';
 
 // Mock cashier data for demonstration
 const mockCashiers: CashierData[] = [
@@ -18,7 +18,7 @@ const mockCashiers: CashierData[] = [
   }
 ];
 
-export class HttpCashierListApi implements CashierListApi {
+export class InMemoryCashierListApi implements CashierListApi {
   
   public constructor() {}
 
@@ -34,4 +34,4 @@ export class HttpCashierListApi implements CashierListApi {
   }
 }
 
-export const cashierListApi = new HttpCashierListApi();
+export const inMemoryCashierListApi = new InMemoryCashierListApi();

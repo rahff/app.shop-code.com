@@ -2,7 +2,7 @@ import { Observable } from "rxjs";
 import { PromoData } from "../../core/CreatePromo/api/data.ts";
 import {PromoApi} from "../../core/CreatePromo/spi/PromoApi.ts";
 
-export class HttpCreatePromoApi implements PromoApi {
+export class InMemoryCreatePromoApi implements PromoApi {
 
     save_promo(promo_data: PromoData): Observable<PromoData> {
         return new Observable(subscriber => {
@@ -14,4 +14,4 @@ export class HttpCreatePromoApi implements PromoApi {
     }
 }
 
-export const createPromoApi = new HttpCreatePromoApi();
+export const inMemoryCreatePromoApi = new InMemoryCreatePromoApi();

@@ -5,7 +5,7 @@ import {accounts_shops} from "../../core/Common/test-utils/fixture.spec.ts";
 
 
 
-export class HttpShopListApi implements ShopListApi {
+export class InMemoryShopListApi implements ShopListApi {
 
   public constructor() {}
 
@@ -20,4 +20,4 @@ export class HttpShopListApi implements ShopListApi {
   }
 }
 
-export const shopListApi = new HttpShopListApi();
+export const inMemoryShopListApi = new InMemoryShopListApi();

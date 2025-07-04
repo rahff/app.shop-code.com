@@ -6,7 +6,7 @@ import {fake_shop_statistics} from "../../core/Common/test-utils/fixture.spec.ts
 
 
 
-export class HttpShopStatisticApi implements ShopStatisticApi {
+export class InMemoryShopStatisticApi implements ShopStatisticApi {
 
   public constructor() {}
 
@@ -20,3 +20,6 @@ export class HttpShopStatisticApi implements ShopStatisticApi {
     });
   }
 }
+
+
+export const inMemoryShopStatisticApi = new InMemoryShopStatisticApi();

@@ -3,7 +3,7 @@ import {UploadFileApi} from "../../core/UploadImage/spi/UploadFileApi.ts";
 
 
 
-export class HttpUploadFileApi implements UploadFileApi {
+export class InMemoryUploadFileApi implements UploadFileApi {
 
   public constructor() {}
 
@@ -25,3 +25,6 @@ export class HttpUploadFileApi implements UploadFileApi {
     })
   }
 }
+
+
+export const inMemoryUploadFileApi = new InMemoryUploadFileApi();

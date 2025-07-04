@@ -6,7 +6,7 @@ import {fake_user_profile} from "../../core/Common/test-utils/fixture.spec.ts";
 
 
 
-export class HttpUserProfileApi implements UserProfileApi {
+export class InMemoryUserProfileApi implements UserProfileApi {
 
   public constructor() {}
 
@@ -22,4 +22,4 @@ export class HttpUserProfileApi implements UserProfileApi {
 }
 
 
-export const userProfileApi = new HttpUserProfileApi();
+export const inMemoryUserProfileApi = new InMemoryUserProfileApi();

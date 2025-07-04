@@ -1,4 +1,4 @@
-import { PromoListApi } from "../../core/ListPromos/spi/PromoListApi";
+import { PromoListApi } from "../../core/ListPromos/spi/PromoListApi.ts";
 import {Observable, throwError} from "rxjs";
 import {PromoData} from "../../core/CreatePromo/api/data.ts";
 import {InternalServerError} from "../../core/Common/api/Exception.ts";
@@ -37,7 +37,7 @@ const mockPromos: PromoData[] = [
   }
 ];
 
-export class HttpPromoListApi implements PromoListApi {
+export class InMemoryPromoListApi implements PromoListApi {
 
   public constructor() {}
 
@@ -53,4 +53,4 @@ export class HttpPromoListApi implements PromoListApi {
   }
 }
 
-export const promoListApi = new HttpPromoListApi();
+export const inMemoryPromoListApi = new InMemoryPromoListApi();

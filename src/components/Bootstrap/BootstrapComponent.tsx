@@ -2,13 +2,14 @@ import React, {useEffect, useState} from 'react';
 import {QrCode} from 'lucide-react';
 import {userSession} from "../../factory/userSessionFactory.ts";
 import {useAuth} from "react-oidc-context";
-import {Authentication} from "../../core/AuthenticationProvider/api/data.ts";
 import {getAuthentication} from "../../functions.ts";
+import {Authentication} from "../../core/Model/Authentication.ts";
+import {AppRoute} from "../../App.tsx";
 
 
 
 interface BootstrapComponentProps {
-  redirectUser: (destination: string, error?: string) => void;
+  redirectUser: (destination: AppRoute, error?: string) => void;
   onAuthentication: (authentication: Authentication) => void;
 }
 
@@ -27,7 +28,7 @@ const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser, o
       if(authentication) onAuthentication(authentication);
       setLoadingText('Loading user session...');
       userSession.load(authentication).then((redirection) => {
-        redirectUser(redirection.path);
+        redirectUser(redirection.path as AppRoute);
       })
       return;
     }else {

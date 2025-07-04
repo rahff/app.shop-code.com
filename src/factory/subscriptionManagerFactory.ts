@@ -1,4 +1,4 @@
 import { SubscriptionManager } from '../core/Subscription/api/SubscriptionManager';
-import { stripePaymentGateway } from '../services/external/StripePaymentGateway';
+import { fakePaymentGateway } from '../services/inMemory/FakePaymentGateway.ts';
 
-export const subscriptionManager = () => new SubscriptionManager(stripePaymentGateway);
+export const subscriptionManager = () => new SubscriptionManager(fakePaymentGateway);

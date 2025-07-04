@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
 import BootstrapComponent from './components/Bootstrap/BootstrapComponent';
 import RefreshSessionComponent from './components/RefreshSession/RefreshSessionComponent';
-import LoginComponent from './components/Login/LoginComponent';
 import ShopListComponent from './components/ShopList/ShopListComponent';
 import BottomNavigation from './components/Layout/BottomNavigation';
 import Header from './components/Layout/Header';
@@ -19,81 +18,58 @@ import {userSession} from "./factory/userSessionFactory.ts";
 import {ShopData} from "./core/CreateShop/api/data.ts";
 import { CouponData } from './core/ScanQrcode/api/data';
 import {Authentication} from "./core/Model/Authentication.ts";
+import {
+  APP_ROUTE, CREATE_PROMO_ROUTE, CREATE_SHOP_ROUTE,
+  DASHBOARD_ROUTE,
+  ERROR_PAGE_ROUTE,
+  MY_SHOPS_ROUTE,
+  REFRESH_SESSION_ROUTE
+} from "./core/Common/constants.ts";
 
 
-
-type AppState = 'bootstrap' | 'refresh-session' | 'login' | 'my-shops' | 'dashboard' | 'error' | 'create-promo' | 'create-shop' | 'redeem-coupon' | 'upgrade-plan' | 'add-cashier' | 'help-support';
+export type AppRoute =
+    typeof APP_ROUTE |
+    typeof REFRESH_SESSION_ROUTE|
+    typeof MY_SHOPS_ROUTE |
+    typeof DASHBOARD_ROUTE |
+    typeof ERROR_PAGE_ROUTE |
+    typeof CREATE_PROMO_ROUTE |
+    typeof CREATE_SHOP_ROUTE |
+    'redeem-coupon' |
+    'upgrade-plan' |
+    'add-cashier' |
+    'help-support';
 
 function App() {
-  const [appState, setAppState] = useState<AppState>('bootstrap');
+  const [appRoute, setAppRoute] = useState<AppRoute>('bootstrap');
   const [activeRoute, setActiveRoute] = useState('promos');
   const [scannedCoupon, setScannedCoupon] = useState<CouponData | null>(null);
   const [authentication, setAuthentication] = useState<Authentication | null>(null);
 
   // Handle bootstrap completion - determines initial app destination
-  const redirectUser = useCallback((destination: string) => {
-    switch (destination) {
-      case 'refresh-session':
-        setAppState('refresh-session');
-        break;
-      case 'bootstrap':
-        setAppState('bootstrap');
-        break;
-      case 'login':
-        setAppState('login');
-        break;
-      case 'my-shops':
-        setAppState('my-shops');
-        break;
-      case 'dashboard':
-        setAppState('dashboard');
-        break;
-      case 'error':
-        setAppState('error');
-        break;
-      case 'create-promo':
-        setAppState('create-promo');
-        break;
-      case 'create-shop':
-        setAppState('create-shop');
-        break;
-      case 'upgrade-plan':
-        setAppState('upgrade-plan');
-        break;
-      case 'add-cashier':
-        setAppState('add-cashier');
-        break;
-      case 'help-support':
-        setAppState('help-support');
-        break;
-      default: setAppState('login');
-    }
+  const redirectUser = useCallback((destination: AppRoute) => {
+    setAppRoute(destination);
   }, []);
 
   const onAuthentication = useCallback((authentication: Authentication) => {
     setAuthentication(authentication);
   }, [])
-  // Handle successful login - redirect to shops list
-  const handleLoginSuccess = useCallback(() => {
-    setAppState('my-shops');
-  }, []);
 
   // Handle shop selection - enter main dashboard
   const handleShopSelect = useCallback((shop: ShopData) => {
     userSession.shop_selected(shop);
-    setAppState('dashboard');
+    setAppRoute('dashboard');
   }, []);
 
   // Handle choose another shop - return to shop list
   const handleChooseAnotherShop = useCallback(() => {
-    setAppState('my-shops');
+    setAppRoute('my-shops');
   }, []);
 
   // Handle scan success - navigate to redeem coupon
   const handleScanSuccess = (coupon: CouponData) => {
-    console.log('Scanned coupon:', coupon);
     setScannedCoupon(coupon);
-    setAppState('redeem-coupon');
+    setAppRoute('redeem-coupon');
   };
 
   // Handle scan error
@@ -111,42 +87,42 @@ function App() {
   // Handle redeem completion - return to dashboard
   const handleRedeemComplete = () => {
     setScannedCoupon(null);
-    setAppState('dashboard');
+    setAppRoute('dashboard');
     setActiveRoute('promos');
   };
 
   // Handle redeem cancel - return to dashboard
   const handleRedeemCancel = () => {
     setScannedCoupon(null);
-    setAppState('dashboard');
+    setAppRoute('dashboard');
     setActiveRoute('promos');
   };
 
   // Handle upgrade plan actions
   const handleUpgradeComplete = () => {
-    setAppState('dashboard');
+    setAppRoute('dashboard');
     setActiveRoute('settings');
   };
 
   const handleUpgradeCancel = () => {
-    setAppState('dashboard');
+    setAppRoute('dashboard');
     setActiveRoute('settings');
   };
 
   // Handle add cashier actions
   const handleAddCashierComplete = () => {
-    setAppState('dashboard');
+    setAppRoute('dashboard');
     setActiveRoute('settings');
   };
 
   const handleAddCashierCancel = () => {
-    setAppState('dashboard');
+    setAppRoute('dashboard');
     setActiveRoute('settings');
   };
 
   // Handle help support actions
   const handleHelpSupportCancel = () => {
-    setAppState('dashboard');
+    setAppRoute('dashboard');
     setActiveRoute('settings');
   };
 
@@ -176,19 +152,12 @@ function App() {
   };
 
   // Main app rendering logic
-  switch (appState) {
+  switch (appRoute) {
     case 'bootstrap':
       return <BootstrapComponent redirectUser={redirectUser} onAuthentication={onAuthentication} />;
     
     case 'refresh-session':
       return <RefreshSessionComponent redirectUser={redirectUser} onAuthentication={onAuthentication} />;
-    
-    case 'login':
-      return (
-        <LoginComponent
-          onLoginSuccess={handleLoginSuccess} 
-        />
-      );
     
     case 'my-shops':
       return <ShopListComponent onShopSelect={handleShopSelect} userId={authentication!.user_id} redirectUser={redirectUser} />;
@@ -202,7 +171,7 @@ function App() {
     case 'redeem-coupon':
       return (
         <RedeemCouponView 
-          couponData={scannedCoupon}
+          couponData={scannedCoupon!}
           onComplete={handleRedeemComplete}
           onCancel={handleRedeemCancel}
         />
@@ -234,7 +203,7 @@ function App() {
     case 'dashboard':
       return (
         <div className="flex flex-col h-screen bg-gray-50">
-          <Header onChooseAnotherShop={handleChooseAnotherShop} />
+          <Header onChooseAnotherShop={handleChooseAnotherShop} userProfile={userSession.its_profile()!} />
           <main className="flex-1 overflow-auto pb-20">
             {renderDashboardContent()}
           </main>

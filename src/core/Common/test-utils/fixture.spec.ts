@@ -1,11 +1,11 @@
 import {CouponData} from '../../ScanQrcode/api/data';
 import {PromoData, PromoFormData} from '../../CreatePromo/api/data';
 import {ShopData, ShopFormData} from '../../CreateShop/api/data';
-import {Authentication} from '../../AuthenticationProvider/api/data';
 import {PromoStatisticsState, PromoStats} from '../../PromoStatistics/api/data';
 import {UserProfile} from '../../UserSession/api/data';
 import {ShopStatisticsState} from '../../ShopStatistics/api/data';
 import {image_uri} from '../../UploadImage/api/UploadFile';
+import {Authentication} from "../../Model/Authentication.ts";
 
 
 export const fake_promo: CouponData = {
@@ -160,7 +160,63 @@ export const fake_user_profile_signup: UserProfile = {
 export const fake_promo_stats_state: PromoStatisticsState = {
   promo_stats: {
     nbr_of_page: 1,
-    data: [{...fake_promo_statistics}],
+    data: [
+      {
+        id: '1',
+        shop_id: 'shop1',
+        name: 'Summer Sale 2025',
+        created_at: '2025-01-15T10:00:00Z',
+        validity_range: { start: '2025-06-01', end: '2025-08-31' },
+        nbr_of_issues: 245,
+        total_conversion: 89,
+        total_revenue: 15420,
+        collected_customers: 156
+      },
+      {
+        id: '2',
+        shop_id: 'shop1',
+        name: 'Coffee Loyalty Program',
+        created_at: '2025-01-01T09:00:00Z',
+        validity_range: { start: '2025-01-01', end: '2025-12-31' },
+        nbr_of_issues: 1200,
+        total_conversion: 340,
+        total_revenue: 8900,
+        collected_customers: 280
+      },
+      {
+        id: '3',
+        shop_id: 'shop1',
+        name: 'Weekend Special',
+        created_at: '2025-01-10T14:30:00Z',
+        validity_range: { start: '2025-01-15', end: '2025-03-15' },
+        nbr_of_issues: 89,
+        total_conversion: 23,
+        total_revenue: 2340,
+        collected_customers: 45
+      },
+      {
+        id: '4',
+        shop_id: 'shop1',
+        name: 'New Year Blast',
+        created_at: '2024-12-28T16:00:00Z',
+        validity_range: { start: '2025-01-01', end: '2025-01-07' },
+        nbr_of_issues: 567,
+        total_conversion: 123,
+        total_revenue: 12800,
+        collected_customers: 98
+      },
+      {
+        id: '5',
+        shop_id: 'shop1',
+        name: 'Valentine Special',
+        created_at: '2025-02-01T11:00:00Z',
+        validity_range: { start: '2025-02-10', end: '2025-02-16' },
+        nbr_of_issues: 234,
+        total_conversion: 67,
+        total_revenue: 5600,
+        collected_customers: 78
+      }
+    ],
     page: 1,
     per_page: 1
   },

@@ -1,43 +1,59 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { TrendingUp, Users, Euro, Gift } from 'lucide-react';
 import {ShopStatisticsState} from "../../core/ShopStatistics/api/data.ts";
+import {shopStatisticsFactory} from "../../factory/shopStatisticsFactory.ts";
 
 
-interface ShopMetricsProps {
-  shopStats: ShopStatisticsState;
-}
+const shopStatistics = shopStatisticsFactory();
 
-const ShopMetrics: React.FC<ShopMetricsProps> = ({ shopStats }) => {
-  const metrics = [
-    {
-      label: 'Conversion Rate',
-      value: `${shopStats.conversion_rate}%`,
-      icon: TrendingUp,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50'
-    },
-    {
-      label: 'Collected Customers',
-      value: shopStats.collected_customers.toLocaleString(),
-      icon: Users,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50'
-    },
-    {
-      label: 'Total Revenue',
-      value: `€${shopStats.collected_revenue.toLocaleString()}`,
-      icon: Euro,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50'
-    },
-    {
-      label: 'Active Promos',
-      value: shopStats.nbr_of_promo.toString(),
-      icon: Gift,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50'
+const ShopMetrics: React.FC = () => {
+  const [state, setState] = useState<ShopStatisticsState | null>(shopStatistics.state);
+
+  useEffect(() => {
+    const onInit = () => {
+      return shopStatistics.shop_stats().subscribe(() => {
+        setState({...shopStatistics.state!})
+      })
     }
-  ];
+    const subscription = onInit();
+    return () => subscription.unsubscribe();
+  }, [])
+
+  const metrics = (shopStats: ShopStatisticsState | null) => {
+    if (!shopStats) {
+      return null;
+    }
+    return [
+      {
+        label: 'Conversion Rate',
+        value: `${state.conversion_rate}%`,
+        icon: TrendingUp,
+        color: 'text-green-600',
+        bgColor: 'bg-green-50'
+      },
+      {
+        label: 'Collected Customers',
+        value: state.collected_customers.toLocaleString(),
+        icon: Users,
+        color: 'text-blue-600',
+        bgColor: 'bg-blue-50'
+      },
+      {
+        label: 'Total Revenue',
+        value: `€${state.collected_revenue.toLocaleString()}`,
+        icon: Euro,
+        color: 'text-purple-600',
+        bgColor: 'bg-purple-50'
+      },
+      {
+        label: 'Active Promos',
+        value: state.nbr_of_promo.toString(),
+        icon: Gift,
+        color: 'text-orange-600',
+        bgColor: 'bg-orange-50'
+      }
+    ];
+  }
 
   return (
     <div className="mb-6 sm:mb-8">
@@ -47,7 +63,7 @@ const ShopMetrics: React.FC<ShopMetricsProps> = ({ shopStats }) => {
       </div>
       
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-        {metrics.map((metric, index) => {
+        {metrics(state).map((metric, index) => {
           const Icon = metric.icon;
           return (
             <div key={index} className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-all duration-300">

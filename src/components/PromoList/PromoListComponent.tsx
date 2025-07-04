@@ -3,12 +3,14 @@ import {Plus} from 'lucide-react';
 import PromoCard from './PromoCard';
 import {PromoListState} from "../../core/ListPromos/api/PromoList.ts";
 import {promoListFactory} from "../../factory/promoListFactory.ts";
+import {AppRoute} from "../../App.tsx";
+import {CREATE_PROMO_ROUTE} from "../../core/Common/constants.ts";
 
 
 const promoList = promoListFactory();
 
 interface PromoListComponentProps {
-  redirectUser: (destination: string) => void;
+  redirectUser: (destination: AppRoute) => void;
 }
 
 const PromoListComponent: React.FC<PromoListComponentProps> = ({ redirectUser }) => {
@@ -25,8 +27,7 @@ const PromoListComponent: React.FC<PromoListComponentProps> = ({ redirectUser })
   },[])
 
   const handleCreatePromo = () => {
-    // Navigate to create promo page using redirectUser
-    redirectUser('create-promo');
+    redirectUser(CREATE_PROMO_ROUTE);
   };
 
   return (
