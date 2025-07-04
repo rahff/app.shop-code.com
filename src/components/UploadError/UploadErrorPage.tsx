@@ -1,14 +1,16 @@
 import React from 'react';
 import { AlertTriangle, ArrowLeft } from 'lucide-react';
+import {AppRoute} from "../../App.tsx";
+import {APP_ROUTE} from "../../core/Common/constants.ts";
 
 interface UploadErrorPageProps {
-  redirectUser?: (path: string) => void;
+  redirectUser?: (path: AppRoute) => void;
 }
 
 const UploadErrorPage: React.FC<UploadErrorPageProps> = ({ redirectUser }) => {
   const handleGoBack = () => {
     if (redirectUser) {
-      redirectUser('bootstrap');
+      redirectUser(APP_ROUTE);
     } else {
       // Fallback navigation
       window.location.href = '/';

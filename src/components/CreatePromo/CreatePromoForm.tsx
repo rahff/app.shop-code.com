@@ -3,13 +3,14 @@ import React, { useState } from 'react';
 import { Calendar, AlertCircle } from 'lucide-react';
 import { PromoFormData } from '../../core/CreatePromo/api/data';
 import FileUploadWidget from '../UploadImage/FileUploadWidget';
+import {AppRoute} from "../../App.tsx";
 
 interface CreatePromoFormProps {
   onSubmit: (formData: PromoFormData) => void;
   isLoading?: boolean;
   error?: string | null;
   onCancel?: () => void;
-  redirectUser?: (path: string) => void;
+  redirectUser: (path: AppRoute) => void;
 }
 
 const CreatePromoForm: React.FC<CreatePromoFormProps> = ({
@@ -236,15 +237,15 @@ const CreatePromoForm: React.FC<CreatePromoFormProps> = ({
           </h3>
           
           <FileUploadWidget
-            onFileSelect={handleFileSelect}
-            onFileRemove={handleFileRemove}
-            onUploadError={handleUploadError}
-            currentFile={selectedFile}
-            label="Upload Coupon Image"
-            description="PNG, JPG or GIF (MAX. 5MB)"
-            error={validationErrors.file}
-            redirectUser={redirectUser}
-          />
+              onFileSelect={handleFileSelect}
+              onFileRemove={handleFileRemove}
+              onUploadError={handleUploadError}
+              currentFile={selectedFile}
+              label="Upload Coupon Image"
+              description="PNG, JPG or GIF (MAX. 5MB)"
+              error={validationErrors.file}
+              redirectUser={redirectUser} accept={''}
+              isLoading={false}          />
         </div>
 
         {/* Submit Button - Using design system primary button */}

@@ -1,5 +1,6 @@
 import {LocalStorageApi} from '../../Common/spi/LocalStorageApi';
 import {
+  AUTHENTICATION,
   LOGIN_ROUTE,
   MY_SHOPS_ROUTE, REFRESH_SESSION_ROUTE,
   SELECTED_SHOP_KEY, SET_CONFIG_ROUTE,
@@ -30,6 +31,7 @@ export class UserSession {
 
   public async load(authentication: Authentication | null): Promise<Redirection> {
     this.authentication = authentication;
+    this.local_storage_api.set_item(AUTHENTICATION, this.authentication);
     if(is_signup(this.authentication)) return {path: REFRESH_SESSION_ROUTE};
     if(this.is_authenticated()){
       this.user_profile = await firstValueFrom(this.user_profile_api.get_user_profile(this.authentication!.user_id));

@@ -202,7 +202,7 @@ function App() {
         />
       );
     
-    case 'upload-error':
+    case ERROR_PAGE_ROUTE:
       return (
         <UploadErrorPage 
           redirectUser={redirectUser}

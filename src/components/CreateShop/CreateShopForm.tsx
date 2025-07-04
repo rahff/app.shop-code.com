@@ -1,16 +1,20 @@
 // src/components/CreateShop/CreateShopForm.tsx
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { MapPin, AlertCircle, Store } from 'lucide-react';
 import { ShopFormData } from '../../core/CreateShop/api/data';
 import FileUploadWidget from '../UploadImage/FileUploadWidget';
+import {AppRoute} from "../../App.tsx";
+import {uploadFileFactory} from "../../factory/uploadFileFactory.ts";
+import {UploadState} from "../../core/UploadImage/api/UploadFile.ts";
 
 interface CreateShopFormProps {
   onSubmit: (formData: ShopFormData) => void;
   isLoading?: boolean;
   error?: string | null;
   onCancel?: () => void;
-  redirectUser?: (path: string) => void;
+  redirectUser: (path: AppRoute) => void;
 }
+const fileUpload = uploadFileFactory();
 
 const CreateShopForm: React.FC<CreateShopFormProps> = ({
   onSubmit,
@@ -19,7 +23,7 @@ const CreateShopForm: React.FC<CreateShopFormProps> = ({
   onCancel,
   redirectUser
 }) => {
-  const [formData, setFormData] = useState<Partial<ShopFormData>>({
+  const [formData, setFormData] = useState<ShopFormData>({
     name: '',
     location: '',
     file_extension: 'png',
@@ -28,8 +32,18 @@ const CreateShopForm: React.FC<CreateShopFormProps> = ({
   
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [state, setState] = useState<UploadState>(fileUpload.upload_state);
   const [uploadComplete, setUploadComplete] = useState(false);
-
+  useEffect(() => {
+    const onInit = () => {
+      return fileUpload.get_upload_url().subscribe(() => {
+        setState({...fileUpload.upload_state});
+        setFormData({...formData, file_identifier: fileUpload.upload_state.file_identifier!});
+      })
+    }
+    const subscription = onInit();
+    return () => subscription.unsubscribe();
+  }, [])
   // Form validation using design system patterns
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
@@ -71,7 +85,6 @@ const CreateShopForm: React.FC<CreateShopFormProps> = ({
 
   const handleFileSelect = (file: File, identifier: string) => {
     setSelectedFile(file);
-    setUploadComplete(true);
     const extension = file.name.split('.').pop()?.toLowerCase() || 'png';
     setFormData(prev => ({ 
       ...prev, 
@@ -169,15 +182,15 @@ const CreateShopForm: React.FC<CreateShopFormProps> = ({
           </h3>
           
           <FileUploadWidget
-            onFileSelect={handleFileSelect}
-            onFileRemove={handleFileRemove}
-            onUploadError={handleUploadError}
-            currentFile={selectedFile}
-            label="Upload Shop Logo"
-            description="PNG, JPG or SVG (MAX. 2MB)"
-            error={validationErrors.file}
-            redirectUser={redirectUser}
-          />
+              onFileSelect={handleFileSelect}
+              onFileRemove={handleFileRemove}
+              onUploadError={handleUploadError}
+              currentFile={selectedFile}
+              label="Upload Shop Logo"
+              description="PNG, JPG or SVG (MAX. 2MB)"
+              error={validationErrors.file}
+              redirectUser={redirectUser} accept={''}
+              isLoading={false}          />
         </div>
 
         {/* Submit Buttons */}

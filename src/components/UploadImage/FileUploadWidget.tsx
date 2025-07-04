@@ -1,27 +1,31 @@
 // src/components/UploadImage/FileUploadWidget.tsx
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Upload, X, CheckCircle, AlertCircle, Image, Loader2 } from 'lucide-react';
-import { UploadFile, UploadStatus } from '../../core/UploadImage/api/UploadFile';
+import { UploadStatus } from '../../core/UploadImage/api/UploadFile';
 import { uploadFileFactory } from '../../factory/uploadFileFactory';
+import {AppRoute} from "../../App.tsx";
+import {ERROR_PAGE_ROUTE} from "../../core/Common/constants.ts";
+import {Observable, Subscription} from "rxjs";
 
 interface FileUploadWidgetProps {
   onFileSelect: (file: File, fileIdentifier: string) => void;
-  onFileRemove?: () => void;
-  onUploadError?: () => void;
-  accept?: string;
-  isLoading?: boolean;
-  error?: string | null;
-  currentFile?: File | null;
-  label?: string;
-  description?: string;
-  redirectUser?: (path: string) => void;
+  onFileRemove: () => void;
+  onUploadError: () => void;
+  fileIdentifier: string;
+  isLoading: boolean;
+  error: string | null;
+  currentFile: File | null;
+  label: string;
+  description: string;
+  redirectUser: (path: AppRoute) => void;
 }
+
 
 const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
   onFileSelect,
   onFileRemove,
   onUploadError,
-  accept = "image/*",
+  fileIdentifier,
   isLoading = false,
   error,
   currentFile,
@@ -45,86 +49,6 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
     return null;
   };
 
-  const handleFileSelect = async (file: File) => {
-    const validationError = validateFile(file);
-    if (validationError) {
-      onUploadError?.();
-      return;
-    }
-
-    setSelectedFile(file);
-    setUploadStatus("Pending");
-    setUploadProgress(0);
-
-    // Create preview for images
-    if (file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setPreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-
-    try {
-      // Step 1: Get upload URL
-      const urlSuccess = await new Promise<boolean>((resolve) => {
-        uploadFileService.get_upload_url().subscribe({
-          next: (success) => resolve(success),
-          error: () => resolve(false)
-        });
-      });
-
-      if (!urlSuccess) {
-        // Redirect to error page if get_upload_url fails
-        if (redirectUser) {
-          redirectUser('/upload-error');
-          return;
-        }
-        setUploadStatus("Failed");
-        onUploadError?.();
-        return;
-      }
-
-      const signedUrl = uploadFileService.upload_state.signed_url;
-      const fileIdentifier = uploadFileService.upload_state.file_identifier;
-
-      if (!signedUrl || !fileIdentifier) {
-        if (redirectUser) {
-          redirectUser('/upload-error');
-          return;
-        }
-        setUploadStatus("Failed");
-        onUploadError?.();
-        return;
-      }
-
-      // Step 2: Upload file
-      setUploadProgress(50);
-      
-      const uploadSuccess = await new Promise<boolean>((resolve) => {
-        uploadFileService.upload(file, signedUrl).subscribe({
-          next: (success) => resolve(success),
-          error: () => resolve(false)
-        });
-      });
-
-      if (uploadSuccess) {
-        setUploadStatus("Ok");
-        setUploadProgress(100);
-        onFileSelect(file, fileIdentifier);
-      } else {
-        setUploadStatus("Failed");
-        setUploadProgress(0);
-        onUploadError?.();
-      }
-    } catch (error) {
-      console.error('Upload error:', error);
-      setUploadStatus("Failed");
-      setUploadProgress(0);
-      onUploadError?.();
-    }
-  };
-
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -141,13 +65,13 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
     setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFileSelect(e.dataTransfer.files[0]);
+      onFileSelect(e.dataTransfer.files[0], fileIdentifier);
     }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      handleFileSelect(e.target.files[0]);
+      onFileSelect(e.target.files[0]);
     }
   };
 
@@ -175,7 +99,7 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
       <input
         ref={fileInputRef}
         type="file"
-        accept={accept}
+        accept={'image/'}
         onChange={handleInputChange}
         className="hidden"
         aria-describedby={error ? "upload-error" : undefined}
