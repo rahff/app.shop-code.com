@@ -4,17 +4,12 @@ import {AppRoute} from "../../App.tsx";
 import {APP_ROUTE} from "../../core/Common/constants.ts";
 
 interface UploadErrorPageProps {
-  redirectUser?: (path: AppRoute) => void;
+  redirectUser: (path: AppRoute) => void;
 }
 
-const UploadErrorPage: React.FC<UploadErrorPageProps> = ({ redirectUser }) => {
+const ErrorPage: React.FC<UploadErrorPageProps> = ({ redirectUser }) => {
   const handleGoBack = () => {
-    if (redirectUser) {
       redirectUser(APP_ROUTE);
-    } else {
-      // Fallback navigation
-      window.location.href = '/';
-    }
   };
 
   return (
@@ -32,7 +27,7 @@ const UploadErrorPage: React.FC<UploadErrorPageProps> = ({ redirectUser }) => {
           </h1>
           
           <p className="text-[#A0A0A8] mb-8 leading-relaxed">
-            We encountered an issue while processing your file upload. Please try again or contact support if the problem persists.
+            We encountered an issue while processing. Please try again or contact support if the problem persists.
           </p>
 
           {/* Action Button */}
@@ -49,4 +44,4 @@ const UploadErrorPage: React.FC<UploadErrorPageProps> = ({ redirectUser }) => {
   );
 };
 
-export default UploadErrorPage;
+export default ErrorPage;
