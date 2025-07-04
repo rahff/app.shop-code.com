@@ -20,13 +20,12 @@ interface FileUploadWidgetProps {
 const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
   signedUrl,
   selectedFile,
-  fileIdentifier,
   onFileSelect,
   onFileRemove,
   onUploadComplete,
   onUploadError,
   label = "Upload File",
-  description = "PNG, JPG or GIF (MAX. 5MB)",
+  description = "PNG, JPG, JPEG",
   accept = "image/*",
   maxSize = 5
 }) => {
@@ -42,9 +41,11 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
   // Auto-upload when signedUrl and selectedFile are available
   useEffect(() => {
     if (signedUrl && selectedFile && !isUploading && !uploadComplete) {
-      handleUpload();
+      handleUpload().catch(() => {
+        setUploadError(true);
+      });
     }
-  }, [signedUrl, selectedFile]);
+  }, [signedUrl, selectedFile, isUploading, uploadComplete]);
 
   // Create preview when file is selected
   useEffect(() => {
@@ -90,7 +91,8 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
         setUploadError(true);
         onUploadError?.();
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      console.log(error);
       setUploadError(true);
       onUploadError?.();
     } finally {
@@ -168,7 +170,7 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
   };
 
   // Show loader if waiting for signedUrl or selectedFile
-  if (!signedUrl || !selectedFile) {
+  if (!signedUrl) {
     return (
       <div className="w-full">
         <div className="border-2 border-dashed border-[#A0A0A8] rounded-lg p-8">

@@ -10,13 +10,14 @@ export class InMemoryUploadFileApi implements UploadFileApi {
   public get_signed_url(): Observable<string> {
     return new Observable((subscriber) => {
       setTimeout(() => {
-        subscriber.next("https://awsS3.signed/endpoint")
+        subscriber.next("https://awsS3.signed/endpoint");
+        subscriber.complete()
       }, 200)
     })
   }
 
   public upload_file(file: File, url: string): Observable<boolean> {
-    console.log(file, url);
+    console.log("upload api called with :", file, url);
     return new Observable((subscriber) => {
       setTimeout(() => {
         subscriber.next(true);

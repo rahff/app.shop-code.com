@@ -39,22 +39,15 @@ const CreateShopForm: React.FC<CreateShopFormProps> = ({
   // Get signed URL when component mounts
   useEffect(() => {
     uploadService.get_upload_url().subscribe({
-      next: (success) => {
-        if (success) {
-          setSignedUrl(uploadService.upload_state.signed_url);
-          setFileIdentifier(uploadService.upload_state.file_identifier);
-          setFormData(prev => ({
-            ...prev,
-            file_identifier: uploadService.upload_state.file_identifier || ''
-          }));
-        } else {
-          // Redirect to error page if getting signed URL fails
-          redirectUser(ERROR_PAGE_ROUTE);
-        }
+      next: () => {
+        setSignedUrl(uploadService.upload_state.signed_url);
+        setFileIdentifier(uploadService.upload_state.file_identifier);
+        setFormData(prev => ({
+          ...prev,
+          file_identifier: uploadService.upload_state.file_identifier || ''
+        }));
       },
-      error: () => {
-        redirectUser(ERROR_PAGE_ROUTE);
-      }
+      error: () => redirectUser(ERROR_PAGE_ROUTE)
     });
   }, [uploadService, redirectUser]);
 
