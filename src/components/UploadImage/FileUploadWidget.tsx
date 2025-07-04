@@ -19,7 +19,6 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
   onFileSelect,
   onFileRemove,
   accept = "image/*",
-  maxSize = 5,
   isLoading = false,
   error,
   uploadProgress = 0,
@@ -32,11 +31,6 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validateFile = (file: File): string | null => {
-    // Check file size
-    if (file.size > maxSize * 1024 * 1024) {
-      return `File size must be less than ${maxSize}MB`;
-    }
-
     // Check file type for images
     if (accept.includes('image/') && !file.type.startsWith('image/')) {
       return 'Please select a valid image file';
