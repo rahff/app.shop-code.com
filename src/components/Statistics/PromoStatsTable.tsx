@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { ChevronLeft, ChevronRight, Calendar, TrendingUp, Users, Euro } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, TrendingUp, Users, Euro, Loader2 } from 'lucide-react';
 import {promoStatisticsFactory} from "../../factory/promoStatisticsFactory.ts";
 import {PromoStatisticsState} from "../../core/PromoStatistics/api/data.ts";
 
@@ -8,17 +8,38 @@ const promoStatistics = promoStatisticsFactory();
 
 const PromoStatsTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [state, setState] = useState<PromoStatisticsState>(promoStatistics.state);
+  const [state, setState] = useState<PromoStatisticsState | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const onInit = () => {
+      setIsLoading(true);
       return promoStatistics.get_promo_statistics().subscribe(() => {
         setState({...promoStatistics.state});
+        setIsLoading(false);
       })
     }
     const subscription = onInit();
     return () => subscription.unsubscribe();
   }, [])
+
+  // Show loader while data is loading
+  if (isLoading || !state) {
+    return (
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="p-4 sm:p-6 border-b border-gray-200">
+          <h3 className="text-lg sm:text-xl font-semibold text-[#2B2C34] font-['Inter']">Promo Performance</h3>
+          <p className="text-[#A0A0A8] text-sm mt-1">Detailed analytics for each promotional campaign</p>
+        </div>
+        <div className="flex items-center justify-center py-16">
+          <div className="flex flex-col items-center space-y-4">
+            <Loader2 className="w-8 h-8 text-[#6C63FF] animate-spin" />
+            <p className="text-[#A0A0A8] text-sm">Loading promo statistics...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
