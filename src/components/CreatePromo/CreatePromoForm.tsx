@@ -1,9 +1,11 @@
 // src/components/CreatePromo/CreatePromoForm.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar, AlertCircle } from 'lucide-react';
 import { PromoFormData } from '../../core/CreatePromo/api/data';
 import FileUploadWidget from '../UploadImage/FileUploadWidget';
-import {AppRoute} from "../../App.tsx";
+import { AppRoute } from "../../App.tsx";
+import { uploadFileFactory } from "../../factory/uploadFileFactory.ts";
+import { ERROR_PAGE_ROUTE } from "../../core/Common/constants.ts";
 
 interface CreatePromoFormProps {
   onSubmit: (formData: PromoFormData) => void;
@@ -31,8 +33,32 @@ const CreatePromoForm: React.FC<CreatePromoFormProps> = ({
   
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [fileIdentifier, setFileIdentifier] = useState<string>('');
+  const [signedUrl, setSignedUrl] = useState<string | null>(null);
+  const [fileIdentifier, setFileIdentifier] = useState<string | null>(null);
   const [uploadComplete, setUploadComplete] = useState(false);
+  const [uploadService] = useState(() => uploadFileFactory());
+
+  // Get signed URL when component mounts
+  useEffect(() => {
+    uploadService.get_upload_url().subscribe({
+      next: (success) => {
+        if (success) {
+          setSignedUrl(uploadService.upload_state.signed_url);
+          setFileIdentifier(uploadService.upload_state.file_identifier);
+          setFormData(prev => ({
+            ...prev,
+            id: uploadService.upload_state.file_identifier || ''
+          }));
+        } else {
+          // Redirect to error page if getting signed URL fails
+          redirectUser(ERROR_PAGE_ROUTE);
+        }
+      },
+      error: () => {
+        redirectUser(ERROR_PAGE_ROUTE);
+      }
+    });
+  }, [uploadService, redirectUser]);
 
   // Form validation using design system error patterns
   const validateForm = (): boolean => {
@@ -78,7 +104,6 @@ const CreatePromoForm: React.FC<CreatePromoFormProps> = ({
     
     if (!validateForm()) return;
     
-    // Generate ID for the promo (would typically come from ID generator)
     const promoData: PromoFormData = {
       id: fileIdentifier || crypto.randomUUID(),
       name: formData.name!,
@@ -91,19 +116,26 @@ const CreatePromoForm: React.FC<CreatePromoFormProps> = ({
     onSubmit(promoData);
   };
 
-  const handleFileSelect = (file: File, identifier: string) => {
+  const handleFileSelect = (file: File) => {
     setSelectedFile(file);
-    setFileIdentifier(identifier);
-    setUploadComplete(true);
     const extension = file.name.split('.').pop()?.toLowerCase() || 'png';
-    setFormData(prev => ({ ...prev, file_extension: extension, id: identifier }));
+    setFormData(prev => ({ ...prev, file_extension: extension }));
+    setUploadComplete(false);
   };
 
   const handleFileRemove = () => {
     setSelectedFile(null);
-    setFileIdentifier('');
     setUploadComplete(false);
-    setFormData(prev => ({ ...prev, file_extension: 'png', id: '' }));
+    setFormData(prev => ({ ...prev, file_extension: 'png' }));
+  };
+
+  const handleUploadComplete = () => {
+    setUploadComplete(true);
+    setValidationErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors.file;
+      return newErrors;
+    });
   };
 
   const handleUploadError = () => {
@@ -237,15 +269,23 @@ const CreatePromoForm: React.FC<CreatePromoFormProps> = ({
           </h3>
           
           <FileUploadWidget
-              onFileSelect={handleFileSelect}
-              onFileRemove={handleFileRemove}
-              onUploadError={handleUploadError}
-              currentFile={selectedFile}
-              label="Upload Coupon Image"
-              description="PNG, JPG or GIF (MAX. 5MB)"
-              error={validationErrors.file}
-              redirectUser={redirectUser} accept={''}
-              isLoading={false}          />
+            signedUrl={signedUrl}
+            selectedFile={selectedFile}
+            fileIdentifier={fileIdentifier}
+            onFileSelect={handleFileSelect}
+            onFileRemove={handleFileRemove}
+            onUploadComplete={handleUploadComplete}
+            onUploadError={handleUploadError}
+            label="Upload Coupon Image"
+            description="PNG, JPG or GIF (MAX. 5MB)"
+            maxSize={5}
+          />
+          
+          {validationErrors.file && (
+            <p className="mt-2 text-sm text-red-600" role="alert">
+              {validationErrors.file}
+            </p>
+          )}
         </div>
 
         {/* Submit Button - Using design system primary button */}
@@ -260,7 +300,7 @@ const CreatePromoForm: React.FC<CreatePromoFormProps> = ({
           
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || !uploadComplete}
             className="px-6 py-3 bg-[#6C63FF] text-white rounded-lg font-medium hover:bg-[#5845E9] focus:outline-none focus:ring-2 focus:ring-[#6C63FF]/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
           >
             {isLoading ? (

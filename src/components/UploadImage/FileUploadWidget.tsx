@@ -1,52 +1,129 @@
 // src/components/UploadImage/FileUploadWidget.tsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Upload, X, CheckCircle, AlertCircle, Image, Loader2 } from 'lucide-react';
-import { UploadStatus } from '../../core/UploadImage/api/UploadFile';
 import { uploadFileFactory } from '../../factory/uploadFileFactory';
-import {AppRoute} from "../../App.tsx";
-import {ERROR_PAGE_ROUTE} from "../../core/Common/constants.ts";
-import {Observable, Subscription} from "rxjs";
 
 interface FileUploadWidgetProps {
-  onFileSelect: (file: File, fileIdentifier: string) => void;
-  onFileRemove: () => void;
-  onUploadError: () => void;
-  fileIdentifier: string;
-  isLoading: boolean;
-  error: string | null;
-  currentFile: File | null;
-  label: string;
-  description: string;
-  redirectUser: (path: AppRoute) => void;
+  signedUrl: string | null;
+  selectedFile: File | null;
+  fileIdentifier: string | null;
+  onFileSelect?: (file: File) => void;
+  onFileRemove?: () => void;
+  onUploadComplete?: () => void;
+  onUploadError?: () => void;
+  label?: string;
+  description?: string;
+  accept?: string;
+  maxSize?: number; // in MB
 }
 
-
 const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
+  signedUrl,
+  selectedFile,
+  fileIdentifier,
   onFileSelect,
   onFileRemove,
+  onUploadComplete,
   onUploadError,
-  fileIdentifier,
-  isLoading = false,
-  error,
-  currentFile,
   label = "Upload File",
   description = "PNG, JPG or GIF (MAX. 5MB)",
-  redirectUser
+  accept = "image/*",
+  maxSize = 5
 }) => {
   const [dragActive, setDragActive] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
-  const [uploadStatus, setUploadStatus] = useState<UploadStatus>("None");
+  const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadComplete, setUploadComplete] = useState(false);
+  const [uploadError, setUploadError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploadFileService = uploadFileFactory();
 
+  // Auto-upload when signedUrl and selectedFile are available
+  useEffect(() => {
+    if (signedUrl && selectedFile && !isUploading && !uploadComplete) {
+      handleUpload();
+    }
+  }, [signedUrl, selectedFile]);
+
+  // Create preview when file is selected
+  useEffect(() => {
+    if (selectedFile && selectedFile.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(selectedFile);
+    } else {
+      setPreview(null);
+    }
+  }, [selectedFile]);
+
+  const handleUpload = async () => {
+    if (!signedUrl || !selectedFile) return;
+
+    setIsUploading(true);
+    setUploadError(false);
+    setUploadProgress(0);
+
+    try {
+      // Simulate upload progress
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 100);
+
+      const success = await uploadFileService.upload(selectedFile, signedUrl).toPromise();
+      
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+      
+      if (success) {
+        setUploadComplete(true);
+        onUploadComplete?.();
+      } else {
+        setUploadError(true);
+        onUploadError?.();
+      }
+    } catch (error) {
+      setUploadError(true);
+      onUploadError?.();
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const validateFile = (file: File): string | null => {
+    // Check file size
+    if (file.size > maxSize * 1024 * 1024) {
+      return `File size must be less than ${maxSize}MB`;
+    }
+
     // Check file type for images
     if (accept.includes('image/') && !file.type.startsWith('image/')) {
       return 'Please select a valid image file';
     }
+
     return null;
+  };
+
+  const handleFileSelect = (file: File) => {
+    const validationError = validateFile(file);
+    if (validationError) {
+      return;
+    }
+
+    // Reset upload state
+    setUploadComplete(false);
+    setUploadError(false);
+    setUploadProgress(0);
+    
+    onFileSelect?.(file);
   };
 
   const handleDrag = (e: React.DragEvent) => {
@@ -65,20 +142,20 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
     setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      onFileSelect(e.dataTransfer.files[0], fileIdentifier);
+      handleFileSelect(e.dataTransfer.files[0]);
     }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      onFileSelect(e.target.files[0]);
+      handleFileSelect(e.target.files[0]);
     }
   };
 
   const handleRemove = () => {
     setPreview(null);
-    setSelectedFile(null);
-    setUploadStatus("None");
+    setUploadComplete(false);
+    setUploadError(false);
     setUploadProgress(0);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -90,19 +167,33 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
     fileInputRef.current?.click();
   };
 
-  const isUploading = uploadStatus === "Pending";
-  const uploadFailed = uploadStatus === "Failed";
-  const uploadSucceeded = uploadStatus === "Ok";
+  // Show loader if waiting for signedUrl or selectedFile
+  if (!signedUrl || !selectedFile) {
+    return (
+      <div className="w-full">
+        <div className="border-2 border-dashed border-[#A0A0A8] rounded-lg p-8">
+          <div className="flex flex-col items-center justify-center">
+            <Loader2 className="w-8 h-8 mb-3 text-[#6C63FF] animate-spin" />
+            <p className="text-sm font-medium text-[#2B2C34] mb-1">
+              Loading upload configuration...
+            </p>
+            <p className="text-xs text-[#A0A0A8]">
+              Please wait while we prepare the upload
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
       <input
         ref={fileInputRef}
         type="file"
-        accept={'image/'}
+        accept={accept}
         onChange={handleInputChange}
         className="hidden"
-        aria-describedby={error ? "upload-error" : undefined}
         disabled={isUploading}
       />
 
@@ -116,12 +207,12 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
         className={`relative border-2 border-dashed rounded-lg cursor-pointer transition-all duration-200 ${
           dragActive
             ? 'border-[#6C63FF] bg-[#6C63FF]/5'
-            : error || uploadFailed
+            : uploadError
             ? 'border-red-300 bg-red-50 hover:bg-red-100'
-            : uploadSucceeded
+            : uploadComplete
             ? 'border-green-300 bg-green-50'
             : 'border-[#A0A0A8] hover:border-[#6C63FF] hover:bg-gray-50'
-        } ${isUploading || isLoading ? 'pointer-events-none opacity-75' : ''}`}
+        } ${isUploading ? 'pointer-events-none opacity-75' : ''}`}
         role="button"
         tabIndex={0}
         aria-label={`Upload ${label.toLowerCase()}`}
@@ -132,7 +223,7 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
           }
         }}
       >
-        {selectedFile || currentFile ? (
+        {selectedFile ? (
           // File Selected State
           <div className="p-4">
             <div className="flex items-center justify-between">
@@ -150,20 +241,20 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
                 )}
                 <div>
                   <p className="text-sm font-medium text-[#2B2C34]">
-                    {selectedFile?.name || currentFile?.name || 'File selected'}
+                    {selectedFile.name}
                   </p>
                   <div className="flex items-center space-x-2">
                     <p className="text-xs text-[#A0A0A8]">
-                      {selectedFile ? `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB` : ''}
+                      {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                     </p>
-                    {uploadStatus !== "None" && (
+                    {(isUploading || uploadComplete || uploadError) && (
                       <span className={`text-xs font-medium ${
-                        uploadStatus === "Ok" ? 'text-green-600' :
-                        uploadStatus === "Failed" ? 'text-red-600' :
+                        uploadComplete ? 'text-green-600' :
+                        uploadError ? 'text-red-600' :
                         'text-[#6C63FF]'
                       }`}>
-                        {uploadStatus === "Pending" ? 'Uploading...' :
-                         uploadStatus === "Ok" ? 'Upload Complete' :
+                        {isUploading ? 'Uploading...' :
+                         uploadComplete ? 'Upload Complete' :
                          'Upload Failed'}
                       </span>
                     )}
@@ -211,17 +302,17 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
             {isUploading ? (
               <Loader2 className="w-8 h-8 mb-3 text-[#6C63FF] animate-spin" />
             ) : (
-              <Upload className={`w-8 h-8 mb-3 ${error || uploadFailed ? 'text-red-400' : 'text-[#A0A0A8]'}`} />
+              <Upload className={`w-8 h-8 mb-3 ${uploadError ? 'text-red-400' : 'text-[#A0A0A8]'}`} />
             )}
-            <p className={`text-sm font-medium mb-1 ${error || uploadFailed ? 'text-red-600' : 'text-[#2B2C34]'}`}>
+            <p className={`text-sm font-medium mb-1 ${uploadError ? 'text-red-600' : 'text-[#2B2C34]'}`}>
               {isUploading ? 'Uploading...' : label}
             </p>
             {!isUploading && (
               <>
-                <p className={`text-xs text-center ${error || uploadFailed ? 'text-red-500' : 'text-[#A0A0A8]'}`}>
+                <p className={`text-xs text-center ${uploadError ? 'text-red-500' : 'text-[#A0A0A8]'}`}>
                   <span className="font-semibold">Click to upload</span> or drag and drop
                 </p>
-                <p className={`text-xs mt-1 ${error || uploadFailed ? 'text-red-500' : 'text-[#A0A0A8]'}`}>
+                <p className={`text-xs mt-1 ${uploadError ? 'text-red-500' : 'text-[#A0A0A8]'}`}>
                   {description}
                 </p>
               </>
@@ -231,7 +322,7 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
       </div>
 
       {/* Success Message */}
-      {uploadSucceeded && !error && (
+      {uploadComplete && !uploadError && (
         <div className="mt-2 flex items-center space-x-2 text-sm text-green-600">
           <CheckCircle className="w-4 h-4" />
           <span>File uploaded successfully</span>
@@ -239,10 +330,10 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
       )}
 
       {/* Error Message */}
-      {(error || uploadFailed) && (
-        <div id="upload-error" className="mt-2 flex items-center space-x-2 text-sm text-red-600" role="alert">
+      {uploadError && (
+        <div className="mt-2 flex items-center space-x-2 text-sm text-red-600" role="alert">
           <AlertCircle className="w-4 h-4" />
-          <span>{error || 'Upload failed. Please try again.'}</span>
+          <span>Upload failed. Please try again.</span>
         </div>
       )}
     </div>
