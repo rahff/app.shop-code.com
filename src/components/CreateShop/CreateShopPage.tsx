@@ -66,6 +66,7 @@ const CreateShopPage: React.FC<CreateShopPageProps> = ({redirectUser}) => {
           isLoading={isLoading}
           error={error}
           onCancel={handleCancel}
+          redirectUser={redirectUser}
         />
       </main>
     </div>

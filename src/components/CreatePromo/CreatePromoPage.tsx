@@ -68,6 +68,7 @@ const CreatePromoPage: React.FC<CreatePromoPageProps> = ({redirectUser}) => {
           isLoading={isLoading}
           error={error}
           onCancel={handleCancel}
+          redirectUser={redirectUser}
         />
       </main>
     </div>

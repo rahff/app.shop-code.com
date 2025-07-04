@@ -1,24 +1,23 @@
 // src/components/CreateShop/CreateShopForm.tsx
 import React, { useState } from 'react';
-import { MapPin, Upload, AlertCircle, CheckCircle, Store } from 'lucide-react';
+import { MapPin, AlertCircle, Store } from 'lucide-react';
 import { ShopFormData } from '../../core/CreateShop/api/data';
+import FileUploadWidget from '../UploadImage/FileUploadWidget';
 
 interface CreateShopFormProps {
   onSubmit: (formData: ShopFormData) => void;
   isLoading?: boolean;
   error?: string | null;
-  onFileUpload?: (file: File) => void;
-  uploadProgress?: number;
   onCancel?: () => void;
+  redirectUser?: (path: string) => void;
 }
 
 const CreateShopForm: React.FC<CreateShopFormProps> = ({
   onSubmit,
   isLoading = false,
   error,
-  onFileUpload,
-  uploadProgress = 0,
-  onCancel
+  onCancel,
+  redirectUser
 }) => {
   const [formData, setFormData] = useState<Partial<ShopFormData>>({
     name: '',
@@ -29,6 +28,7 @@ const CreateShopForm: React.FC<CreateShopFormProps> = ({
   
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadComplete, setUploadComplete] = useState(false);
 
   // Form validation using design system patterns
   const validateForm = (): boolean => {
@@ -45,6 +45,10 @@ const CreateShopForm: React.FC<CreateShopFormProps> = ({
     if (!selectedFile) {
       errors.file = 'Shop logo is required';
     }
+
+    if (!uploadComplete) {
+      errors.file = 'Please wait for file upload to complete';
+    }
     
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
@@ -55,31 +59,36 @@ const CreateShopForm: React.FC<CreateShopFormProps> = ({
     
     if (!validateForm()) return;
     
-    // Generate file identifier (would typically come from upload service)
-    const fileIdentifier = crypto.randomUUID();
-    
     const shopData: ShopFormData = {
       name: formData.name!,
       location: formData.location!,
       file_extension: formData.file_extension!,
-      file_identifier: fileIdentifier
+      file_identifier: formData.file_identifier!
     };
     
     onSubmit(shopData);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      const extension = file.name.split('.').pop()?.toLowerCase() || 'png';
-      setFormData(prev => ({ 
-        ...prev, 
-        file_extension: extension,
-        file_identifier: crypto.randomUUID()
-      }));
-      onFileUpload?.(file);
-    }
+  const handleFileSelect = (file: File, identifier: string) => {
+    setSelectedFile(file);
+    setUploadComplete(true);
+    const extension = file.name.split('.').pop()?.toLowerCase() || 'png';
+    setFormData(prev => ({ 
+      ...prev, 
+      file_extension: extension,
+      file_identifier: identifier
+    }));
+  };
+
+  const handleFileRemove = () => {
+    setSelectedFile(null);
+    setUploadComplete(false);
+    setFormData(prev => ({ ...prev, file_extension: 'png', file_identifier: '' }));
+  };
+
+  const handleUploadError = () => {
+    setUploadComplete(false);
+    setValidationErrors(prev => ({ ...prev, file: 'Upload failed. Please try again.' }));
   };
 
   return (
@@ -153,67 +162,22 @@ const CreateShopForm: React.FC<CreateShopFormProps> = ({
         </div>
 
         {/* Logo Upload */}
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
           <h3 className="text-lg font-semibold text-[#2B2C34] font-['Inter'] mb-4 flex items-center">
-            <Upload className="w-5 h-5 mr-2 text-[#6C63FF]" />
+            <Store className="w-5 h-5 mr-2 text-[#6C63FF]" />
             Shop Logo
           </h3>
           
-          <div className="space-y-4">
-            <input
-              type="file"
-              id="logo-upload"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-              aria-describedby={validationErrors.file ? "file-error" : undefined}
-            />
-            
-            <label
-              htmlFor="logo-upload"
-              className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
-                validationErrors.file 
-                  ? 'border-red-300 bg-red-50 hover:bg-red-100' 
-                  : 'border-[#A0A0A8] hover:border-[#6C63FF] hover:bg-gray-50'
-              }`}
-            >
-              <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                <Upload className={`w-8 h-8 mb-2 ${validationErrors.file ? 'text-red-400' : 'text-[#A0A0A8]'}`} />
-                <p className={`text-sm ${validationErrors.file ? 'text-red-600' : 'text-[#A0A0A8]'}`}>
-                  <span className="font-semibold">Click to upload logo</span> or drag and drop
-                </p>
-                <p className={`text-xs ${validationErrors.file ? 'text-red-500' : 'text-[#A0A0A8]'}`}>
-                  PNG, JPG or SVG (MAX. 2MB)
-                </p>
-              </div>
-            </label>
-            
-            {selectedFile && (
-              <div className="flex items-center space-x-2 text-sm text-[#2B2C34]">
-                <CheckCircle className="w-4 h-4 text-green-600" />
-                <span>{selectedFile.name}</span>
-              </div>
-            )}
-            
-            {uploadProgress > 0 && uploadProgress < 100 && (
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-[#6C63FF] h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${uploadProgress}%` }}
-                  role="progressbar"
-                  aria-valuenow={uploadProgress}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                />
-              </div>
-            )}
-            
-            {validationErrors.file && (
-              <p id="file-error" className="text-sm text-red-600" role="alert">
-                {validationErrors.file}
-              </p>
-            )}
-          </div>
+          <FileUploadWidget
+            onFileSelect={handleFileSelect}
+            onFileRemove={handleFileRemove}
+            onUploadError={handleUploadError}
+            currentFile={selectedFile}
+            label="Upload Shop Logo"
+            description="PNG, JPG or SVG (MAX. 2MB)"
+            error={validationErrors.file}
+            redirectUser={redirectUser}
+          />
         </div>
 
         {/* Submit Buttons */}

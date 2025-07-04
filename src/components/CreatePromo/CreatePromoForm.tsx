@@ -1,35 +1,37 @@
 // src/components/CreatePromo/CreatePromoForm.tsx
 import React, { useState } from 'react';
-import { Calendar, Upload, AlertCircle, CheckCircle } from 'lucide-react';
+import { Calendar, AlertCircle } from 'lucide-react';
 import { PromoFormData } from '../../core/CreatePromo/api/data';
+import FileUploadWidget from '../UploadImage/FileUploadWidget';
 
 interface CreatePromoFormProps {
   onSubmit: (formData: PromoFormData) => void;
   isLoading?: boolean;
   error?: string | null;
-  onFileUpload?: (file: File) => void;
-  uploadProgress?: number;
   onCancel?: () => void;
+  redirectUser?: (path: string) => void;
 }
 
 const CreatePromoForm: React.FC<CreatePromoFormProps> = ({
   onSubmit,
   isLoading = false,
   error,
-  onFileUpload,
-  uploadProgress = 0,
-  onCancel
+  onCancel,
+  redirectUser
 }) => {
   const [formData, setFormData] = useState<Partial<PromoFormData>>({
     name: '',
     description: '',
     validity_date_start: '',
     validity_date_end: '',
-    file_extension: 'png'
+    file_extension: 'png',
+    id: ''
   });
   
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [fileIdentifier, setFileIdentifier] = useState<string>('');
+  const [uploadComplete, setUploadComplete] = useState(false);
 
   // Form validation using design system error patterns
   const validateForm = (): boolean => {
@@ -61,6 +63,10 @@ const CreatePromoForm: React.FC<CreatePromoFormProps> = ({
     if (!selectedFile) {
       errors.file = 'Coupon image is required';
     }
+
+    if (!uploadComplete) {
+      errors.file = 'Please wait for file upload to complete';
+    }
     
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
@@ -73,7 +79,7 @@ const CreatePromoForm: React.FC<CreatePromoFormProps> = ({
     
     // Generate ID for the promo (would typically come from ID generator)
     const promoData: PromoFormData = {
-      id: crypto.randomUUID(),
+      id: fileIdentifier || crypto.randomUUID(),
       name: formData.name!,
       description: formData.description!,
       validity_date_start: formData.validity_date_start!,
@@ -84,14 +90,24 @@ const CreatePromoForm: React.FC<CreatePromoFormProps> = ({
     onSubmit(promoData);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      const extension = file.name.split('.').pop()?.toLowerCase() || 'png';
-      setFormData(prev => ({ ...prev, file_extension: extension }));
-      onFileUpload?.(file);
-    }
+  const handleFileSelect = (file: File, identifier: string) => {
+    setSelectedFile(file);
+    setFileIdentifier(identifier);
+    setUploadComplete(true);
+    const extension = file.name.split('.').pop()?.toLowerCase() || 'png';
+    setFormData(prev => ({ ...prev, file_extension: extension, id: identifier }));
+  };
+
+  const handleFileRemove = () => {
+    setSelectedFile(null);
+    setFileIdentifier('');
+    setUploadComplete(false);
+    setFormData(prev => ({ ...prev, file_extension: 'png', id: '' }));
+  };
+
+  const handleUploadError = () => {
+    setUploadComplete(false);
+    setValidationErrors(prev => ({ ...prev, file: 'Upload failed. Please try again.' }));
   };
 
   return (
@@ -213,67 +229,22 @@ const CreatePromoForm: React.FC<CreatePromoFormProps> = ({
         </div>
 
         {/* File Upload - Using design system card and button styling */}
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
           <h3 className="text-lg font-semibold text-[#2B2C34] font-['Inter'] mb-4 flex items-center">
-            <Upload className="w-5 h-5 mr-2 text-[#6C63FF]" />
+            <Calendar className="w-5 h-5 mr-2 text-[#6C63FF]" />
             Coupon Image
           </h3>
           
-          <div className="space-y-4">
-            <input
-              type="file"
-              id="file-upload"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-              aria-describedby={validationErrors.file ? "file-error" : undefined}
-            />
-            
-            <label
-              htmlFor="file-upload"
-              className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
-                validationErrors.file 
-                  ? 'border-red-300 bg-red-50 hover:bg-red-100' 
-                  : 'border-[#A0A0A8] hover:border-[#6C63FF] hover:bg-gray-50'
-              }`}
-            >
-              <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                <Upload className={`w-8 h-8 mb-2 ${validationErrors.file ? 'text-red-400' : 'text-[#A0A0A8]'}`} />
-                <p className={`text-sm ${validationErrors.file ? 'text-red-600' : 'text-[#A0A0A8]'}`}>
-                  <span className="font-semibold">Click to upload</span> or drag and drop
-                </p>
-                <p className={`text-xs ${validationErrors.file ? 'text-red-500' : 'text-[#A0A0A8]'}`}>
-                  PNG, JPG or GIF (MAX. 5MB)
-                </p>
-              </div>
-            </label>
-            
-            {selectedFile && (
-              <div className="flex items-center space-x-2 text-sm text-[#2B2C34]">
-                <CheckCircle className="w-4 h-4 text-green-600" />
-                <span>{selectedFile.name}</span>
-              </div>
-            )}
-            
-            {uploadProgress > 0 && uploadProgress < 100 && (
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-[#6C63FF] h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${uploadProgress}%` }}
-                  role="progressbar"
-                  aria-valuenow={uploadProgress}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                />
-              </div>
-            )}
-            
-            {validationErrors.file && (
-              <p id="file-error" className="text-sm text-red-600" role="alert">
-                {validationErrors.file}
-              </p>
-            )}
-          </div>
+          <FileUploadWidget
+            onFileSelect={handleFileSelect}
+            onFileRemove={handleFileRemove}
+            onUploadError={handleUploadError}
+            currentFile={selectedFile}
+            label="Upload Coupon Image"
+            description="PNG, JPG or GIF (MAX. 5MB)"
+            error={validationErrors.file}
+            redirectUser={redirectUser}
+          />
         </div>
 
         {/* Submit Button - Using design system primary button */}

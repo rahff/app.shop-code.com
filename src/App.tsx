@@ -14,6 +14,7 @@ import RedeemCouponView from './components/RedeemCoupon/RedeemCouponView.tsx';
 import UpgradePlanView from './components/Subscription/UpgradePlanView';
 import AddCashierView from './components/AddCashier/AddCashierView.tsx';
 import HelpSupportView from './components/HelpSupport/HelpSupportView.tsx';
+import UploadErrorPage from './components/UploadError/UploadErrorPage.tsx';
 import {userSession} from "./factory/userSessionFactory.ts";
 import {ShopData} from "./core/CreateShop/api/data.ts";
 import { CouponData } from './core/ScanQrcode/api/data';
@@ -35,6 +36,7 @@ export type AppRoute =
     typeof ERROR_PAGE_ROUTE |
     typeof CREATE_PROMO_ROUTE |
     typeof CREATE_SHOP_ROUTE |
+    'upload-error' |
     'redeem-coupon' |
     'upgrade-plan' |
     'add-cashier' |
@@ -197,6 +199,13 @@ function App() {
       return (
         <HelpSupportView 
           onCancel={handleHelpSupportCancel}
+        />
+      );
+    
+    case 'upload-error':
+      return (
+        <UploadErrorPage 
+          redirectUser={redirectUser}
         />
       );
     
