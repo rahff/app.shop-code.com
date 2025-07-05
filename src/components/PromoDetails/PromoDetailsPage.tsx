@@ -257,36 +257,36 @@ const PromoDetailsPage: React.FC<PromoDetailsPageProps> = ({
                           </div>
                           <div>
                             <h4 className="font-semibold text-[#2B2C34] font-['Inter']">
-                              {campaign.platform}
+                              {campaign.platform} ad link
                             </h4>
                             <p className="text-xs text-[#A0A0A8]">
-                              {t('promoDetails.trackTraffic', { platform: campaign.platform.toLowerCase() })}
+                              Click to copy link for your {campaign.platform.toLowerCase()} ads
                             </p>
                           </div>
                         </div>
-                        
-                        <button
-                          onClick={() => copyToClipboard(campaignUrl, campaign.platform)}
-                          className={`p-2 rounded-lg transition-all duration-200 ${
-                            isCopied
-                              ? 'bg-green-100 text-green-600'
-                              : 'bg-gray-100 text-[#A0A0A8] hover:bg-[#6C63FF]/10 hover:text-[#6C63FF]'
-                          }`}
-                          aria-label={t('promoDetails.copyLink', { platform: campaign.platform })}
-                        >
-                          {isCopied ? (
-                            <Check className="w-4 h-4" />
-                          ) : (
-                            <Copy className="w-4 h-4" />
-                          )}
-                        </button>
                       </div>
                       
-                      <div className="bg-gray-50 rounded-lg p-3">
-                        <code className="text-xs text-[#2B2C34] break-all font-mono">
-                          {campaignUrl}
-                        </code>
-                      </div>
+                      <button
+                        onClick={() => copyToClipboard(campaignUrl, campaign.platform)}
+                        className={`w-full p-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 ${
+                          isCopied
+                            ? 'bg-green-100 text-green-600 border border-green-200'
+                            : 'bg-gray-50 text-[#2B2C34] hover:bg-[#6C63FF]/10 hover:text-[#6C63FF] border border-gray-200 hover:border-[#6C63FF]/30'
+                        }`}
+                        aria-label={t('promoDetails.copyLink', { platform: campaign.platform })}
+                      >
+                        {isCopied ? (
+                          <>
+                            <Check className="w-4 h-4" />
+                            <span className="font-medium">Link copied – paste into your ad</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-4 h-4" />
+                            <span className="font-medium">Copy {campaign.platform.toLowerCase()} campaign link</span>
+                          </>
+                        )}
+                      </button>
                     </div>
                   );
                 })}

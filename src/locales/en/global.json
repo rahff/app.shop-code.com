@@ -80,11 +80,10 @@
     "description": "Manage your promotional campaign",
     "campaignLinks": "Campaign Links",
     "campaignLinksDescription": "Copy these links to track traffic from different social media platforms",
-    "trackTraffic": "Track {{platform}} traffic",
     "quickActions": "Quick Actions",
     "viewAnalytics": "View Analytics",
     "editPromo": "Edit Promo",
-    "linkCopied": "Link copied ✅",
+    "linkCopied": "Link copied – paste into your ad ✅",
     "copyLink": "Copy {{platform}} campaign link",
     "viewDetails": "View Details",
     "goBack": "Go back to promo list"
