@@ -145,7 +145,7 @@
   "settings": {
     "title": "Paramètres",
     "description": "Gérez vos préférences de compte et la configuration de votre boutique",
-    "upgradePlan": "Mettre à Niveau le Plan",
+    "upgradeplan": "Mettre à Niveau le Plan",
     "upgradeplanDescription": "Débloquez des fonctionnalités premium et augmentez les limites",
     "addcashier": "Ajouter un Caissier",
     "addcashierDescription": "Créez des comptes caissier pour votre personnel",
