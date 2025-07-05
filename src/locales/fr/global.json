@@ -1,0 +1,250 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "cancel": "Annuler",
+    "continue": "Continuer",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "create": "Créer",
+    "back": "Retour",
+    "next": "Suivant",
+    "submit": "Soumettre",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "error": "Erreur",
+    "success": "Succès",
+    "warning": "Attention",
+    "info": "Information"
+  },
+  "navigation": {
+    "promos": "Promos",
+    "statistics": "Stats",
+    "scan": "Scanner",
+    "settings": "Paramètres",
+    "dashboard": "Tableau de bord",
+    "myShops": "Mes Boutiques",
+    "chooseAnotherShop": "Choisir une autre boutique"
+  },
+  "auth": {
+    "signIn": "Se connecter",
+    "signOut": "Se déconnecter",
+    "signUp": "S'inscrire",
+    "loading": "Chargement de l'authentification...",
+    "refreshing": "Actualisation de la session...",
+    "sessionRefreshed": "Session actualisée avec succès...",
+    "sessionRefreshFailed": "Échec de l'actualisation de la session..."
+  },
+  "bootstrap": {
+    "title": "Shop-Code",
+    "subtitle": "Tableau de bord",
+    "initializing": "Initialisation...",
+    "loadingAuth": "Chargement de l'authentification...",
+    "loadingSession": "Chargement de la session utilisateur..."
+  },
+  "regionPicker": {
+    "title": "Choisissez votre région préférée",
+    "description": "Nous stockerons vos données dans la région que vous choisissez pour vous offrir une latence plus faible et de meilleures performances en réduisant la distance entre vous et nos services backend. Vous ne pourrez pas changer cela plus tard.",
+    "regions": {
+      "eu-west-3": {
+        "name": "Paris",
+        "description": "Idéal si vous êtes en Europe de l'Ouest"
+      },
+      "eu-central-1": {
+        "name": "Francfort",
+        "description": "Idéal si vous êtes en Europe centrale"
+      },
+      "us-east-1": {
+        "name": "N. Virginie",
+        "description": "Idéal si vous êtes dans l'est des États-Unis"
+      },
+      "us-west-2": {
+        "name": "Oregon",
+        "description": "Idéal si vous êtes dans l'ouest des États-Unis"
+      }
+    },
+    "selectRegion": "Sélectionner la région {{region}}",
+    "continueWith": "Continuer avec la région {{region}}"
+  },
+  "promos": {
+    "title": "Campagnes Promotionnelles",
+    "description": "Gérez vos campagnes promotionnelles et suivez leurs performances",
+    "createNew": "Créer une Nouvelle Promo",
+    "createFirst": "Créer Votre Première Promo",
+    "noPromos": "Aucune promo pour le moment",
+    "noPromosDescription": "Créez votre première campagne promotionnelle pour commencer",
+    "validPeriod": "Période de validité"
+  },
+  "createPromo": {
+    "title": "Créer une Nouvelle Promo",
+    "description": "Concevez votre campagne promotionnelle pour engager les clients",
+    "promoName": "Nom de la Promo",
+    "promoNamePlaceholder": "Entrez le nom de la promo",
+    "description": "Description",
+    "descriptionPlaceholder": "Décrivez votre offre promotionnelle",
+    "validityPeriod": "Période de Validité",
+    "startDate": "Date de Début",
+    "endDate": "Date de Fin",
+    "couponImage": "Image du Coupon",
+    "uploadImage": "Télécharger l'Image du Coupon",
+    "imageDescription": "PNG, JPG ou GIF (MAX. 5MB)",
+    "creating": "Création de la Promo...",
+    "required": "requis"
+  },
+  "shops": {
+    "title": "Mes Boutiques",
+    "description": "Sélectionnez une boutique pour gérer vos campagnes promotionnelles",
+    "createNew": "Créer une Nouvelle Boutique",
+    "createFirst": "Créer Votre Première Boutique",
+    "noShops": "Aucune boutique pour le moment",
+    "noShopsDescription": "Créez votre première boutique pour commencer à gérer les campagnes promotionnelles et engager les clients.",
+    "created": "Créé le {{date}}",
+    "promosCount": "{{count}} promos"
+  },
+  "createShop": {
+    "title": "Créer une Nouvelle Boutique",
+    "description": "Configurez votre boutique pour commencer à gérer les campagnes promotionnelles",
+    "shopName": "Nom de la Boutique",
+    "shopNamePlaceholder": "Entrez le nom de votre boutique",
+    "location": "Emplacement",
+    "locationPlaceholder": "Entrez l'emplacement de la boutique (ex: Paris 15ème)",
+    "shopLogo": "Logo de la Boutique",
+    "uploadLogo": "Télécharger le Logo de la Boutique",
+    "logoDescription": "PNG, JPG ou SVG (MAX. 2MB)",
+    "creating": "Création de la Boutique...",
+    "required": "requis"
+  },
+  "statistics": {
+    "title": "Tableau de Bord Analytique",
+    "description": "Suivez les performances de vos campagnes promotionnelles et l'engagement client",
+    "shopOverview": "Aperçu de {{shopName}}",
+    "keyMetrics": "Métriques clés de performance pour votre boutique",
+    "conversionRate": "Taux de Conversion",
+    "collectedCustomers": "Clients Collectés",
+    "totalRevenue": "Revenus Totaux",
+    "activePromos": "Promos Actives",
+    "promoPerformance": "Performance des Promos",
+    "detailedAnalytics": "Analyses détaillées pour chaque campagne promotionnelle",
+    "loadingMetrics": "Chargement des métriques de la boutique...",
+    "loadingStats": "Chargement des statistiques des promos..."
+  },
+  "settings": {
+    "title": "Paramètres",
+    "description": "Gérez vos préférences de compte et la configuration de votre boutique",
+    "upgradePlan": "Mettre à Niveau le Plan",
+    "upgradePlanDescription": "Débloquez des fonctionnalités premium et augmentez les limites",
+    "addCashier": "Ajouter un Caissier",
+    "addCashierDescription": "Créez des comptes caissier pour votre personnel",
+    "privacySecurity": "Confidentialité et Sécurité",
+    "privacySecurityDescription": "Contrôlez vos données et paramètres de sécurité",
+    "helpSupport": "Aide et Support",
+    "helpSupportDescription": "Obtenez de l'aide et contactez notre équipe de support",
+    "cashierList": "Liste des Caissiers",
+    "cashierListDescription": "Visualisez et gérez vos comptes caissier",
+    "loadingCashiers": "Chargement des caissiers...",
+    "noCashiers": "Aucun caissier trouvé",
+    "addFirstCashier": "Ajoutez votre premier caissier",
+    "manage": "Gérer",
+    "upgrade": "Mettre à niveau",
+    "getHelp": "Obtenir de l'aide"
+  },
+  "addCashier": {
+    "title": "Ajouter un Caissier",
+    "description": "Créez des identifiants pour un nouvel utilisateur caissier",
+    "username": "Nom d'utilisateur",
+    "usernamePlaceholder": "Entrez le nom d'utilisateur",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Entrez le mot de passe",
+    "confirmPassword": "Confirmer le Mot de passe",
+    "confirmPasswordPlaceholder": "Confirmez le mot de passe",
+    "adding": "Ajout du Caissier...",
+    "required": "requis"
+  },
+  "scanner": {
+    "title": "Scanner le Code QR",
+    "instructions": "Positionnez le code QR dans le cadre pour scanner",
+    "instructionsDetail": "Assurez-vous que le code est clairement visible et bien éclairé",
+    "startScanning": "Commencer le Scan",
+    "stopScanning": "Arrêter le Scan",
+    "scanning": "Scan en cours...",
+    "scannedResult": "Résultat scanné:",
+    "scanSuccess": "Code QR scanné avec succès!",
+    "scanFailed": "Échec du scan. Veuillez réessayer.",
+    "invalidQrcode": "Code QR invalide!",
+    "cameraNotActive": "Caméra non active"
+  },
+  "redeemCoupon": {
+    "title": "Échanger le Coupon",
+    "description": "Complétez la transaction",
+    "scannedCoupon": "Coupon Scanné",
+    "customer": "Client",
+    "validPeriod": "Valide",
+    "transactionAmount": "Montant de la Transaction",
+    "customerStatus": "Statut du Client",
+    "returningCustomer": "Client Fidèle",
+    "newCustomer": "Nouveau Client",
+    "processing": "Traitement...",
+    "redeemCoupon": "Échanger le Coupon"
+  },
+  "upgradePlan": {
+    "title": "Mettre à Niveau Votre Plan",
+    "description": "Choisissez le plan parfait pour développer vos campagnes promotionnelles et faire croître votre entreprise",
+    "currentPlan": "Plan Actuel",
+    "recommended": "Recommandé",
+    "upgradeTo": "Passer au {{plan}}",
+    "contactSales": "Contacter les Ventes",
+    "processing": "Traitement...",
+    "allPlansInclude": "Tous les Plans Incluent:",
+    "questionsTitle": "Des questions sur la mise à niveau?",
+    "questionsDescription": "Notre équipe est là pour vous aider à choisir le bon plan pour votre entreprise",
+    "contactSupport": "Contacter le Support",
+    "footerNote": "Annulez à tout moment. Aucun engagement à long terme. Votre succès guide notre feuille de route.",
+    "backToSettings": "Retour aux Paramètres"
+  },
+  "helpSupport": {
+    "title": "Aide et Support",
+    "description": "Obtenez de l'aide avec votre compte Shop-Code",
+    "contactSupport": "Contacter le Support",
+    "contactDescription": "Envoyez-nous un message et nous vous répondrons dès que possible",
+    "yourEmail": "Votre Email",
+    "emailPlaceholder": "votre.email@exemple.com",
+    "subject": "Sujet",
+    "subjectPlaceholder": "Comment pouvons-nous vous aider?",
+    "message": "Message",
+    "messagePlaceholder": "Veuillez décrire votre problème ou question en détail...",
+    "sending": "Envoi...",
+    "sendMessage": "Envoyer le Message",
+    "messageSent": "Message envoyé avec succès!",
+    "messageResponse": "Nous répondrons à votre demande dans les 24 heures.",
+    "messageFailed": "Échec de l'envoi du message. Veuillez réessayer.",
+    "otherWays": "Autres Moyens d'Obtenir de l'Aide",
+    "faq": "Questions Fréquemment Posées"
+  },
+  "errors": {
+    "somethingWrong": "Quelque chose s'est mal passé",
+    "errorDescription": "Nous avons rencontré un problème lors du traitement. Veuillez réessayer ou contacter le support si le problème persiste.",
+    "gotIt": "Compris",
+    "uploadFailed": "Échec du téléchargement. Veuillez réessayer.",
+    "loadingUpload": "Chargement de la configuration de téléchargement...",
+    "pleaseWait": "Veuillez patienter pendant que nous préparons le téléchargement",
+    "fileUploaded": "Fichier téléchargé avec succès",
+    "uploadError": "Échec du téléchargement. Veuillez réessayer."
+  },
+  "validation": {
+    "required": "{{field}} est requis",
+    "invalidEmail": "Veuillez entrer une adresse email valide",
+    "minLength": "{{field}} doit contenir au moins {{min}} caractères",
+    "passwordsNotMatch": "Les mots de passe ne correspondent pas",
+    "invalidAmount": "Veuillez entrer un montant valide",
+    "invalidDateRange": "La date de fin doit être postérieure à la date de début",
+    "fileTooLarge": "La taille du fichier doit être inférieure à {{size}}MB",
+    "invalidFileType": "Veuillez sélectionner un fichier image valide"
+  },
+  "fileUpload": {
+    "clickToUpload": "Cliquez pour télécharger",
+    "dragAndDrop": "ou glissez-déposez",
+    "uploading": "Téléchargement...",
+    "uploadComplete": "Téléchargement Terminé",
+    "uploadFailed": "Échec du téléchargement. Veuillez réessayer."
+  }
+}

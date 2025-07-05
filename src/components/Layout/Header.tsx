@@ -1,5 +1,6 @@
 import React from 'react';
-import { QrCode, ArrowLeft } from 'lucide-react';
+import { QrCode, ArrowLeft, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {UserProfile} from "../../core/UserSession/api/data.ts";
 
 interface HeaderProps {
@@ -8,6 +9,13 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ onChooseAnotherShop, userProfile }) => {
+  const { t, i18n } = useTranslation('global');
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language === 'en' ? 'fr' : 'en';
+    i18n.changeLanguage(newLang);
+  };
+
   return (
     <header className="bg-white border-b border-gray-200 px-4 py-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between">
@@ -16,12 +24,22 @@ const Header: React.FC<HeaderProps> = ({ onChooseAnotherShop, userProfile }) => 
             <QrCode className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-[#2B2C34] font-['Inter']">Shop-Code</h1>
-            <p className="text-sm text-[#A0A0A8] hidden sm:block">Dashboard</p>
+            <h1 className="text-xl font-bold text-[#2B2C34] font-['Inter']">{t('bootstrap.title')}</h1>
+            <p className="text-sm text-[#A0A0A8] hidden sm:block">{t('navigation.dashboard')}</p>
           </div>
         </div>
         
         <div className="flex items-center space-x-4">
+          {/* Language Switcher */}
+          <button
+            onClick={toggleLanguage}
+            className="flex items-center space-x-2 px-3 py-2 text-[#A0A0A8] hover:text-[#6C63FF] rounded-lg hover:bg-gray-50 transition-all duration-200"
+            aria-label={`Switch to ${i18n.language === 'en' ? 'French' : 'English'}`}
+          >
+            <Globe className="w-4 h-4" />
+            <span className="text-sm font-medium uppercase">{i18n.language === 'en' ? '🇫🇷 FR' : '🇬🇧 EN'}</span>
+          </button>
+          
           {/* Choose Another Shop Button */}
           {onChooseAnotherShop && (
             <button
@@ -29,8 +47,8 @@ const Header: React.FC<HeaderProps> = ({ onChooseAnotherShop, userProfile }) => 
               className="flex items-center space-x-2 px-4 py-2 border-2 border-[#6C63FF] text-[#6C63FF] rounded-lg font-medium hover:bg-[#6C63FF] hover:text-white transition-all duration-200 text-sm"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span className="hidden sm:inline">Choose another shop</span>
-              <span className="sm:hidden">My shops</span>
+              <span className="hidden sm:inline">{t('navigation.chooseAnotherShop')}</span>
+              <span className="sm:hidden">{t('navigation.myShops')}</span>
             </button>
           )}
           

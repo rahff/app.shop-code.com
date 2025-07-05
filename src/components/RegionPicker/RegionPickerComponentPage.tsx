@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Globe, Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Region {
   code: string;
@@ -36,6 +37,7 @@ const regions: Region[] = [
 ];
 
 const RegionPickerComponentPage: React.FC = () => {
+  const { t } = useTranslation('global');
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
 
   const handleRegionSelect = (regionCode: string) => {
@@ -45,8 +47,8 @@ const RegionPickerComponentPage: React.FC = () => {
 
   const handleContinue = () => {
     if (selectedRegion) {
-      const selected = regions.find(r => r.code === selectedRegion);
-      console.log(`Proceeding with region: ${selected?.name} (${selectedRegion})`);
+      const regionName = t(`regionPicker.regions.${selectedRegion}.name`);
+      console.log(`Proceeding with region: ${regionName} (${selectedRegion})`);
     }
   };
 
@@ -60,11 +62,11 @@ const RegionPickerComponentPage: React.FC = () => {
           </div>
           
           <h1 className="text-3xl sm:text-4xl font-bold text-[#2B2C34] font-['Inter'] mb-6">
-            Choose your preferred region
+            {t('regionPicker.title')}
           </h1>
           
           <p className="text-[#A0A0A8] text-lg max-w-3xl mx-auto leading-relaxed">
-            We will store your data in the region you choose to provide you with lower latency and better performance by reducing the distance between you and our backend services. You cannot change this later.
+            {t('regionPicker.description')}
           </p>
         </div>
 
@@ -81,7 +83,7 @@ const RegionPickerComponentPage: React.FC = () => {
               }`}
               role="button"
               tabIndex={0}
-              aria-label={`Select ${region.name} region`}
+              aria-label={t('regionPicker.selectRegion', { region: t(`regionPicker.regions.${region.code}.name`) })}
               aria-pressed={selectedRegion === region.code}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -106,13 +108,13 @@ const RegionPickerComponentPage: React.FC = () => {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-xl font-bold text-[#2B2C34] font-['Inter'] mb-2">
-                    {region.name}
+                    {t(`regionPicker.regions.${region.code}.name`)}
                   </h3>
                   <p className="text-sm font-medium text-[#6C63FF] mb-3">
                     {region.code}
                   </p>
                   <p className="text-[#A0A0A8] text-sm leading-relaxed">
-                    {region.description}
+                    {t(`regionPicker.regions.${region.code}.description`)}
                   </p>
                 </div>
               </div>
@@ -133,9 +135,9 @@ const RegionPickerComponentPage: React.FC = () => {
             <button
               onClick={handleContinue}
               className="bg-[#6C63FF] text-white px-8 py-4 rounded-xl font-medium hover:bg-[#5845E9] focus:outline-none focus:ring-2 focus:ring-[#6C63FF]/20 transition-all duration-200 shadow-lg hover:shadow-xl"
-              aria-label={`Continue with ${regions.find(r => r.code === selectedRegion)?.name} region`}
+              aria-label={t('regionPicker.continueWith', { region: t(`regionPicker.regions.${selectedRegion}.name`) })}
             >
-              Continue
+              {t('common.continue')}
             </button>
           </div>
         )}

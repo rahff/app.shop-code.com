@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {QrCode} from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {userSession} from "../../factory/userSessionFactory.ts";
 import {useAuth} from "react-oidc-context";
 import {getAuthentication} from "../../functions.ts";
@@ -16,17 +17,18 @@ interface BootstrapComponentProps {
 
 
 const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser, onAuthentication }) => {
-  const [loadingText, setLoadingText] = useState('Initializing...');
+  const { t } = useTranslation('global');
+  const [loadingText, setLoadingText] = useState(t('bootstrap.initializing'));
   const auth = useAuth();
   useEffect(() => {
     if(auth.isLoading){
-      setLoadingText('Loading authentication...');
+      setLoadingText(t('auth.loading'));
       return;
     }
     if(auth.isAuthenticated && !auth.isLoading) {
       const authentication: Authentication = getAuthentication(auth.user!)!;
       if(authentication) onAuthentication(authentication);
-      setLoadingText('Loading user session...');
+      setLoadingText(t('bootstrap.loadingSession'));
       userSession.load(authentication).then((redirection) => {
         redirectUser(redirection.path as AppRoute);
       })
@@ -47,7 +49,8 @@ const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser, o
             <QrCode className="w-12 h-12 text-[#6C63FF]" />
           </div>
           <h1 className="text-4xl font-bold text-white font-['Inter'] mb-2">Shop-Code</h1>
-          <p className="text-white/80 text-lg">Dashboard</p>
+          <h1 className="text-4xl font-bold text-white font-['Inter'] mb-2">{t('bootstrap.title')}</h1>
+          <p className="text-white/80 text-lg">{t('bootstrap.subtitle')}</p>
         </div>
 
         {/* Loading Animation */}

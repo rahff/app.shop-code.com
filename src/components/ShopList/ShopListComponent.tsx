@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { Plus, MapPin, Calendar, ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {ShopData} from "../../core/CreateShop/api/data.ts";
 import {shopListFactory} from "../../factory/shopListFactory.ts";
 import {ShopListState} from "../../core/ListShops/api/ShopList.ts";
@@ -16,6 +17,7 @@ interface ShopListComponentProps {
 const shopList = shopListFactory();
 
 const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect, userId, redirectUser }) => {
+  const { t } = useTranslation('global');
   const [state, setState] = useState<ShopListState>(shopList.state);
   useEffect(() => {
     const onInit = () => {
@@ -45,16 +47,16 @@ const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect, use
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-[#2B2C34] font-['Inter']">My Shops</h1>
-              <p className="text-[#A0A0A8] mt-1">Select a shop to manage your promotional campaigns</p>
+              <h1 className="text-3xl font-bold text-[#2B2C34] font-['Inter']">{t('shops.title')}</h1>
+              <p className="text-[#A0A0A8] mt-1">{t('shops.description')}</p>
             </div>
             <button 
               onClick={handleCreateShop}
               className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-6 py-3 rounded-xl font-medium flex items-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               <Plus className="w-5 h-5" />
-              <span className="hidden sm:inline">Create New Shop</span>
-              <span className="sm:hidden">New</span>
+              <span className="hidden sm:inline">{t('shops.createNew')}</span>
+              <span className="sm:hidden">{t('common.create')}</span>
             </button>
           </div>
         </div>
@@ -99,11 +101,11 @@ const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect, use
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                   <div className="flex items-center space-x-2 text-sm text-[#A0A0A8]">
                     <Calendar className="w-4 h-4" />
-                    <span>Created {shop.createdAt}</span>
+                    <span>{t('shops.created', { date: shop.createdAt })}</span>
                   </div>
                   <div className="text-sm">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#6C63FF]/10 text-[#6C63FF]">
-                      {shop.promoCount} promos
+                      {t('shops.promosCount', { count: shop.promoCount })}
                     </span>
                   </div>
                 </div>
@@ -115,15 +117,15 @@ const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect, use
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <Plus className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-xl font-semibold text-[#2B2C34] mb-2">No shops yet</h3>
+            <h3 className="text-xl font-semibold text-[#2B2C34] mb-2">{t('shops.noShops')}</h3>
             <p className="text-[#A0A0A8] mb-8 max-w-md mx-auto">
-              Create your first shop to start managing promotional campaigns and engaging with customers.
+              {t('shops.noShopsDescription')}
             </p>
             <button 
               onClick={handleCreateShop}
               className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-8 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
             >
-              Create Your First Shop
+              {t('shops.createFirst')}
             </button>
           </div>
         )}

@@ -1,0 +1,250 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Info"
+  },
+  "navigation": {
+    "promos": "Promos",
+    "statistics": "Stats",
+    "scan": "Start Scan",
+    "settings": "Settings",
+    "dashboard": "Dashboard",
+    "myShops": "My Shops",
+    "chooseAnotherShop": "Choose another shop"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "signUp": "Sign Up",
+    "loading": "Loading authentication...",
+    "refreshing": "Refreshing session...",
+    "sessionRefreshed": "Session refreshed successfully...",
+    "sessionRefreshFailed": "Session refresh failed..."
+  },
+  "bootstrap": {
+    "title": "Shop-Code",
+    "subtitle": "Dashboard",
+    "initializing": "Initializing...",
+    "loadingAuth": "Loading authentication...",
+    "loadingSession": "Loading user session..."
+  },
+  "regionPicker": {
+    "title": "Choose your preferred region",
+    "description": "We will store your data in the region you choose to provide you with lower latency and better performance by reducing the distance between you and our backend services. You cannot change this later.",
+    "regions": {
+      "eu-west-3": {
+        "name": "Paris",
+        "description": "Best if you are in Western Europe"
+      },
+      "eu-central-1": {
+        "name": "Frankfurt", 
+        "description": "Best if you are in Central Europe"
+      },
+      "us-east-1": {
+        "name": "N. Virginia",
+        "description": "Best if you are in Eastern US"
+      },
+      "us-west-2": {
+        "name": "Oregon",
+        "description": "Best if you are in Western US"
+      }
+    },
+    "selectRegion": "Select {{region}} region",
+    "continueWith": "Continue with {{region}} region"
+  },
+  "promos": {
+    "title": "Promo Campaigns",
+    "description": "Manage your promotional campaigns and track their performance",
+    "createNew": "Create New Promo",
+    "createFirst": "Create Your First Promo",
+    "noPromos": "No promos yet",
+    "noPromosDescription": "Create your first promotional campaign to get started",
+    "validPeriod": "Valid Period"
+  },
+  "createPromo": {
+    "title": "Create New Promo",
+    "description": "Design your promotional campaign to engage customers",
+    "promoName": "Promo Name",
+    "promoNamePlaceholder": "Enter promo name",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe your promotional offer",
+    "validityPeriod": "Validity Period",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "couponImage": "Coupon Image",
+    "uploadImage": "Upload Coupon Image",
+    "imageDescription": "PNG, JPG or GIF (MAX. 5MB)",
+    "creating": "Creating Promo...",
+    "required": "required"
+  },
+  "shops": {
+    "title": "My Shops",
+    "description": "Select a shop to manage your promotional campaigns",
+    "createNew": "Create New Shop",
+    "createFirst": "Create Your First Shop",
+    "noShops": "No shops yet",
+    "noShopsDescription": "Create your first shop to start managing promotional campaigns and engaging with customers.",
+    "created": "Created {{date}}",
+    "promosCount": "{{count}} promos"
+  },
+  "createShop": {
+    "title": "Create New Shop",
+    "description": "Set up your shop to start managing promotional campaigns",
+    "shopName": "Shop Name",
+    "shopNamePlaceholder": "Enter your shop name",
+    "location": "Location",
+    "locationPlaceholder": "Enter shop location (e.g., Paris 15ème)",
+    "shopLogo": "Shop Logo",
+    "uploadLogo": "Upload Shop Logo",
+    "logoDescription": "PNG, JPG or SVG (MAX. 2MB)",
+    "creating": "Creating Shop...",
+    "required": "required"
+  },
+  "statistics": {
+    "title": "Analytics Dashboard",
+    "description": "Track your promotional campaigns performance and customer engagement",
+    "shopOverview": "{{shopName}} Overview",
+    "keyMetrics": "Key performance metrics for your shop",
+    "conversionRate": "Conversion Rate",
+    "collectedCustomers": "Collected Customers",
+    "totalRevenue": "Total Revenue",
+    "activePromos": "Active Promos",
+    "promoPerformance": "Promo Performance",
+    "detailedAnalytics": "Detailed analytics for each promotional campaign",
+    "loadingMetrics": "Loading shop metrics...",
+    "loadingStats": "Loading promo statistics..."
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Manage your account preferences and shop configuration",
+    "upgradePlan": "Upgrade Plan",
+    "upgradePlanDescription": "Unlock premium features and increase limits",
+    "addCashier": "Add Cashier",
+    "addCashierDescription": "Create cashier accounts for your staff",
+    "privacySecurity": "Privacy & Security",
+    "privacySecurityDescription": "Control your data and security settings",
+    "helpSupport": "Help & Support",
+    "helpSupportDescription": "Get help and contact our support team",
+    "cashierList": "Cashier List",
+    "cashierListDescription": "View and manage your cashier accounts",
+    "loadingCashiers": "Loading cashiers...",
+    "noCashiers": "No cashiers found",
+    "addFirstCashier": "Add your first cashier",
+    "manage": "Manage",
+    "upgrade": "Upgrade",
+    "getHelp": "Get Help"
+  },
+  "addCashier": {
+    "title": "Add Cashier",
+    "description": "Create credentials for a new cashier user",
+    "username": "Username",
+    "usernamePlaceholder": "Enter username",
+    "password": "Password",
+    "passwordPlaceholder": "Enter password",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm password",
+    "adding": "Adding Cashier...",
+    "required": "required"
+  },
+  "scanner": {
+    "title": "Scan QR Code",
+    "instructions": "Position the QR code within the frame to scan",
+    "instructionsDetail": "Make sure the code is clearly visible and well-lit",
+    "startScanning": "Start Scanning",
+    "stopScanning": "Stop Scanning",
+    "scanning": "Scanning...",
+    "scannedResult": "Scanned result:",
+    "scanSuccess": "QR Code scanned successfully!",
+    "scanFailed": "Scan failed. Please try again.",
+    "invalidQrcode": "Invalid qrcode!",
+    "cameraNotActive": "Camera not active"
+  },
+  "redeemCoupon": {
+    "title": "Redeem Coupon",
+    "description": "Complete the transaction",
+    "scannedCoupon": "Scanned Coupon",
+    "customer": "Customer",
+    "validPeriod": "Valid",
+    "transactionAmount": "Transaction Amount",
+    "customerStatus": "Customer Status",
+    "returningCustomer": "Returning Customer",
+    "newCustomer": "New Customer",
+    "processing": "Processing...",
+    "redeemCoupon": "Redeem Coupon"
+  },
+  "upgradePlan": {
+    "title": "Upgrade Your Plan",
+    "description": "Choose the perfect plan to scale your promotional campaigns and grow your business",
+    "currentPlan": "Current Plan",
+    "recommended": "Recommended",
+    "upgradeTo": "Upgrade to {{plan}}",
+    "contactSales": "Contact Sales",
+    "processing": "Processing...",
+    "allPlansInclude": "All Plans Include:",
+    "questionsTitle": "Questions about upgrading?",
+    "questionsDescription": "Our team is here to help you choose the right plan for your business",
+    "contactSupport": "Contact Support",
+    "footerNote": "Cancel anytime. No long-term commitment. Your success drives our roadmap.",
+    "backToSettings": "Back to Settings"
+  },
+  "helpSupport": {
+    "title": "Help & Support",
+    "description": "Get help with your Shop-Code account",
+    "contactSupport": "Contact Support",
+    "contactDescription": "Send us a message and we'll get back to you as soon as possible",
+    "yourEmail": "Your Email",
+    "emailPlaceholder": "your.email@example.com",
+    "subject": "Subject",
+    "subjectPlaceholder": "How can we help you?",
+    "message": "Message",
+    "messagePlaceholder": "Please describe your issue or question in detail...",
+    "sending": "Sending...",
+    "sendMessage": "Send Message",
+    "messageSent": "Message sent successfully!",
+    "messageResponse": "We'll respond to your inquiry within 24 hours.",
+    "messageFailed": "Failed to send message. Please try again.",
+    "otherWays": "Other Ways to Get Help",
+    "faq": "Frequently Asked Questions"
+  },
+  "errors": {
+    "somethingWrong": "Something went wrong",
+    "errorDescription": "We encountered an issue while processing. Please try again or contact support if the problem persists.",
+    "gotIt": "Got it",
+    "uploadFailed": "Upload failed. Please try again.",
+    "loadingUpload": "Loading upload configuration...",
+    "pleaseWait": "Please wait while we prepare the upload",
+    "fileUploaded": "File uploaded successfully",
+    "uploadError": "Upload failed. Please try again."
+  },
+  "validation": {
+    "required": "{{field}} is required",
+    "invalidEmail": "Please enter a valid email address",
+    "minLength": "{{field}} must be at least {{min}} characters",
+    "passwordsNotMatch": "Passwords do not match",
+    "invalidAmount": "Please enter a valid amount",
+    "invalidDateRange": "End date must be after start date",
+    "fileTooLarge": "File size must be less than {{size}}MB",
+    "invalidFileType": "Please select a valid image file"
+  },
+  "fileUpload": {
+    "clickToUpload": "Click to upload",
+    "dragAndDrop": "or drag and drop",
+    "uploading": "Uploading...",
+    "uploadComplete": "Upload Complete",
+    "uploadFailed": "Upload failed. Please try again."
+  }
+}
