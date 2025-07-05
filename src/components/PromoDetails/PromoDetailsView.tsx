@@ -36,11 +36,12 @@ const PromoDetailsView: React.FC<PromoDetailsViewProps> = ({ redirectUser }) => 
             coupon_img: 'https://images.pexels.com/photos/1028741/pexels-photo-1028741.jpeg?auto=compress&cs=tinysrgb&w=400',
             created_at: '2025-01-15'
           };
-          
+
           setPromoData(mockPromo);
           setIsLoading(false);
         }, 1000);
-      } catch (err) {
+      } catch (err: unknown) {
+        console.log(err);
         setError('Failed to load promo data');
         setIsLoading(false);
       }
