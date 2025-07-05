@@ -64,7 +64,7 @@ const RegionPickerComponentPage: React.FC = () => {
           </h1>
           
           <p className="text-[#A0A0A8] text-lg max-w-3xl mx-auto leading-relaxed">
-            We will store your data in the region you choose to provide you with lower latency and better performance by reducing the distance between you and our backend services. You can change this later.
+            We will store your data in the region you choose to provide you with lower latency and better performance by reducing the distance between you and our backend services. You cannot change this later.
           </p>
         </div>
 
