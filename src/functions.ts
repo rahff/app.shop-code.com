@@ -1,5 +1,6 @@
 import {User} from "oidc-client-ts";
-import {Authentication} from "./core/AuthenticationProvider/api/data.ts";
+import {Authentication} from "./core/Model/Authentication.ts";
+
 
 export const getAuthentication = (user: User | null): Authentication | null => {
     if(user) {
