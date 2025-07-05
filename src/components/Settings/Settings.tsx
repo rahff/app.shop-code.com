@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { CreditCard, Shield, HelpCircle, UserPlus, Users, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { CreditCard, Shield, HelpCircle, UserPlus, Users, Trash2, ChevronDown, ChevronUp, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { ListCashiers } from '../../core/ListCashiers/api/ListCashiers';
 import { CashierData } from '../../core/AddCashier/api/data';
 import { localStorageApi } from '../../services/browser/LocalStorageBrowserApi';
@@ -12,6 +13,7 @@ interface SettingsProps {
 }
 
 const Settings: React.FC<SettingsProps> = ({ redirectUser, account_ref }) => {
+  const { t, i18n } = useTranslation('global');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [cashiers, setCashiers] = useState<CashierData[]>([]);
   const [isLoadingCashiers, setIsLoadingCashiers] = useState(false);
@@ -36,6 +38,9 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, account_ref }) => {
     redirectUser('help-support');
   };
 
+  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    i18n.changeLanguage(e.target.value);
+  };
   const toggleDropdown = () => {
     if (!isDropdownOpen) {
       loadCashiers();
@@ -117,13 +122,39 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, account_ref }) => {
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-[#2B2C34] font-['Inter'] mb-2">Settings</h1>
-        <p className="text-[#A0A0A8] text-sm sm:text-base">Manage your account preferences and shop configuration</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-[#2B2C34] font-['Inter'] mb-2">{t('settings.title')}</h1>
+        <p className="text-[#A0A0A8] text-sm sm:text-base">{t('settings.description')}</p>
       </div>
 
       {/* Responsive centering wrapper - centers on desktop, left-aligned on mobile */}
       <div className="flex justify-start md:justify-center">
         <div className="w-full max-w-2xl">
+          {/* Language Settings Section */}
+          <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:border-[#6C63FF]/20 mb-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-indigo-50 rounded-lg flex items-center justify-center">
+                  <Globe className="w-6 h-6 text-indigo-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-[#2B2C34] font-['Inter']">{t('settings.language')}</h3>
+                  <p className="text-[#A0A0A8] text-sm">{t('settings.languageDescription')}</p>
+                </div>
+              </div>
+              <div className="ml-4">
+                <select
+                  value={i18n.resolvedLanguage}
+                  onChange={handleLanguageChange}
+                  className="px-4 py-2 border border-[#A0A0A8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6C63FF]/20 focus:border-[#6C63FF] transition-colors bg-white text-[#2B2C34] font-medium"
+                  aria-label={t('settings.selectLanguage')}
+                >
+                  <option value="en">🇬🇧 English</option>
+                  <option value="fr">🇫🇷 Français</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
           {/* Cashier List Section - positioned first */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:border-[#6C63FF]/20 mb-8">
             <div className="flex items-center justify-between">
@@ -132,8 +163,8 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, account_ref }) => {
                   <Users className="w-6 h-6 text-purple-600" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-[#2B2C34] font-['Inter']">Cashier List</h3>
-                  <p className="text-[#A0A0A8] text-sm">View and manage your cashier accounts</p>
+                  <h3 className="text-lg font-semibold text-[#2B2C34] font-['Inter']">{t('settings.cashierList')}</h3>
+                  <p className="text-[#A0A0A8] text-sm">{t('settings.cashierListDescription')}</p>
                 </div>
               </div>
               <button 
@@ -154,7 +185,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, account_ref }) => {
                 {isLoadingCashiers ? (
                   <div className="flex items-center justify-center py-4">
                     <div className="w-6 h-6 border-2 border-[#6C63FF]/30 border-t-[#6C63FF] rounded-full animate-spin"></div>
-                    <span className="ml-2 text-[#A0A0A8]">Loading cashiers...</span>
+                    <span className="ml-2 text-[#A0A0A8]">{t('settings.loadingCashiers')}</span>
                   </div>
                 ) : cashierError ? (
                   <div className="text-center py-4">
@@ -163,7 +194,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, account_ref }) => {
                       onClick={loadCashiers}
                       className="mt-2 text-[#6C63FF] hover:text-[#5845E9] text-sm font-medium"
                     >
-                      Try again
+                      {t('common.tryAgain')}
                     </button>
                   </div>
                 ) : cashiers.length > 0 ? (
@@ -193,12 +224,12 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, account_ref }) => {
                   </div>
                 ) : (
                   <div className="text-center py-4">
-                    <p className="text-[#A0A0A8] text-sm mb-2">No cashiers found</p>
+                    <p className="text-[#A0A0A8] text-sm mb-2">{t('settings.noCashiers')}</p>
                     <button 
                       onClick={handleAddCashier}
                       className="text-[#6C63FF] hover:text-[#5845E9] text-sm font-medium"
                     >
-                      Add your first cashier
+                      {t('settings.addFirstCashier')}
                     </button>
                   </div>
                 )}
@@ -218,15 +249,15 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, account_ref }) => {
                         <Icon className={`w-6 h-6 ${option.color}`} />
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-[#2B2C34] font-['Inter']">{option.title}</h3>
-                        <p className="text-[#A0A0A8] text-sm">{option.description}</p>
+                        <h3 className="text-lg font-semibold text-[#2B2C34] font-['Inter']">{t(`settings.${option.title.toLowerCase().replace(/\s+/g, '')}`)}</h3>
+                        <p className="text-[#A0A0A8] text-sm">{t(`settings.${option.title.toLowerCase().replace(/\s+/g, '')}Description`)}</p>
                       </div>
                     </div>
                     <button 
                       onClick={option.onClick}
                       className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm"
                     >
-                      {option.action}
+                      {t(`settings.${option.action.toLowerCase().replace(/\s+/g, '')}`)}
                     </button>
                   </div>
                 </div>

@@ -144,9 +144,20 @@
     "loadingCashiers": "Loading cashiers...",
     "noCashiers": "No cashiers found",
     "addFirstCashier": "Add your first cashier",
+    "language": "Language",
+    "languageDescription": "Choose your preferred language for the interface",
+    "selectLanguage": "Select language",
     "manage": "Manage",
     "upgrade": "Upgrade",
-    "getHelp": "Get Help"
+    "getHelp": "Get Help",
+    "upgradePlan": "Upgrade Plan",
+    "upgradePlanDescription": "Unlock premium features and increase limits",
+    "addCashier": "Add Cashier",
+    "addCashierDescription": "Create cashier accounts for your staff",
+    "privacySecurity": "Privacy & Security",
+    "privacySecurityDescription": "Control your data and security settings",
+    "helpSupport": "Help & Support",
+    "helpSupportDescription": "Get help and contact our support team"
   },
   "addCashier": {
     "title": "Add Cashier",
@@ -238,7 +249,8 @@
     "invalidAmount": "Please enter a valid amount",
     "invalidDateRange": "End date must be after start date",
     "fileTooLarge": "File size must be less than {{size}}MB",
-    "invalidFileType": "Please select a valid image file"
+    "invalidFileType": "Please select a valid image file",
+    "tryAgain": "Try again"
   },
   "fileUpload": {
     "clickToUpload": "Click to upload",
