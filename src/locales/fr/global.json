@@ -144,9 +144,20 @@
     "loadingCashiers": "Chargement des caissiers...",
     "noCashiers": "Aucun caissier trouvé",
     "addFirstCashier": "Ajoutez votre premier caissier",
+    "language": "Langue",
+    "languageDescription": "Choisissez votre langue préférée pour l'interface",
+    "selectLanguage": "Sélectionner la langue",
     "manage": "Gérer",
     "upgrade": "Mettre à niveau",
-    "getHelp": "Obtenir de l'aide"
+    "getHelp": "Obtenir de l'aide",
+    "upgradePlan": "Mettre à Niveau le Plan",
+    "upgradePlanDescription": "Débloquez des fonctionnalités premium et augmentez les limites",
+    "addCashier": "Ajouter un Caissier",
+    "addCashierDescription": "Créez des comptes caissier pour votre personnel",
+    "privacySecurity": "Confidentialité et Sécurité",
+    "privacySecurityDescription": "Contrôlez vos données et paramètres de sécurité",
+    "helpSupport": "Aide et Support",
+    "helpSupportDescription": "Obtenez de l'aide et contactez notre équipe de support"
   },
   "addCashier": {
     "title": "Ajouter un Caissier",
@@ -238,7 +249,8 @@
     "invalidAmount": "Veuillez entrer un montant valide",
     "invalidDateRange": "La date de fin doit être postérieure à la date de début",
     "fileTooLarge": "La taille du fichier doit être inférieure à {{size}}MB",
-    "invalidFileType": "Veuillez sélectionner un fichier image valide"
+    "invalidFileType": "Veuillez sélectionner un fichier image valide",
+    "tryAgain": "Réessayer"
   },
   "fileUpload": {
     "clickToUpload": "Cliquez pour télécharger",

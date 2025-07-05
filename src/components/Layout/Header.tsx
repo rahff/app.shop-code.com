@@ -9,12 +9,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ onChooseAnotherShop, userProfile }) => {
-  const { t, i18n } = useTranslation('global');
-
-  const toggleLanguage = () => {
-    const newLang = i18n.language === 'en' ? 'fr' : 'en';
-    i18n.changeLanguage(newLang);
-  };
+  const { t } = useTranslation('global');
 
   return (
     <header className="bg-white border-b border-gray-200 px-4 py-4 sm:px-6 lg:px-8">
@@ -30,16 +25,6 @@ const Header: React.FC<HeaderProps> = ({ onChooseAnotherShop, userProfile }) => 
         </div>
         
         <div className="flex items-center space-x-4">
-          {/* Language Switcher */}
-          <button
-            onClick={toggleLanguage}
-            className="flex items-center space-x-2 px-3 py-2 text-[#A0A0A8] hover:text-[#6C63FF] rounded-lg hover:bg-gray-50 transition-all duration-200"
-            aria-label={`Switch to ${i18n.language === 'en' ? 'French' : 'English'}`}
-          >
-            <Globe className="w-4 h-4" />
-            <span className="text-sm font-medium uppercase">{i18n.language === 'en' ? '🇫🇷 FR' : '🇬🇧 EN'}</span>
-          </button>
-          
           {/* Choose Another Shop Button */}
           {onChooseAnotherShop && (
             <button
