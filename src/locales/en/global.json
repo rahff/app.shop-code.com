@@ -75,6 +75,22 @@
     "noPromosDescription": "Create your first promotional campaign to get started",
     "validPeriod": "Valid Period"
   },
+  "promoDetails": {
+    "title": "Promo Details",
+    "description": "Manage your promotional campaign",
+    "qrCodeImage": "QR Code Image",
+    "download": "Download",
+    "campaignLinks": "Campaign Links",
+    "campaignLinksDescription": "Copy these links to track traffic from different social media platforms",
+    "trackTraffic": "Track {{platform}} traffic",
+    "quickActions": "Quick Actions",
+    "viewAnalytics": "View Analytics",
+    "editPromo": "Edit Promo",
+    "linkCopied": "Link copied ✅",
+    "copyLink": "Copy {{platform}} campaign link",
+    "viewDetails": "View Details",
+    "goBack": "Go back to promo list"
+  },
   "createPromo": {
     "title": "Create New Promo",
     "description": "Design your promotional campaign to engage customers",

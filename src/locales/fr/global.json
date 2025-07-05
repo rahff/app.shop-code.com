@@ -75,6 +75,22 @@
     "noPromosDescription": "Créez votre première campagne promotionnelle pour commencer",
     "validPeriod": "Période de validité"
   },
+  "promoDetails": {
+    "title": "Détails de la Promo",
+    "description": "Gérez votre campagne promotionnelle",
+    "qrCodeImage": "Image du Code QR",
+    "download": "Télécharger",
+    "campaignLinks": "Liens de Campagne",
+    "campaignLinksDescription": "Copiez ces liens pour suivre le trafic des différentes plateformes de médias sociaux",
+    "trackTraffic": "Suivre le trafic {{platform}}",
+    "quickActions": "Actions Rapides",
+    "viewAnalytics": "Voir les Analyses",
+    "editPromo": "Modifier la Promo",
+    "linkCopied": "Lien copié ✅",
+    "copyLink": "Copier le lien de campagne {{platform}}",
+    "viewDetails": "Voir les Détails",
+    "goBack": "Retour à la liste des promos"
+  },
   "createPromo": {
     "title": "Créer une Nouvelle Promo",
     "description": "Concevez votre campagne promotionnelle pour engager les clients",
