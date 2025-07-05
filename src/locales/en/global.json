@@ -78,8 +78,6 @@
   "promoDetails": {
     "title": "Promo Details",
     "description": "Manage your promotional campaign",
-    "qrCodeImage": "QR Code Image",
-    "download": "Download",
     "campaignLinks": "Campaign Links",
     "campaignLinksDescription": "Copy these links to track traffic from different social media platforms",
     "trackTraffic": "Track {{platform}} traffic",

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Copy, Check, Calendar, ExternalLink, Download } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Calendar, ExternalLink } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { PromoData } from '../../core/CreatePromo/api/data';
 import { AppRoute } from '../../App';
@@ -89,12 +89,6 @@ const PromoDetailsPage: React.FC<PromoDetailsPageProps> = ({
     return `https://promo.shop-code.com?promo_id=${displayPromo.id}&shop_id=${displayPromo.shop_id}&traffic_origin=${trafficOrigin}`;
   };
 
-  const getQrCodeImageUrl = (): string => {
-    // Extract file extension from coupon_img or default to png
-    const fileExtension = displayPromo.coupon_img?.split('.').pop() || 'png';
-    return `https://promo-assets.shop-code.com/${displayPromo.id}.${fileExtension}`;
-  };
-
   const copyToClipboard = async (url: string, platform: string) => {
     try {
       await navigator.clipboard.writeText(url);
@@ -123,16 +117,6 @@ const PromoDetailsPage: React.FC<PromoDetailsPageProps> = ({
     } else if (redirectUser) {
       redirectUser('dashboard');
     }
-  };
-
-  const downloadQrCode = () => {
-    const qrCodeUrl = getQrCodeImageUrl();
-    const link = document.createElement('a');
-    link.href = qrCodeUrl;
-    link.download = `${displayPromo.name.replace(/\s+/g, '_')}_QR_Code.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   if (isLoading) {
@@ -179,13 +163,13 @@ const PromoDetailsPage: React.FC<PromoDetailsPageProps> = ({
           <button
             onClick={handleGoBack}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            aria-label="Go back to promo list"
+            aria-label={t('promoDetails.goBack')}
           >
             <ArrowLeft className="w-5 h-5 text-[#A0A0A8]" />
           </button>
           <div>
-            <h1 className="text-xl font-bold text-[#2B2C34] font-['Inter']">Promo Details</h1>
-            <p className="text-sm text-[#A0A0A8]">Manage your promotional campaign</p>
+            <h1 className="text-xl font-bold text-[#2B2C34] font-['Inter']">{t('promoDetails.title')}</h1>
+            <p className="text-sm text-[#A0A0A8]">{t('promoDetails.description')}</p>
           </div>
         </div>
       </header>
@@ -194,7 +178,7 @@ const PromoDetailsPage: React.FC<PromoDetailsPageProps> = ({
       {copiedLink && (
         <div className="fixed top-4 right-4 z-50 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center space-x-2 animate-in slide-in-from-top-2">
           <Check className="w-4 h-4" />
-          <span className="text-sm font-medium">Link copied ✅</span>
+          <span className="text-sm font-medium">{t('promoDetails.linkCopied')}</span>
         </div>
       )}
 
@@ -203,13 +187,14 @@ const PromoDetailsPage: React.FC<PromoDetailsPageProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Promo Details */}
           <div className="space-y-6">
-            {/* Promo Image Card */}
+            {/* Coupon Image Card */}
             <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-              <div className="aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-[#6C63FF] to-[#5845E9] flex items-center justify-center mb-4">
+              <h3 className="text-lg font-semibold text-[#2B2C34] font-['Inter'] mb-4">Coupon Image</h3>
+              <div className="aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-[#6C63FF] to-[#5845E9] flex items-center justify-center">
                 {displayPromo.coupon_img ? (
                   <img 
                     src={displayPromo.coupon_img} 
-                    alt={displayPromo.name}
+                    alt={`${displayPromo.name} coupon`}
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
@@ -221,17 +206,6 @@ const PromoDetailsPage: React.FC<PromoDetailsPageProps> = ({
                     {displayPromo.name.charAt(0)}
                   </span>
                 )}
-              </div>
-              
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-[#2B2C34] font-['Inter']">QR Code Image</h3>
-                <button
-                  onClick={downloadQrCode}
-                  className="flex items-center space-x-2 px-4 py-2 bg-[#6C63FF] text-white rounded-lg font-medium hover:bg-[#5845E9] transition-all duration-200"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Download</span>
-                </button>
               </div>
             </div>
 
@@ -259,10 +233,10 @@ const PromoDetailsPage: React.FC<PromoDetailsPageProps> = ({
             <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
               <div className="mb-6">
                 <h3 className="text-xl font-bold text-[#2B2C34] font-['Inter'] mb-2">
-                  Campaign Links
+                  {t('promoDetails.campaignLinks')}
                 </h3>
                 <p className="text-[#A0A0A8] text-sm">
-                  Copy these links to track traffic from different social media platforms
+                  {t('promoDetails.campaignLinksDescription')}
                 </p>
               </div>
 
@@ -286,7 +260,7 @@ const PromoDetailsPage: React.FC<PromoDetailsPageProps> = ({
                               {campaign.platform}
                             </h4>
                             <p className="text-xs text-[#A0A0A8]">
-                              Track {campaign.platform.toLowerCase()} traffic
+                              {t('promoDetails.trackTraffic', { platform: campaign.platform.toLowerCase() })}
                             </p>
                           </div>
                         </div>
@@ -298,7 +272,7 @@ const PromoDetailsPage: React.FC<PromoDetailsPageProps> = ({
                               ? 'bg-green-100 text-green-600'
                               : 'bg-gray-100 text-[#A0A0A8] hover:bg-[#6C63FF]/10 hover:text-[#6C63FF]'
                           }`}
-                          aria-label={`Copy ${campaign.platform} campaign link`}
+                          aria-label={t('promoDetails.copyLink', { platform: campaign.platform })}
                         >
                           {isCopied ? (
                             <Check className="w-4 h-4" />
@@ -322,17 +296,17 @@ const PromoDetailsPage: React.FC<PromoDetailsPageProps> = ({
             {/* Additional Actions */}
             <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
               <h3 className="text-lg font-semibold text-[#2B2C34] font-['Inter'] mb-4">
-                Quick Actions
+                {t('promoDetails.quickActions')}
               </h3>
               
               <div className="space-y-3">
                 <button className="w-full flex items-center justify-center space-x-2 px-4 py-3 border-2 border-[#6C63FF] text-[#6C63FF] rounded-lg font-medium hover:bg-[#6C63FF] hover:text-white transition-all duration-200">
                   <ExternalLink className="w-4 h-4" />
-                  <span>View Analytics</span>
+                  <span>{t('promoDetails.viewAnalytics')}</span>
                 </button>
                 
                 <button className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-gray-100 text-[#2B2C34] rounded-lg font-medium hover:bg-gray-200 transition-all duration-200">
-                  <span>Edit Promo</span>
+                  <span>{t('promoDetails.editPromo')}</span>
                 </button>
               </div>
             </div>
