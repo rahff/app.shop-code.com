@@ -49,7 +49,6 @@ const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser, o
             <QrCode className="w-12 h-12 text-[#6C63FF]" />
           </div>
           <h1 className="text-4xl font-bold text-white font-['Inter'] mb-2">Shop-Code</h1>
-          <h1 className="text-4xl font-bold text-white font-['Inter'] mb-2">{t('bootstrap.title')}</h1>
           <p className="text-white/80 text-lg">{t('bootstrap.subtitle')}</p>
         </div>
 
