@@ -46,7 +46,14 @@ const PromoListComponent: React.FC<PromoListComponentProps> = ({ redirectUser })
   };
 
   if (showDetails && selectedPromo) {
-    return <PromoDetailsPage promoData={selectedPromo} onBack={handleBackFromDetails} redirectUser={redirectUser} />;
+    return (
+      <PromoDetailsPage 
+        promoData={selectedPromo} 
+        isLoading={false}
+        onBack={handleBackFromDetails} 
+        redirectUser={redirectUser} 
+      />
+    );
   }
 
   return (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Copy, Check, Calendar, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Calendar, ExternalLink, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { PromoData } from '../../core/CreatePromo/api/data';
 import { AppRoute } from '../../App';
@@ -8,6 +8,7 @@ interface PromoDetailsPageProps {
   promoData?: PromoData;
   onBack?: () => void;
   redirectUser?: (destination: AppRoute) => void;
+  isLoading?: boolean;
 }
 
 interface CampaignLink {
@@ -20,11 +21,15 @@ interface CampaignLink {
 const PromoDetailsPage: React.FC<PromoDetailsPageProps> = ({
   promoData,
   onBack,
-  redirectUser
+  redirectUser,
+  isLoading: externalLoading = false
 }) => {
   const { t } = useTranslation('global');
   const [copiedLink, setCopiedLink] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(!promoData);
+  const [internalLoading, setInternalLoading] = useState(!promoData);
+  
+  // Use external loading state if provided, otherwise use internal state
+  const isLoading = externalLoading || internalLoading;
 
   // Mock data for demonstration if no promoData provided
   const mockPromoData: PromoData = {
@@ -76,13 +81,18 @@ const PromoDetailsPage: React.FC<PromoDetailsPageProps> = ({
 
   useEffect(() => {
     // Simulate loading if no promo data provided
-    if (!promoData) {
+    if (!promoData && !externalLoading) {
       const timer = setTimeout(() => {
-        setIsLoading(false);
+        setInternalLoading(false);
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [promoData]);
+    
+    // If promo data is provided, stop internal loading
+    if (promoData) {
+      setInternalLoading(false);
+    }
+  }, [promoData, externalLoading]);
 
   const generateCampaignUrl = (platform: string): string => {
     const trafficOrigin = platform.toLowerCase().replace(/\s+/g, '');
@@ -122,33 +132,35 @@ const PromoDetailsPage: React.FC<PromoDetailsPageProps> = ({
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        {/* Header Skeleton */}
+        {/* Header */}
         <header className="bg-white border-b border-gray-200 px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center space-x-4">
-            <div className="w-10 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+            <button
+              onClick={handleGoBack}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              aria-label={t('promoDetails.goBack')}
+            >
+              <ArrowLeft className="w-5 h-5 text-[#A0A0A8]" />
+            </button>
             <div>
-              <div className="w-32 h-6 bg-gray-200 rounded animate-pulse mb-2"></div>
-              <div className="w-24 h-4 bg-gray-200 rounded animate-pulse"></div>
+              <h1 className="text-xl font-bold text-[#2B2C34] font-['Inter']">{t('promoDetails.title')}</h1>
+              <p className="text-sm text-[#A0A0A8]">{t('promoDetails.description')}</p>
             </div>
           </div>
         </header>
 
-        {/* Content Skeleton */}
-        <main className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="space-y-6">
-              <div className="w-full h-64 bg-gray-200 rounded-xl animate-pulse"></div>
-              <div className="space-y-3">
-                <div className="w-3/4 h-6 bg-gray-200 rounded animate-pulse"></div>
-                <div className="w-full h-4 bg-gray-200 rounded animate-pulse"></div>
-                <div className="w-5/6 h-4 bg-gray-200 rounded animate-pulse"></div>
-              </div>
+        {/* Loading Content */}
+        <main className="flex-1 flex items-center justify-center py-16">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-gradient-to-br from-[#6C63FF] to-[#5845E9] rounded-xl flex items-center justify-center mx-auto mb-6">
+              <Loader2 className="w-8 h-8 text-white animate-spin" />
             </div>
-            <div className="space-y-4">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="w-full h-16 bg-gray-200 rounded-lg animate-pulse"></div>
-              ))}
-            </div>
+            <h2 className="text-xl font-semibold text-[#2B2C34] font-['Inter'] mb-2">
+              Loading promo details...
+            </h2>
+            <p className="text-[#A0A0A8]">
+              Please wait while we fetch your promotional campaign information
+            </p>
           </div>
         </main>
       </div>

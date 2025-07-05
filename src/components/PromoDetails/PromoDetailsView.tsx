@@ -73,6 +73,7 @@ const PromoDetailsView: React.FC<PromoDetailsViewProps> = ({ redirectUser }) => 
   return (
     <PromoDetailsPage
       promoData={promoData || undefined}
+      isLoading={isLoading}
       onBack={handleBack}
       redirectUser={redirectUser}
     />
