@@ -8,7 +8,6 @@ interface AccountUsage {
   nbr_of_promos: { current: number, limit: number };
 }
 
-type UserPlan = "Basic" | "Pro";
 
 interface Config {
   shop_service_endpoint: string;
