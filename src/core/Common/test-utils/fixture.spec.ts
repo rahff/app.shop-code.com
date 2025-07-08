@@ -136,7 +136,11 @@ export const fake_user_profile: UserProfile = {
     nbr_of_shop: {current: 2, limit: 2},
     nbr_of_staff_user: {current: 0, limit: 2}
   },
-  config: null
+  config: {
+    cognito_endpoint: "http://localhost:8080/cognito.endpoint",
+    shop_service_endpoint: "http://localhost:8080/shop.service",
+    user_service_endpoint: "http://localhost:8080/user.service",
+  }
 }
 
 export const fake_user_profile_signup: UserProfile = {

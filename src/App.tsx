@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import {useState, useCallback, useEffect} from 'react';
 import BootstrapComponent from './components/Bootstrap/BootstrapComponent';
 import RefreshSessionComponent from './components/RefreshSession/RefreshSessionComponent';
 import ShopListComponent from './components/ShopList/ShopListComponent';
@@ -27,7 +27,8 @@ import {
   MY_SHOPS_ROUTE,
   REFRESH_SESSION_ROUTE, SET_CONFIG_ROUTE
 } from "./core/Common/constants.ts";
-
+import {AuthProvider, AuthProviderProps} from 'react-oidc-context';
+import {cognitoConfig, RegionCode} from "./config.ts";
 
 export type AppRoute =
     typeof APP_ROUTE |
@@ -50,12 +51,17 @@ function App() {
   const [activeRoute, setActiveRoute] = useState('promos');
   const [scannedCoupon, setScannedCoupon] = useState<CouponData | null>(null);
   const [authentication, setAuthentication] = useState<Authentication | null>(null);
+  const [region, setRegion] = useState<RegionCode>("eu-west-3");
 
+
+  const onSelectedRegion = (region: RegionCode) => {
+    setRegion(region);
+  }
   // Check for region selection before proceeding to bootstrap
   const checkRegionAndProceed = useCallback(() => {
     const storedRegion = localStorage.getItem('region');
     if (!storedRegion) {
-      setAppRoute('region-picker');
+      setAppRoute(SET_CONFIG_ROUTE);
       return;
     }
     setAppRoute('bootstrap');
@@ -78,12 +84,12 @@ function App() {
   // Handle shop selection - enter main dashboard
   const handleShopSelect = useCallback((shop: ShopData) => {
     userSession.shop_selected(shop);
-    setAppRoute('dashboard');
+    setAppRoute(DASHBOARD_ROUTE);
   }, []);
 
   // Handle choose another shop - return to shop list
   const handleChooseAnotherShop = useCallback(() => {
-    setAppRoute('my-shops');
+    setAppRoute(MY_SHOPS_ROUTE);
   }, []);
 
   // Handle scan success - navigate to redeem coupon
@@ -107,42 +113,42 @@ function App() {
   // Handle redeem completion - return to dashboard
   const handleRedeemComplete = () => {
     setScannedCoupon(null);
-    setAppRoute('dashboard');
+    setAppRoute(DASHBOARD_ROUTE);
     setActiveRoute('promos');
   };
 
   // Handle redeem cancel - return to dashboard
   const handleRedeemCancel = () => {
     setScannedCoupon(null);
-    setAppRoute('dashboard');
+    setAppRoute(DASHBOARD_ROUTE);
     setActiveRoute('promos');
   };
 
   // Handle upgrade plan actions
   const handleUpgradeComplete = () => {
-    setAppRoute('dashboard');
+    setAppRoute(DASHBOARD_ROUTE);
     setActiveRoute('settings');
   };
 
   const handleUpgradeCancel = () => {
-    setAppRoute('dashboard');
+    setAppRoute(DASHBOARD_ROUTE);
     setActiveRoute('settings');
   };
 
   // Handle add cashier actions
   const handleAddCashierComplete = () => {
-    setAppRoute('dashboard');
+    setAppRoute(DASHBOARD_ROUTE);
     setActiveRoute('settings');
   };
 
   const handleAddCashierCancel = () => {
-    setAppRoute('dashboard');
+    setAppRoute(DASHBOARD_ROUTE);
     setActiveRoute('settings');
   };
 
   // Handle help support actions
   const handleHelpSupportCancel = () => {
-    setAppRoute('dashboard');
+    setAppRoute(DASHBOARD_ROUTE);
     setActiveRoute('settings');
   };
 
@@ -171,69 +177,73 @@ function App() {
     }
   };
 
+  const getCognitoConfig = (region: RegionCode): AuthProviderProps => {
+    return cognitoConfig[region];
+  }
+
   // Main app rendering logic
   switch (appRoute) {
-    case 'region-picker':
-      return <RegionPickerComponentPage redirectUser={redirectUser} />;
-    
-    case 'bootstrap':
-      return <BootstrapComponent redirectUser={redirectUser} onAuthentication={onAuthentication} />;
-    
-    case 'refresh-session':
+
+    case APP_ROUTE:
+      return <AuthProvider {...getCognitoConfig(region)}>
+                <BootstrapComponent redirectUser={redirectUser} onAuthentication={onAuthentication} />;
+             </AuthProvider>
+
+    case REFRESH_SESSION_ROUTE:
       return <RefreshSessionComponent redirectUser={redirectUser} onAuthentication={onAuthentication} />;
-    
-    case 'my-shops':
+
+    case MY_SHOPS_ROUTE:
       return <ShopListComponent onShopSelect={handleShopSelect} userId={authentication!.user_id} redirectUser={redirectUser} />;
-    
-    case 'create-promo':
+
+    case CREATE_PROMO_ROUTE:
       return <CreatePromoPage redirectUser={redirectUser} />;
-    
-    case 'create-shop':
+
+    case CREATE_SHOP_ROUTE:
       return <CreateShopPage redirectUser={redirectUser} />;
-    
+
     case 'redeem-coupon':
       return (
-        <RedeemCouponView 
+        <RedeemCouponView
           couponData={scannedCoupon!}
           onComplete={handleRedeemComplete}
           onCancel={handleRedeemCancel}
         />
       );
-    
+
     case 'upgrade-plan':
       return (
-        <UpgradePlanView 
+        <UpgradePlanView
           onUpgrade={handleUpgradeComplete}
           onCancel={handleUpgradeCancel}
         />
       );
-    
+
     case 'add-cashier':
       return (
-        <AddCashierView 
+        <AddCashierView
           onComplete={handleAddCashierComplete}
           onCancel={handleAddCashierCancel}
         />
       );
-    
+
     case 'help-support':
       return (
-        <HelpSupportView 
+        <HelpSupportView
           onCancel={handleHelpSupportCancel}
         />
       );
-    
+
     case SET_CONFIG_ROUTE:
-      return <RegionPickerComponentPage />;
-    
+      return <RegionPickerComponentPage redirectUser={redirectUser} onSelectedRegion={onSelectedRegion} />;
+
     case ERROR_PAGE_ROUTE:
       return (
         <ErrorPage
           redirectUser={redirectUser}
         />
       );
-    
-    case 'dashboard':
+
+    case DASHBOARD_ROUTE:
       return (
         <div className="flex flex-col h-screen bg-gray-50">
           <Header onChooseAnotherShop={handleChooseAnotherShop} userProfile={userSession.its_profile()!} />
@@ -243,7 +253,7 @@ function App() {
           <BottomNavigation activeRoute={activeRoute} onRouteChange={setActiveRoute} />
         </div>
       );
-    
+
     default:
       // Fallback to region check
       checkRegionAndProceed();

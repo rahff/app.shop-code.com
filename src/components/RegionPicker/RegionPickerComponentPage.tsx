@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Globe, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { AppRoute } from '../../App';
+import {RegionCode} from "../../config.ts";
 
 interface Region {
   code: string;
@@ -11,7 +12,8 @@ interface Region {
 }
 
 interface RegionPickerComponentPageProps {
-  redirectUser?: (destination: AppRoute) => void;
+  redirectUser: (destination: AppRoute) => void;
+  onSelectedRegion: (region: RegionCode) => void;
 }
 const regions: Region[] = [
   {
