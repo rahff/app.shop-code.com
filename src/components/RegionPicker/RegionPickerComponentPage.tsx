@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Globe, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { AppRoute } from '../../App';
 
 interface Region {
   code: string;
@@ -36,19 +37,31 @@ const regions: Region[] = [
   }
 ];
 
-const RegionPickerComponentPage: React.FC = () => {
+interface RegionPickerComponentPageProps {
+  redirectUser?: (destination: AppRoute) => void;
+}
+
+const RegionPickerComponentPage: React.FC<RegionPickerComponentPageProps> = ({ redirectUser }) => {
   const { t } = useTranslation('global');
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
 
   const handleRegionSelect = (regionCode: string) => {
     setSelectedRegion(regionCode);
-    console.log("Selected region:", regionCode);
   };
 
   const handleContinue = () => {
     if (selectedRegion) {
+      // Store the selected region in localStorage
+      localStorage.setItem('region', selectedRegion);
+      
+      // Log for debugging
       const regionName = t(`regionPicker.regions.${selectedRegion}.name`);
-      console.log(`Proceeding with region: ${regionName} (${selectedRegion})`);
+      console.log(`Region selected and stored: ${regionName} (${selectedRegion})`);
+      
+      // Redirect to bootstrap to continue the app flow
+      if (redirectUser) {
+        redirectUser('bootstrap');
+      }
     }
   };
 
