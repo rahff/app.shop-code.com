@@ -6,6 +6,7 @@ import {PromoListState} from "../../core/ListPromos/api/PromoList.ts";
 import {promoListFactory} from "../../factory/promoListFactory.ts";
 import {AppRoute} from "../../App.tsx";
 import {CREATE_PROMO_ROUTE} from "../../core/Common/constants.ts";
+import PromoDetailsPage from '../PromoDetails/PromoDetailsPage';
 
 
 const promoList = promoListFactory();
@@ -16,6 +17,8 @@ interface PromoListComponentProps {
 
 const PromoListComponent: React.FC<PromoListComponentProps> = ({ redirectUser }) => {
   const { t } = useTranslation('global');
+  const [selectedPromo, setSelectedPromo] = useState<PromoData | null>(null);
+  const [showDetails, setShowDetails] = useState(false);
   const [state, setState] = useState<PromoListState>(promoList.state);
   
   useEffect(() => {
@@ -31,6 +34,27 @@ const PromoListComponent: React.FC<PromoListComponentProps> = ({ redirectUser })
   const handleCreatePromo = () => {
     redirectUser(CREATE_PROMO_ROUTE);
   };
+
+  const handleViewPromoDetails = (promo: PromoData) => {
+    setSelectedPromo(promo);
+    setShowDetails(true);
+  };
+
+  const handleBackFromDetails = () => {
+    setShowDetails(false);
+    setSelectedPromo(null);
+  };
+
+  if (showDetails && selectedPromo) {
+    return (
+      <PromoDetailsPage 
+        promoData={selectedPromo} 
+        isLoading={false}
+        onBack={handleBackFromDetails} 
+        redirectUser={redirectUser} 
+      />
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -49,7 +73,7 @@ const PromoListComponent: React.FC<PromoListComponentProps> = ({ redirectUser })
 
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
         {state.promos.map((promo) => (
-          <PromoCard key={promo.id} promo={promo} />
+          <PromoCard key={promo.id} promo={promo} onViewDetails={handleViewPromoDetails} />
         ))}
       </div>
 

@@ -1,19 +1,24 @@
 import React from 'react';
-import { Calendar } from 'lucide-react';
+import { Calendar, ExternalLink } from 'lucide-react';
 import {PromoData} from "../../core/CreatePromo/api/data.ts";
 
 
 interface PromoCardProps {
   promo: PromoData;
+  onViewDetails?: (promo: PromoData) => void;
 }
 
-const PromoCard: React.FC<PromoCardProps> = ({ promo }) => {
+const PromoCard: React.FC<PromoCardProps> = ({ promo, onViewDetails }) => {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric'
     });
+  };
+
+  const handleViewDetails = () => {
+    onViewDetails?.(promo);
   };
 
   return (
@@ -29,6 +34,16 @@ const PromoCard: React.FC<PromoCardProps> = ({ promo }) => {
         <span className="font-medium text-[#6C63FF] truncate">
           {formatDate(promo.validity_date_start)} - {formatDate(promo.validity_date_end)}
         </span>
+      </div>
+      
+      <div className="mt-4 pt-4 border-t border-gray-100">
+        <button
+          onClick={handleViewDetails}
+          className="flex items-center space-x-2 text-[#6C63FF] hover:text-[#5845E9] font-medium text-sm transition-colors"
+        >
+          <ExternalLink className="w-4 h-4" />
+          <span>View Details</span>
+        </button>
       </div>
     </div>
   );

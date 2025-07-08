@@ -51,7 +51,7 @@
         "description": "Best if you are in Western Europe"
       },
       "eu-central-1": {
-        "name": "Frankfurt", 
+        "name": "Frankfurt",
         "description": "Best if you are in Central Europe"
       },
       "us-east-1": {
@@ -74,6 +74,19 @@
     "noPromos": "No promos yet",
     "noPromosDescription": "Create your first promotional campaign to get started",
     "validPeriod": "Valid Period"
+  },
+  "promoDetails": {
+    "title": "Promo Details",
+    "description": "Manage your promotional campaign",
+    "campaignLinks": "Campaign Links",
+    "campaignLinksDescription": "Copy these links to track traffic from different social media platforms",
+    "quickActions": "Quick Actions",
+    "viewAnalytics": "View Analytics",
+    "editPromo": "Edit Promo",
+    "linkCopied": "Link copied – paste into your ad ✅",
+    "copyLink": "Copy {{platform}} campaign link",
+    "viewDetails": "View Details",
+    "goBack": "Go back to promo list"
   },
   "createPromo": {
     "title": "Create New Promo",
@@ -131,8 +144,8 @@
   "settings": {
     "title": "Settings",
     "description": "Manage your account preferences and shop configuration",
-    "upgradePlan": "Upgrade Plan",
-    "upgradePlanDescription": "Unlock premium features and increase limits",
+    "upgradeplan": "Upgrade Plan",
+    "upgradeplanDescription": "Unlock premium features and increase limits",
     "addcashier": "Add Cashier",
     "addcashierDescription": "Create cashier accounts for your staff",
     "privacy&security": "Privacy & Security",
