@@ -25,7 +25,7 @@ import {
   DASHBOARD_ROUTE,
   ERROR_PAGE_ROUTE,
   MY_SHOPS_ROUTE,
-  REFRESH_SESSION_ROUTE
+  REFRESH_SESSION_ROUTE, SET_CONFIG_ROUTE
 } from "./core/Common/constants.ts";
 
 
@@ -37,6 +37,7 @@ export type AppRoute =
     typeof ERROR_PAGE_ROUTE |
     typeof CREATE_PROMO_ROUTE |
     typeof CREATE_SHOP_ROUTE |
+    typeof SET_CONFIG_ROUTE |
     'region-picker' |
     'upload-error' |
     'redeem-coupon' |
@@ -204,7 +205,7 @@ function App() {
         />
       );
     
-    case 'region-picker':
+    case SET_CONFIG_ROUTE:
       return <RegionPickerComponentPage />;
     
     case ERROR_PAGE_ROUTE:

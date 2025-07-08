@@ -36,7 +36,6 @@ export class UserSession {
     if(this.is_authenticated()){
       this.user_profile = await firstValueFrom(this.user_profile_api.get_user_profile(this.authentication!.user_id));
       if(!this.user_profile.config) return {path: SET_CONFIG_ROUTE};
-      this.selected_shop = this.local_storage_api.get_item(SELECTED_SHOP_KEY);
       return {path: MY_SHOPS_ROUTE};
     }else return {path: LOGIN_ROUTE};
   }
