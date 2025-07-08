@@ -51,6 +51,21 @@ function App() {
   const [scannedCoupon, setScannedCoupon] = useState<CouponData | null>(null);
   const [authentication, setAuthentication] = useState<Authentication | null>(null);
 
+  // Check for region selection before proceeding to bootstrap
+  const checkRegionAndProceed = useCallback(() => {
+    const storedRegion = localStorage.getItem('region');
+    if (!storedRegion) {
+      setAppRoute('region-picker');
+      return;
+    }
+    setAppRoute('bootstrap');
+  }, []);
+
+  // Initialize app with region check
+  useEffect(() => {
+    checkRegionAndProceed();
+  }, [checkRegionAndProceed]);
+
   // Handle bootstrap completion - determines initial app destination
   const redirectUser = useCallback((destination: AppRoute) => {
     setAppRoute(destination);
@@ -158,6 +173,9 @@ function App() {
 
   // Main app rendering logic
   switch (appRoute) {
+    case 'region-picker':
+      return <RegionPickerComponentPage redirectUser={redirectUser} />;
+    
     case 'bootstrap':
       return <BootstrapComponent redirectUser={redirectUser} onAuthentication={onAuthentication} />;
     
@@ -227,7 +245,9 @@ function App() {
       );
     
     default:
-      return <BootstrapComponent redirectUser={redirectUser} onAuthentication={onAuthentication} />;
+      // Fallback to region check
+      checkRegionAndProceed();
+      return null;
   }
 }
 

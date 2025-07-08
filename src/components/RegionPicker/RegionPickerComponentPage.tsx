@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Globe, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { AppRoute } from '../../App';
 
 interface Region {
   code: string;
@@ -9,6 +10,9 @@ interface Region {
   description: string;
 }
 
+interface RegionPickerComponentPageProps {
+  redirectUser?: (destination: AppRoute) => void;
+}
 const regions: Region[] = [
   {
     code: 'eu-west-3',
@@ -36,7 +40,7 @@ const regions: Region[] = [
   }
 ];
 
-const RegionPickerComponentPage: React.FC = () => {
+const RegionPickerComponentPage: React.FC<RegionPickerComponentPageProps> = ({ redirectUser }) => {
   const { t } = useTranslation('global');
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
 
@@ -47,8 +51,19 @@ const RegionPickerComponentPage: React.FC = () => {
 
   const handleContinue = () => {
     if (selectedRegion) {
+      // Store the selected region in localStorage
+      localStorage.setItem('region', selectedRegion);
+      
       const regionName = t(`regionPicker.regions.${selectedRegion}.name`);
-      console.log(`Proceeding with region: ${regionName} (${selectedRegion})`);
+      console.log(`Region saved: ${regionName} (${selectedRegion})`);
+      
+      // Redirect to bootstrap to continue the app flow
+      if (redirectUser) {
+        redirectUser('bootstrap');
+      } else {
+        // Fallback for when used in SET_CONFIG_ROUTE context
+        window.location.reload();
+      }
     }
   };
 
