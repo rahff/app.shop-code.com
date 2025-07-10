@@ -27,8 +27,9 @@ import {
   MY_SHOPS_ROUTE,
   REFRESH_SESSION_ROUTE, SET_CONFIG_ROUTE
 } from "./core/Common/constants.ts";
-import {AuthProvider, AuthProviderProps} from 'react-oidc-context';
-import {cognitoConfig, RegionCode} from "./config.ts";
+import {AuthProvider} from 'react-oidc-context';
+import {Config} from "./config.ts";
+import {fetchConfig} from "./services/external/fetchConfig.ts";
 
 export type AppRoute =
     typeof APP_ROUTE |
@@ -51,26 +52,40 @@ function App() {
   const [activeRoute, setActiveRoute] = useState('promos');
   const [scannedCoupon, setScannedCoupon] = useState<CouponData | null>(null);
   const [authentication, setAuthentication] = useState<Authentication | null>(null);
-  const [region, setRegion] = useState<RegionCode>("eu-west-3");
+  const [config, setConfig] = useState<Config >({
+    "cognito": {
+      "authority": "https://cognito-idp.eu-west-3.amazonaws.com/eu-west-3_4sYZgkGwV",
+      "client_id": "672adatjjqeolfdkpljt49g4qt",
+      "redirect_uri": "http://localhost:5173/",
+      "response_type": "code",
+      "scope": "email openid profile",
+      "automaticSilentRenew": true
+    },
+    "apiEndpoints": {
+      "userSide": "",
+      "shopPromo": ''
+    }
+  });
 
 
-  const onSelectedRegion = (region: RegionCode) => {
-    setRegion(region);
+  const onConfigReceived = (config: Config) => {
+    localStorage.setItem("config", JSON.stringify(config));
+    setConfig(config);
   }
   // Check for region selection before proceeding to bootstrap
-  const checkRegionAndProceed = useCallback(() => {
-    const storedRegion = localStorage.getItem('region');
-    if (!storedRegion) {
+  const checkConfig = useCallback(() => {
+    const config = localStorage.getItem('config');
+    if (!config) {
       setAppRoute(SET_CONFIG_ROUTE);
       return;
     }
-    setAppRoute('bootstrap');
+    setAppRoute(APP_ROUTE);
   }, []);
 
   // Initialize app with region check
   useEffect(() => {
-    checkRegionAndProceed();
-  }, [checkRegionAndProceed]);
+    checkConfig();
+  }, [checkConfig]);
 
   // Handle bootstrap completion - determines initial app destination
   const redirectUser = useCallback((destination: AppRoute) => {
@@ -177,15 +192,11 @@ function App() {
     }
   };
 
-  const getCognitoConfig = (region: RegionCode): AuthProviderProps => {
-    return cognitoConfig[region];
-  }
-
   // Main app rendering logic
   switch (appRoute) {
 
     case APP_ROUTE:
-      return <AuthProvider {...getCognitoConfig(region)}>
+      return <AuthProvider {...config!.cognito}>
                 <BootstrapComponent redirectUser={redirectUser} onAuthentication={onAuthentication} />;
              </AuthProvider>
 
@@ -234,7 +245,9 @@ function App() {
       );
 
     case SET_CONFIG_ROUTE:
-      return <RegionPickerComponentPage redirectUser={redirectUser} onSelectedRegion={onSelectedRegion} />;
+      return <RegionPickerComponentPage redirectUser={redirectUser}
+                                        onConfigReceived={onConfigReceived}
+                                        fetchConfig={fetchConfig} />;
 
     case ERROR_PAGE_ROUTE:
       return (
@@ -256,7 +269,7 @@ function App() {
 
     default:
       // Fallback to region check
-      checkRegionAndProceed();
+      checkConfig();
       return null;
   }
 }

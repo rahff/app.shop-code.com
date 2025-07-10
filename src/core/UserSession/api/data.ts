@@ -9,11 +9,7 @@ interface AccountUsage {
 }
 
 
-interface Config {
-  shop_service_endpoint: string;
-  user_service_endpoint: string;
-  cognito_endpoint: string;
-}
+
 
 export interface UserProfile {
   account_ref: string;
@@ -21,5 +17,4 @@ export interface UserProfile {
   user_name: string;
   region: string | null;
   account_usage: AccountUsage;
-  config: Config | null;
 }

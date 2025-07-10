@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Globe, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { AppRoute } from '../../App';
-import {RegionCode} from "../../config.ts";
+import {Config, RegionCode} from "../../config.ts";
 
 interface Region {
-  code: string;
+  code: RegionCode;
   name: string;
   flag: string;
   description: string;
@@ -13,7 +13,9 @@ interface Region {
 
 interface RegionPickerComponentPageProps {
   redirectUser: (destination: AppRoute) => void;
-  onSelectedRegion: (region: RegionCode) => void;
+  onConfigReceived: (config: Config) => void;
+  fetchConfig: (region: RegionCode) => Promise<Config>;
+
 }
 const regions: Region[] = [
   {
@@ -42,30 +44,24 @@ const regions: Region[] = [
   }
 ];
 
-const RegionPickerComponentPage: React.FC<RegionPickerComponentPageProps> = ({ redirectUser }) => {
+const RegionPickerComponentPage: React.FC<RegionPickerComponentPageProps> = ({ redirectUser, onConfigReceived, fetchConfig }) => {
   const { t } = useTranslation('global');
-  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+  const [selectedRegion, setSelectedRegion] = useState<RegionCode | null>(null);
 
-  const handleRegionSelect = (regionCode: string) => {
+  const handleRegionSelect = (regionCode: RegionCode) => {
     setSelectedRegion(regionCode);
     console.log("Selected region:", regionCode);
   };
 
   const handleContinue = () => {
     if (selectedRegion) {
-      // Store the selected region in localStorage
       localStorage.setItem('region', selectedRegion);
-      
+      fetchConfig(selectedRegion).then(config => {
+        onConfigReceived(config);
+        redirectUser('bootstrap');
+      })
       const regionName = t(`regionPicker.regions.${selectedRegion}.name`);
       console.log(`Region saved: ${regionName} (${selectedRegion})`);
-      
-      // Redirect to bootstrap to continue the app flow
-      if (redirectUser) {
-        redirectUser('bootstrap');
-      } else {
-        // Fallback for when used in SET_CONFIG_ROUTE context
-        window.location.reload();
-      }
     }
   };
 
