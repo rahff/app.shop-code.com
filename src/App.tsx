@@ -48,7 +48,7 @@ export type AppRoute =
     'help-support';
 
 function App() {
-  const [appRoute, setAppRoute] = useState<AppRoute>('bootstrap');
+  const [appRoute, setAppRoute] = useState<AppRoute>(SET_CONFIG_ROUTE);
   const [activeRoute, setActiveRoute] = useState('promos');
   const [scannedCoupon, setScannedCoupon] = useState<CouponData | null>(null);
   const [authentication, setAuthentication] = useState<Authentication | null>(null);
