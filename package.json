@@ -23,6 +23,7 @@
     "react-i18next": "^15.6.0",
     "react-oidc-context": "^3.3.0",
     "react-router-dom": "^7.6.3",
+    "react-spinners": "^0.17.0",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {

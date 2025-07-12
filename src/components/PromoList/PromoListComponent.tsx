@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Plus} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import PromoCard from './PromoCard';
+import Loader from '../Common/Loader';
 import {PromoListState} from "../../core/ListPromos/api/PromoList.ts";
 import {AppRoute} from "../../App.tsx";
 import {CREATE_PROMO_ROUTE} from "../../core/Common/constants.ts";
@@ -22,10 +23,13 @@ const PromoListComponent: React.FC<PromoListComponentProps> = ({ redirectUser, g
   const [selectedPromo, setSelectedPromo] = useState<PromoData | null>(null);
   const [showDetails, setShowDetails] = useState(false);
   const [state, setState] = useState<PromoListState>(promo_list_initial_state);
+  const [isLoadingPromo, setIsLoadingPromo] = useState(true);
 
   useEffect(() => {
+    setIsLoadingPromo(true);
     getPromoList().then((state) => {
       setState(state);
+      setIsLoadingPromo(false);
     })
   },[getPromoList])
 
@@ -54,6 +58,18 @@ const PromoListComponent: React.FC<PromoListComponentProps> = ({ redirectUser, g
     );
   }
 
+  // Show loader while fetching promos
+  if (isLoadingPromo) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8">
+        <div className="mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#2B2C34] font-['Inter'] mb-2">{t('promos.title')}</h1>
+          <p className="text-[#A0A0A8] text-sm sm:text-base">{t('promos.description')}</p>
+        </div>
+        <Loader aria-label="Loading promotional campaigns..." />
+      </div>
+    );
+  }
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <div className="mb-6">

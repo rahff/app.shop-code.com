@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { Plus, MapPin, Calendar, ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import Loader from '../Common/Loader';
 import {ShopData} from "../../core/CreateShop/api/data.ts";
 import {ShopListState} from "../../core/ListShops/api/ShopList.ts";
 import {AppRoute} from "../../App.tsx";
@@ -18,9 +19,13 @@ interface ShopListComponentProps {
 const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect, redirectUser, getShopList }) => {
   const { t } = useTranslation('global');
   const [state, setState] = useState<ShopListState>(shop_list_initial_state);
+  const [isLoadingShop, setIsLoadingShop] = useState(true);
+
   useEffect(() => {
+     setIsLoadingShop(true);
      getShopList().then((state) => {
        setState(state);
+       setIsLoadingShop(false);
      })
   }, [getShopList])
 
@@ -35,6 +40,37 @@ const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect, red
     redirectUser(CREATE_SHOP_ROUTE);
   };
 
+  // Show loader while fetching shops
+  if (isLoadingShop) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <header className="bg-white border-b border-gray-200 px-4 py-6 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-[#2B2C34] font-['Inter']">{t('shops.title')}</h1>
+                <p className="text-[#A0A0A8] mt-1">{t('shops.description')}</p>
+              </div>
+              <button
+                onClick={handleCreateShop}
+                className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-6 py-3 rounded-xl font-medium flex items-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl"
+              >
+                <Plus className="w-5 h-5" />
+                <span className="hidden sm:inline">{t('shops.createNew')}</span>
+                <span className="sm:hidden">{t('common.create')}</span>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {/* Loading Content */}
+        <main className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+          <Loader aria-label="Loading shops..." />
+        </main>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
