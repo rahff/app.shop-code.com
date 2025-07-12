@@ -1,5 +1,5 @@
 import React from 'react';
-import { ClipLoader } from 'react-spinners';
+import { Loader2 } from 'lucide-react';
 
 interface LoaderProps {
   'aria-label'?: string;
@@ -21,8 +21,9 @@ const Loader: React.FC<LoaderProps> = ({
       aria-label={ariaLabel}
     >
       <div className="flex flex-col items-center space-y-4">
-        <ClipLoader
-          color={color}
+        <Loader2
+          className="animate-spin"
+          style={{ color }}
           size={size}
           aria-hidden="true"
         />
