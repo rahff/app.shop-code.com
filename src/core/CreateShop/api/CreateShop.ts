@@ -13,7 +13,8 @@ import {
   UPGRADE_PLAN_ROUTE
 } from '../../Common/constants';
 import {LocalStorageApi} from '../../Common/spi/LocalStorageApi';
-import {Authentication} from '../../AuthenticationProvider/api/data';
+import {Authentication} from "../../Model/Authentication.ts";
+
 
 
 

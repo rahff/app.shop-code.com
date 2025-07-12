@@ -1,33 +1,32 @@
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import CreateShopForm from './CreateShopForm';
-import { ShopFormData } from '../../core/CreateShop/api/data';
-import {createShopFactory} from "../../factory/createShopFactory.ts";
+import {ShopData, ShopFormData} from '../../core/CreateShop/api/data';
 import {AppRoute} from "../../App.tsx";
+import {DASHBOARD_ROUTE, MY_SHOPS_ROUTE} from "../../core/Common/constants.ts";
 
 
 interface CreateShopPageProps {
   redirectUser: (destination: AppRoute, error?: string) => void;
+  createShop: (shop: ShopFormData) => Promise<ShopData>;
 }
 
-const createShop = createShopFactory();
 
-const CreateShopPage: React.FC<CreateShopPageProps> = ({redirectUser}) => {
+const CreateShopPage: React.FC<CreateShopPageProps> = ({redirectUser, createShop}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (formData: ShopFormData) => {
     setIsLoading(true);
     setError(null);
-    createShop.create(formData).subscribe(redirection => {
-      setIsLoading(false);
-      redirectUser(redirection.path as AppRoute);
-    })
+    createShop(formData).then(() => {
+      redirectUser(MY_SHOPS_ROUTE);
+    });
   };
 
   const navigateToDashboard = () => {
     // Navigate to dashboard using redirectUser
-    redirectUser('dashboard');
+    redirectUser(DASHBOARD_ROUTE);
   };
 
   const handleGoBack = () => {

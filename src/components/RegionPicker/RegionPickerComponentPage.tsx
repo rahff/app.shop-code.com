@@ -3,6 +3,7 @@ import { Globe, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { AppRoute } from '../../App';
 import {Config, RegionCode} from "../../config.ts";
+import {APP_ROUTE} from "../../core/Common/constants.ts";
 
 interface Region {
   code: RegionCode;
@@ -58,7 +59,7 @@ const RegionPickerComponentPage: React.FC<RegionPickerComponentPageProps> = ({ r
       localStorage.setItem('region', selectedRegion);
       fetchConfig(selectedRegion).then(config => {
         onConfigReceived(config);
-        redirectUser('bootstrap');
+        redirectUser(APP_ROUTE);
       })
       const regionName = t(`regionPicker.regions.${selectedRegion}.name`);
       console.log(`Region saved: ${regionName} (${selectedRegion})`);
@@ -73,11 +74,11 @@ const RegionPickerComponentPage: React.FC<RegionPickerComponentPageProps> = ({ r
           <div className="w-16 h-16 bg-gradient-to-br from-[#6C63FF] to-[#5845E9] rounded-xl flex items-center justify-center mx-auto mb-6">
             <Globe className="w-8 h-8 text-white" />
           </div>
-          
+
           <h1 className="text-3xl sm:text-4xl font-bold text-[#2B2C34] font-['Inter'] mb-6">
             {t('regionPicker.title')}
           </h1>
-          
+
           <p className="text-[#A0A0A8] text-lg max-w-3xl mx-auto leading-relaxed">
             {t('regionPicker.description')}
           </p>

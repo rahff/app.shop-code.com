@@ -23,6 +23,12 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
+      '@typescript-eslint/no-explicit-any': [
+        'error',
+        {
+          ignoreCatch: true, // ✅ allow `any` in catch clauses only
+        },
+      ],
     },
   }
 );

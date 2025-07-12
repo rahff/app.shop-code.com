@@ -22,6 +22,7 @@ const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser, o
   const auth = useAuth();
   useEffect(() => {
     if(auth.isLoading){
+      console.log("is loading", auth)
       setLoadingText(t('auth.loading'));
       return;
     }
@@ -61,12 +62,12 @@ const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser, o
               <div className="w-3 h-3 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
             </div>
           </div>
-          
+
           <p className="text-white/90 text-lg font-medium">{loadingText}</p>
-          
+
           {/* Progress Bar */}
           <div className="w-64 h-2 bg-white/20 rounded-full mx-auto overflow-hidden">
-            <div className="h-full bg-white rounded-full animate-pulse" style={{ 
+            <div className="h-full bg-white rounded-full animate-pulse" style={{
               animation: 'progress 2s ease-in-out infinite',
               width: '60%'
             }}></div>

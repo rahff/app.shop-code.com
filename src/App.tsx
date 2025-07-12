@@ -30,6 +30,9 @@ import {
 import {AuthProvider} from 'react-oidc-context';
 import {Config} from "./config.ts";
 import {fetchConfig} from "./services/external/fetchConfig.ts";
+import {getPromoList} from "./services/external/getPromoList.ts";
+import {getShopList} from "./services/external/getShopList.ts";
+import {createShop} from "./services/external/createShop.ts";
 
 export type AppRoute =
     typeof APP_ROUTE |
@@ -47,39 +50,43 @@ export type AppRoute =
     'add-cashier' |
     'help-support';
 
+const nullConfig = {
+  "cognito": {
+    "authority": "",
+    "client_id": "",
+    "redirect_uri": "",
+    "response_type": "code",
+    "scope": "email openid profile",
+    "automaticSilentRenew": true
+  },
+  "apiEndpoints": {
+    "userSide": "",
+    "shopPromo": ""
+  }
+} as const;
+
 function App() {
   const [appRoute, setAppRoute] = useState<AppRoute>(SET_CONFIG_ROUTE);
   const [activeRoute, setActiveRoute] = useState('promos');
   const [scannedCoupon, setScannedCoupon] = useState<CouponData | null>(null);
   const [authentication, setAuthentication] = useState<Authentication | null>(null);
-  const [config, setConfig] = useState<Config >({
-    "cognito": {
-      "authority": "https://cognito-idp.eu-west-3.amazonaws.com/eu-west-3_4sYZgkGwV",
-      "client_id": "672adatjjqeolfdkpljt49g4qt",
-      "redirect_uri": "http://localhost:5173/",
-      "response_type": "code",
-      "scope": "email openid profile",
-      "automaticSilentRenew": true
-    },
-    "apiEndpoints": {
-      "userSide": "",
-      "shopPromo": ''
-    }
-  });
+  const [config, setConfig] = useState<Config>(nullConfig);
 
 
-  const onConfigReceived = (config: Config) => {
-    localStorage.setItem("config", JSON.stringify(config));
-    setConfig(config);
+  const onConfigReceived = (appConfig: Config) => {
+    localStorage.setItem("config", JSON.stringify(appConfig));
+    setConfig(appConfig);
   }
   // Check for region selection before proceeding to bootstrap
   const checkConfig = useCallback(() => {
-    const config = localStorage.getItem('config');
-    if (!config) {
+    const localConfig = localStorage.getItem('config');
+    if (localConfig === null) {
       setAppRoute(SET_CONFIG_ROUTE);
       return;
+    }else {
+      setConfig(JSON.parse(localConfig))
+      setAppRoute(APP_ROUTE);
     }
-    setAppRoute(APP_ROUTE);
   }, []);
 
   // Initialize app with region check
@@ -171,7 +178,7 @@ function App() {
   const renderDashboardContent = () => {
     switch (activeRoute) {
       case 'promos':
-        return <PromoListComponent redirectUser={redirectUser} />;
+        return <PromoListComponent redirectUser={redirectUser} getPromoList={ getPromoList(config.apiEndpoints.shopPromo, userSession.its_selected_shop().id, authentication!.token)} />;
       case 'statistics':
         return <Statistics />;
       case 'scan':
@@ -188,7 +195,7 @@ function App() {
       case 'settings':
         return <Settings redirectUser={redirectUser} account_ref={authentication!.account_ref!} />;
       default:
-        return <PromoListComponent redirectUser={redirectUser} />;
+        return <PromoListComponent redirectUser={redirectUser} getPromoList={ getPromoList(config.apiEndpoints.shopPromo, userSession.its_selected_shop().id, authentication!.token)} />;
     }
   };
 
@@ -196,7 +203,7 @@ function App() {
   switch (appRoute) {
 
     case APP_ROUTE:
-      return <AuthProvider {...config!.cognito}>
+      return <AuthProvider {...config.cognito}>
                 <BootstrapComponent redirectUser={redirectUser} onAuthentication={onAuthentication} />;
              </AuthProvider>
 
@@ -204,13 +211,17 @@ function App() {
       return <RefreshSessionComponent redirectUser={redirectUser} onAuthentication={onAuthentication} />;
 
     case MY_SHOPS_ROUTE:
-      return <ShopListComponent onShopSelect={handleShopSelect} userId={authentication!.user_id} redirectUser={redirectUser} />;
+      return <ShopListComponent
+        onShopSelect={handleShopSelect}
+        getShopList={getShopList(config.apiEndpoints.shopPromo, authentication!.account_ref!)}
+        redirectUser={redirectUser}
+      />;
 
     case CREATE_PROMO_ROUTE:
       return <CreatePromoPage redirectUser={redirectUser} />;
 
     case CREATE_SHOP_ROUTE:
-      return <CreateShopPage redirectUser={redirectUser} />;
+      return <CreateShopPage redirectUser={redirectUser} createShop={createShop(config.apiEndpoints.shopPromo, authentication!.account_ref!, authentication!.token)} />;
 
     case 'redeem-coupon':
       return (

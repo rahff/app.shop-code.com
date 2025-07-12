@@ -2,32 +2,27 @@ import React, {useEffect, useState} from 'react';
 import { Plus, MapPin, Calendar, ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import {ShopData} from "../../core/CreateShop/api/data.ts";
-import {shopListFactory} from "../../factory/shopListFactory.ts";
 import {ShopListState} from "../../core/ListShops/api/ShopList.ts";
 import {AppRoute} from "../../App.tsx";
 import {CREATE_SHOP_ROUTE} from "../../core/Common/constants.ts";
+import {shop_list_initial_state} from "../../services/external/getShopList.ts";
 
 
 interface ShopListComponentProps {
   onShopSelect: (shop: ShopData) => void;
-  userId: string;
   redirectUser: (destination: AppRoute) => void;
+  getShopList: () => Promise<ShopListState>;
 }
 
-const shopList = shopListFactory();
 
-const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect, userId, redirectUser }) => {
+const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect, redirectUser, getShopList }) => {
   const { t } = useTranslation('global');
-  const [state, setState] = useState<ShopListState>(shopList.state);
+  const [state, setState] = useState<ShopListState>(shop_list_initial_state);
   useEffect(() => {
-    const onInit = () => {
-      return shopList.shops(userId).subscribe({
-        next: () => setState({...shopList.state}),
-      })
-    }
-    const subscription = onInit();
-    return () => subscription.unsubscribe();
-  }, [])
+     getShopList().then((state) => {
+       setState(state);
+     })
+  }, [getShopList])
 
 
 
@@ -50,7 +45,7 @@ const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect, use
               <h1 className="text-3xl font-bold text-[#2B2C34] font-['Inter']">{t('shops.title')}</h1>
               <p className="text-[#A0A0A8] mt-1">{t('shops.description')}</p>
             </div>
-            <button 
+            <button
               onClick={handleCreateShop}
               className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-6 py-3 rounded-xl font-medium flex items-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
@@ -75,8 +70,8 @@ const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect, use
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-4">
                     <div className="w-12 h-12 bg-gradient-to-br from-[#6C63FF] to-[#5845E9] rounded-xl flex items-center justify-center flex-shrink-0">
-                      <img 
-                        src={shop.logo} 
+                      <img
+                        src={shop.logo}
                         alt={`${shop.name} logo`}
                         className="w-8 h-8 object-contain"
                         onError={(e) => {
@@ -121,7 +116,7 @@ const ShopListComponent: React.FC<ShopListComponentProps> = ({ onShopSelect, use
             <p className="text-[#A0A0A8] mb-8 max-w-md mx-auto">
               {t('shops.noShopsDescription')}
             </p>
-            <button 
+            <button
               onClick={handleCreateShop}
               className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-8 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
             >

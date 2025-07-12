@@ -8,11 +8,7 @@
     "automaticSilentRenew": true
   },
   "apiEndpoints": {
-    "userSide": {
-
-    },
-    "shopPromo": {
-
-    }
+    "userSide": "",
+    "shopPromo": ""
   }
 }

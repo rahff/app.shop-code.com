@@ -3,33 +3,31 @@ import {Plus} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import PromoCard from './PromoCard';
 import {PromoListState} from "../../core/ListPromos/api/PromoList.ts";
-import {promoListFactory} from "../../factory/promoListFactory.ts";
 import {AppRoute} from "../../App.tsx";
 import {CREATE_PROMO_ROUTE} from "../../core/Common/constants.ts";
 import PromoDetailsPage from '../PromoDetails/PromoDetailsPage';
+import {PromoData} from "../../core/CreatePromo/api/data.ts";
+import {promo_list_initial_state} from "../../services/external/getPromoList.ts";
 
 
-const promoList = promoListFactory();
+
 
 interface PromoListComponentProps {
   redirectUser: (destination: AppRoute) => void;
+  getPromoList: () => Promise<PromoListState>;
 }
 
-const PromoListComponent: React.FC<PromoListComponentProps> = ({ redirectUser }) => {
+const PromoListComponent: React.FC<PromoListComponentProps> = ({ redirectUser, getPromoList }) => {
   const { t } = useTranslation('global');
   const [selectedPromo, setSelectedPromo] = useState<PromoData | null>(null);
   const [showDetails, setShowDetails] = useState(false);
-  const [state, setState] = useState<PromoListState>(promoList.state);
-  
+  const [state, setState] = useState<PromoListState>(promo_list_initial_state);
+
   useEffect(() => {
-    const on_init = () => {
-      return promoList.promo_of_shop("123").subscribe(() => {
-        setState({...promoList.state});
-      });
-    }
-    const subscription = on_init();
-    return () => subscription.unsubscribe();
-  },[])
+    getPromoList().then((state) => {
+      setState(state);
+    })
+  },[getPromoList])
 
   const handleCreatePromo = () => {
     redirectUser(CREATE_PROMO_ROUTE);
@@ -47,11 +45,11 @@ const PromoListComponent: React.FC<PromoListComponentProps> = ({ redirectUser })
 
   if (showDetails && selectedPromo) {
     return (
-      <PromoDetailsPage 
-        promoData={selectedPromo} 
+      <PromoDetailsPage
+        promoData={selectedPromo}
         isLoading={false}
-        onBack={handleBackFromDetails} 
-        redirectUser={redirectUser} 
+        onBack={handleBackFromDetails}
+        redirectUser={redirectUser}
       />
     );
   }
@@ -63,7 +61,7 @@ const PromoListComponent: React.FC<PromoListComponentProps> = ({ redirectUser })
         <p className="text-[#A0A0A8] text-sm sm:text-base">{t('promos.description')}</p>
       </div>
 
-      <button 
+      <button
         onClick={handleCreatePromo}
         className="w-full bg-[#6C63FF] hover:bg-[#5845E9] text-white px-6 py-4 rounded-xl font-medium flex items-center justify-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl mb-6 sm:w-auto sm:mb-8"
       >
@@ -84,7 +82,7 @@ const PromoListComponent: React.FC<PromoListComponentProps> = ({ redirectUser })
           </div>
           <h3 className="text-lg font-semibold text-[#2B2C34] mb-2">{t('promos.noPromos')}</h3>
           <p className="text-[#A0A0A8] mb-6 px-4">{t('promos.noPromosDescription')}</p>
-          <button 
+          <button
             onClick={handleCreatePromo}
             className="w-full bg-[#6C63FF] hover:bg-[#5845E9] text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 max-w-xs mx-auto sm:w-auto"
           >
