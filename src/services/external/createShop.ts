@@ -4,7 +4,9 @@ import {DateProvider} from "../../core/Common/spi/DateProvider.ts";
 import {authorizationHeaders, Fetch} from "../common.ts";
 import {NativeDateProvider} from "../browser/NativeDateProvider.ts";
 import {environment} from "../../environment.ts";
-import {fake_shop_data} from "../../core/Common/test-utils/fixture.spec.ts";
+import {SHOP_LIST_KEY} from "../../core/Common/constants.ts";
+import {LocalStorageApi} from "../../core/Common/spi/LocalStorageApi.ts";
+import {sessionStorageBrowserApi} from "../browser/SessionStorageBrowserApi.ts";
 
 
 const shopFactoryCreator =
@@ -20,7 +22,7 @@ const shopFactory = shopFactoryCreator(new NativeDateProvider());
 
 export const createShopCreator =
   (factory: (form_data: ShopFormData, account_ref: string) => ShopData) =>
-  (fetch: Fetch) =>
+  (fetch: Fetch, sessionStorage: LocalStorageApi) =>
   (endpoint: string, account_ref: string, token: string) =>
     async (shopData: ShopFormData): Promise<ShopData> => {
       const shop = factory(shopData, account_ref);
@@ -29,11 +31,13 @@ export const createShopCreator =
         body: JSON.stringify(shop),
         headers: authorizationHeaders(token),
       })
-     return await response.json();
+      const createdShop: ShopData = await response.json();
+      sessionStorage.add_item(SHOP_LIST_KEY, createdShop);
+      return createdShop;
 }
 
-const fakeFetch: Fetch = () => {
-  const body = {...fake_shop_data};
+const fakeFetch: Fetch = (_url: string, config?: RequestInit) => {
+  const body = JSON.parse(config!.body!.toString());
   const response: Response = new Response(JSON.stringify(body));
   return new Promise(resolve => {
     setTimeout(() => {
@@ -45,5 +49,5 @@ const fakeFetch: Fetch = () => {
 
 
 export const createShop = environment === "production" ?
-  createShopCreator(shopFactory)(fetch) :
-  createShopCreator(shopFactory)(fakeFetch);
+  createShopCreator(shopFactory)(fetch, sessionStorageBrowserApi) :
+  createShopCreator(shopFactory)(fakeFetch, sessionStorageBrowserApi);

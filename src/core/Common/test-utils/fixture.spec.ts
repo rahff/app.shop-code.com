@@ -101,12 +101,12 @@ export const shop_id = "shop_id";
 export const shop_promo_list: PromoData[] = [{
   shop_id,
   id: "promo_id",
-  name: "promo_name",
-  description: "promo_description",
+  name: "Black Friday",
+  description: "-50% on all items",
   coupon_img: image_uri("promo_id", "png"),
-  validity_date_start: "promo_start",
-  validity_date_end: "promo_end",
-  created_at: "promo_created_at"
+  validity_date_start: "2025-05-03",
+  validity_date_end: "2025-05-04",
+  created_at: "2025-05-02"
 }];
 
 export const promo_id = "promo_id";
@@ -136,11 +136,6 @@ export const fake_user_profile: UserProfile = {
     nbr_of_shop: {current: 2, limit: 2},
     nbr_of_staff_user: {current: 0, limit: 2}
   },
-  config: {
-    cognito_endpoint: "http://localhost:8080/cognito.endpoint",
-    shop_service_endpoint: "http://localhost:8080/shop.service",
-    user_service_endpoint: "http://localhost:8080/user.service",
-  }
 }
 
 export const fake_user_profile_signup: UserProfile = {
@@ -148,7 +143,6 @@ export const fake_user_profile_signup: UserProfile = {
   user_name: "rahff@gmail.com",
   role: "Business",
   region: null,
-  config: null,
   account_usage: {
     nbr_of_promos: {current: 0, limit: 20},
     nbr_of_shop: {current: 0, limit: 2},

@@ -3,7 +3,7 @@ import {
   AUTHENTICATION,
   LOGIN_ROUTE,
   MY_SHOPS_ROUTE, REFRESH_SESSION_ROUTE,
-  SELECTED_SHOP_KEY, SET_CONFIG_ROUTE,
+  SELECTED_SHOP_KEY
 } from '../../Common/constants';
 import {Redirection} from '../../Common/api/CommonTypes';
 import {UserProfile} from './data';
@@ -35,7 +35,6 @@ export class UserSession {
     if(is_signup(this.authentication)) return {path: REFRESH_SESSION_ROUTE};
     if(this.is_authenticated()){
       this.user_profile = await firstValueFrom(this.user_profile_api.get_user_profile(this.authentication!.user_id));
-      if(!this.user_profile.config) return {path: SET_CONFIG_ROUTE};
       return {path: MY_SHOPS_ROUTE};
     }else return {path: LOGIN_ROUTE};
   }

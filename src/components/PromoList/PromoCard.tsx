@@ -9,13 +9,7 @@ interface PromoCardProps {
 }
 
 const PromoCard: React.FC<PromoCardProps> = ({ promo, onViewDetails }) => {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
-  };
+
 
   const handleViewDetails = () => {
     onViewDetails?.(promo);
@@ -32,7 +26,7 @@ const PromoCard: React.FC<PromoCardProps> = ({ promo, onViewDetails }) => {
       <div className="flex items-center space-x-2 text-sm">
         <Calendar className="w-4 h-4 text-[#6C63FF] flex-shrink-0" />
         <span className="font-medium text-[#6C63FF] truncate">
-          {formatDate(promo.validity_date_start)} - {formatDate(promo.validity_date_end)}
+          {promo.validity_date_start} - {promo.validity_date_end}
         </span>
       </div>
       
