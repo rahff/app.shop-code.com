@@ -13,3 +13,6 @@ export class NativeDateProvider implements DateProvider {
     });
   }
 }
+
+
+export const nativeDateProvider = new NativeDateProvider();

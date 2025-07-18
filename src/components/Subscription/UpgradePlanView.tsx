@@ -1,7 +1,6 @@
-// src/components/Subscription/UpgradePlanView.tsx
 import React from 'react';
 import { Crown, Check, ArrowRight, AlertCircle, ArrowLeft } from 'lucide-react';
-import { subscriptionManager } from '../../factory/subscriptionManagerFactory';
+
 
 interface PlanFeature {
   name: string;
@@ -20,10 +19,10 @@ interface Plan {
 
 interface UpgradePlanViewProps {
   onUpgrade: (planId: string) => void;
-  onCancel?: () => void;
-  isLoading?: boolean;
-  error?: string | null;
-  currentPlan?: string;
+  onCancel: () => void;
+  isLoading: boolean;
+  error: string | null;
+  currentPlan: string;
 }
 
 const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({
@@ -89,37 +88,7 @@ const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({
     }
   ];
 
-  const handlePlanSelect = (planId: string) => {
-    if (planId === 'personalized') {
-      // For personalized plan, could open contact form or redirect to sales
-      console.log('Contact sales for personalized plan');
-      return;
-    }
 
-    // Use the subscription manager to create Stripe checkout session
-    subscriptionManager.initiate_subscription(planId).subscribe({
-      next: (checkoutUrl) => {
-        if (checkoutUrl.includes('stripe.com')) {
-          // Redirect to Stripe checkout
-          window.location.href = checkoutUrl;
-        } else {
-          // Handle error or redirect to login
-          console.error('Invalid checkout URL received');
-          onUpgrade(planId);
-        }
-      },
-      error: (error) => {
-        console.error('Failed to initiate subscription:', error);
-        onUpgrade(planId);
-      }
-    });
-  };
-
-  const handleGoBack = () => {
-    if (onCancel) {
-      onCancel();
-    }
-  };
 
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
@@ -131,7 +100,7 @@ const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({
             className="flex items-center space-x-2 text-[#A0A0A8] hover:text-[#6C63FF] transition-colors duration-200 group"
             aria-label="Go back"
           >
-            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-200" />
+            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-200"/>
             <span className="text-sm font-medium">Back to Settings</span>
           </button>
         </div>
@@ -226,7 +195,7 @@ const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({
 
             {/* Action Button */}
             <button
-              onClick={() => handlePlanSelect(plan.id)}
+              onClick={() => onUpgrade(plan.id)}
               disabled={isLoading || currentPlan.toLowerCase() === plan.id}
               className={`w-full py-3 px-6 rounded-lg font-medium transition-all duration-200 flex items-center justify-center space-x-2 ${
                 currentPlan.toLowerCase() === plan.id

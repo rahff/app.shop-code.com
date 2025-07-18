@@ -4,24 +4,20 @@ import { useTranslation } from 'react-i18next';
 import { ListCashiers } from '../../core/ListCashiers/api/ListCashiers';
 import { CashierData } from '../../core/AddCashier/api/data';
 import { localStorageApi } from '../../services/browser/LocalStorageBrowserApi';
-import { InMemoryCashierListApi } from '../../services/inMemory/InMemoryCashierListApi.ts';
-import {AppRoute} from "../../App.tsx";
+import {AppRoute} from "../../core/Common/api/CommonTypes.ts";
+
 
 interface SettingsProps {
   redirectUser: (destination: AppRoute) => void;
-  account_ref: string;
+  listCashiers: ListCashiers;
 }
 
-const Settings: React.FC<SettingsProps> = ({ redirectUser, account_ref }) => {
+const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
   const { t, i18n } = useTranslation('global');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [cashiers, setCashiers] = useState<CashierData[]>([]);
   const [isLoadingCashiers, setIsLoadingCashiers] = useState(false);
   const [cashierError, setCashierError] = useState<string | null>(null);
-
-  // Initialize cashier list service
-  const cashierListApi = new InMemoryCashierListApi();
-  const listCashiers = new ListCashiers(cashierListApi, localStorageApi);
 
   const handleUpgradePlan = () => {
     // Navigate to upgrade plan page using redirectUser
@@ -51,21 +47,11 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, account_ref }) => {
   const loadCashiers = () => {
     setIsLoadingCashiers(true);
     setCashierError(null);
-    
-    listCashiers.account_cashier(account_ref).subscribe({
-      next: (success) => {
-        if (success) {
-          setCashiers(listCashiers.state.cashier_list);
-          setCashierError(listCashiers.state.error?.message || null);
-        }
-        setIsLoadingCashiers(false);
-      },
-      error: (error: unknown) => {
-        console.log(error);
-        setCashierError('Failed to load cashiers');
-        setIsLoadingCashiers(false);
-      }
-    });
+    listCashiers().then((state) => {
+      setCashiers(state.cashier_list);
+      setCashierError(state.error?.message || null);
+      setIsLoadingCashiers(false);
+    })
   };
 
   const deleteCashier = (cashierId: string) => {

@@ -3,20 +3,22 @@ import { ArrowLeft, Calendar, AlertCircle } from 'lucide-react';
 import RedeemCouponForm from './RedeemCouponForm';
 import { CouponData } from '../../core/ScanQrcode/api/data';
 import { TransactionInfo } from '../../core/RedeemCoupon/api/data';
-import {redeemCouponFactory} from "../../factory/redeemCouponFactory.ts";
+import {RedeemCoupon} from "../../core/RedeemCoupon/api/RedeemCoupon.ts";
+
 
 interface RedeemCouponViewProps {
   couponData: CouponData;
   onComplete: () => void;
   onCancel: () => void;
+  redeemCoupon: RedeemCoupon;
 }
 
-const redeemCoupon = redeemCouponFactory();
 
 const RedeemCouponView: React.FC<RedeemCouponViewProps> = ({
   couponData,
   onComplete,
-  onCancel
+  onCancel,
+  redeemCoupon,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +27,7 @@ const RedeemCouponView: React.FC<RedeemCouponViewProps> = ({
   const handleSubmit = (transactionInfo: TransactionInfo) => {
     setIsLoading(true);
     setError(null);
-    redeemCoupon.redeem(couponData, transactionInfo).subscribe(() => {
+    redeemCoupon(couponData, transactionInfo).then(() => {
       setIsLoading(false);
       onComplete();
     })

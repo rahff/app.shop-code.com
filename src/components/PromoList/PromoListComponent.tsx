@@ -3,22 +3,23 @@ import {Plus} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import PromoCard from './PromoCard';
 import Loader from '../Common/Loader';
-import {PromoListState} from "../../core/ListPromos/api/PromoList.ts";
-import {AppRoute} from "../../App.tsx";
+import {GetPromoList, PromoListState} from "../../core/ListPromos/api/PromoList.ts";
 import {CREATE_PROMO_ROUTE} from "../../core/Common/constants.ts";
 import PromoDetailsPage from '../PromoDetails/PromoDetailsPage';
 import {PromoData} from "../../core/CreatePromo/api/data.ts";
-import {promo_list_initial_state} from "../../services/external/getPromoList.ts";
+import {promo_list_initial_state} from "../../services/external/getPromoListApi.ts";
+import {AppRoute} from "../../core/Common/api/CommonTypes.ts";
 
 
 
 
 interface PromoListComponentProps {
   redirectUser: (destination: AppRoute) => void;
-  getPromoList: () => Promise<PromoListState>;
+  getPromoList: GetPromoList;
+  shopId: string;
 }
 
-const PromoListComponent: React.FC<PromoListComponentProps> = ({ redirectUser, getPromoList }) => {
+const PromoListComponent: React.FC<PromoListComponentProps> = ({ redirectUser, getPromoList, shopId }) => {
   const { t } = useTranslation('global');
   const [selectedPromo, setSelectedPromo] = useState<PromoData | null>(null);
   const [showDetails, setShowDetails] = useState(false);
@@ -27,7 +28,7 @@ const PromoListComponent: React.FC<PromoListComponentProps> = ({ redirectUser, g
 
   useEffect(() => {
     setIsLoadingPromo(true);
-    getPromoList().then((state) => {
+    getPromoList(shopId).then((state) => {
       setState(state);
       setIsLoadingPromo(false);
     })

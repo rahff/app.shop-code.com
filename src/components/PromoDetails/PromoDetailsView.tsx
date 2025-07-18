@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import PromoDetailsPage from './PromoDetailsPage';
 import { PromoData } from '../../core/CreatePromo/api/data';
-import { AppRoute } from '../../App';
+import {AppRoute} from "../../core/Common/api/CommonTypes.ts";
+
+
 
 interface PromoDetailsViewProps {
   redirectUser: (destination: AppRoute) => void;

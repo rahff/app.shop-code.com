@@ -1,10 +1,20 @@
 import React from 'react';
 import ShopMetrics from './ShopMetrics';
 import PromoStatsTable from './PromoStatsTable';
+import {GetPromoStatistics} from "../../core/PromoStatistics/api/PromoStatistics.ts";
+import {GetShopStatistics} from "../../core/ShopStatistics/api/ShopStatistics.ts";
+
+
+interface StatisticsPropsComponent {
+    shopId: string;
+    getPromoStatistics: GetPromoStatistics;
+    getShopStatistics: GetShopStatistics;
+}
 
 
 
-const Statistics: React.FC = () => {
+
+const Statistics: React.FC<StatisticsPropsComponent> = ({getPromoStatistics, shopId, getShopStatistics}) => {
 
 
 
@@ -15,8 +25,14 @@ const Statistics: React.FC = () => {
         <p className="text-[#A0A0A8] text-sm sm:text-base">Track your promotional campaigns performance and customer engagement</p>
       </div>
 
-      <ShopMetrics/>
-      <PromoStatsTable />
+      <ShopMetrics
+          shopId={shopId}
+          getShopStatistics={getShopStatistics}
+      />
+      <PromoStatsTable
+          getPromoStatistics={getPromoStatistics}
+          shopId={shopId}
+      />
     </div>
   );
 };

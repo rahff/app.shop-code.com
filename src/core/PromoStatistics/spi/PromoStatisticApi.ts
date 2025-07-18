@@ -1,7 +1,6 @@
-import {Observable} from 'rxjs';
-import {PromoStatisticsState} from '../api/data';
+
+import {StatsPage} from '../api/data';
+import {Exception} from "../../Common/api/Exception.ts";
 
 
-export interface PromoStatisticApi {
-  get_promo_statistics(shop_id: string, page: number): Observable<PromoStatisticsState>;
-}
+export type PromoStatisticApi = (shop_id: string, page: number) => Promise<StatsPage | Exception>

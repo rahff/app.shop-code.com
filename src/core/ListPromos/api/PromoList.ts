@@ -1,45 +1,45 @@
 import {PromoListApi} from '../spi/PromoListApi';
-import {catchError, first, map, Observable, of} from 'rxjs';
 import {PromoData} from '../../CreatePromo/api/data';
-import {Exception} from '../../Common/api/Exception';
+import {Exception, isException} from '../../Common/api/Exception';
 import {LocalStorageApi} from '../../Common/spi/LocalStorageApi';
 
 
 export const promo_list_key = (shop_id: string): string => `promo_list_${shop_id}`;
+
 export interface PromoListState {
   promos: PromoData[];
   error: { message: string } | null;
 }
 
-const promo_list_initial_state = {promos: [], error: null};
 
-export class PromoList {
+export type GetPromoList = (shopId: string) => Promise<PromoListState>
 
-  public state: PromoListState = {...promo_list_initial_state};
+const errorState = (response: Exception) => ({
+  promos: [],
+  error: {message: response.message}
+})
 
-  public constructor(private promo_gateway: PromoListApi, private local_storage_api: LocalStorageApi) {}
+const promoListState = (response: PromoData[]) => ({
+  promos: response,
+  error: null
+})
 
-  public promo_of_shop(shopId: string): Observable<boolean> {
-    const local_promo_list = this.local_storage_api.get_item<PromoData[]>(promo_list_key(shopId));
-    if(local_promo_list) {
-      this.state.promos = local_promo_list;
-      return of(true);
-    }
-    return this.promo_gateway.get_shop_promos(shopId).pipe(
-        first(),
-        map((promos) => this.set_state(promos, shopId)),
-        catchError(this.handle_error.bind(this))
-    );
-  }
-
-  private set_state(promos: PromoData[], shop_id: string): boolean {
-    this.local_storage_api.set_item(promo_list_key(shop_id), promos);
-    this.state.promos = promos;
-    return true;
-  }
-
-  private handle_error(error: Exception) {
-    this.state.error = {message: error.message};
-    return of(false);
+const handleResponse = (localStorage: LocalStorageApi, shopId: string) => (response: PromoData[] | Exception) => {
+  if(isException(response)) return errorState(response);
+  else {
+    localStorage.set_item(promo_list_key(shopId), response);
+    return promoListState(response);
   }
 }
+
+export const getPromoListCreator =
+    (promoListApi: PromoListApi, localStorage: LocalStorageApi): GetPromoList =>
+    async (shopId: string): Promise<PromoListState> => {
+      const localData = localStorage.get_item<PromoData[]>(promo_list_key(shopId));
+      if(localData === null) {
+        return promoListApi(shopId).then(handleResponse(localStorage, shopId));
+      }else return {
+        promos: localData,
+        error: null
+      }
+    }

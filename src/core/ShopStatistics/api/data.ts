@@ -1,4 +1,4 @@
-export interface ShopStatisticsState {
+export interface ShopStatistics {
   name: string,
   conversion_rate: number,
   collected_customers: number,

@@ -2,29 +2,31 @@ import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import CreatePromoForm from './CreatePromoForm';
 import { PromoFormData } from '../../core/CreatePromo/api/data';
-import {createPromoFactory} from "../../factory/createPromoFactory.ts";
 import {DASHBOARD_ROUTE} from "../../core/Common/constants.ts";
-import {AppRoute} from "../../App.tsx";
+import {AppRoute} from "../../core/Common/api/CommonTypes.ts";
+import {CreatePromo} from "../../core/CreatePromo/api/CreatePromo.ts";
+
 
 
 interface CreatePromoPageProps {
   redirectUser: (destination: AppRoute, error?: string) => void;
-
+  createPromo: CreatePromo;
+  shopId: string;
 }
 
-const createPromo = createPromoFactory();
 
-const CreatePromoPage: React.FC<CreatePromoPageProps> = ({redirectUser}) => {
+
+const CreatePromoPage: React.FC<CreatePromoPageProps> = ({redirectUser, createPromo, shopId}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (formData: PromoFormData) => {
     setIsLoading(true);
     setError(null);
-    createPromo.create(formData).subscribe((redirection) => {
+    createPromo(shopId, formData).then((redirection) => {
       setIsLoading(false);
-      redirectUser(redirection.path as AppRoute);
-    })
+      redirectUser(redirection.path);
+    });
   };
 
   const navigateToDashboard = () => {

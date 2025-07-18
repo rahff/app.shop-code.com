@@ -1,10 +1,10 @@
 import {PromoStatisticApi} from '../spi/PromoStatisticApi';
 import {PromoStatisticsState, StatsPage} from './data';
-import {catchError, first, map, Observable, of} from 'rxjs';
-import {Exception} from '../../Common/api/Exception';
+
+import {Exception, isException} from '../../Common/api/Exception';
 import {LocalStorageApi} from '../../Common/spi/LocalStorageApi';
-import {SELECTED_SHOP_KEY, STATS_PAGE} from '../../Common/constants';
-import {ShopData} from '../../CreateShop/api/data';
+import {STATS_PAGE} from '../../Common/constants';
+
 
 
 export const promo_statistic_initial_state: PromoStatisticsState = {
@@ -17,35 +17,27 @@ export const promo_statistic_initial_state: PromoStatisticsState = {
   error: null,
 }
 
-export class PromoStatistics {
+const errorState = (exception: Exception): PromoStatisticsState =>
+    ({...promo_statistic_initial_state, error: {message: exception.message}});
 
-  public state: PromoStatisticsState = {...promo_statistic_initial_state};
-  private local_memory_register: string[] = [];
+const promoStatisticsState = (promoStatsPage: StatsPage): PromoStatisticsState => ({promo_stats: promoStatsPage, error: null})
 
-  public constructor(private promo_statistic_api: PromoStatisticApi, private local_storage: LocalStorageApi) {}
+export type GetPromoStatistics = (shopId: string, page?: number) => Promise<PromoStatisticsState>;
 
-  public get_promo_statistics(page: number = 1): Observable<boolean> {
-    const {id} = this.local_storage.get_item<ShopData>(SELECTED_SHOP_KEY)!;
-    const local_data = this.local_storage.get_item<StatsPage>(STATS_PAGE(id, page));
-    if(local_data && this.local_memory_register.includes(STATS_PAGE(id, page))) return of(true);
-    return this.promo_statistic_api.get_promo_statistics(id, page)
-      .pipe(first(),
-        map(this.set_state(id, page)),
-        catchError(this.handle_error.bind(this))
-      );
-  }
-
-  private set_state(id: string, page: number) {
-    return (state: PromoStatisticsState) => {
-      this.local_storage.set_item(STATS_PAGE(id, page), {...state.promo_stats})
-      this.state = {...state};
-      this.local_memory_register.push(STATS_PAGE(id, page));
-      return true;
-    }
-  }
-
-  private handle_error(error: Exception): Observable<boolean> {
-    this.state.error = {message: error.message}
-    return of(false);
+const handleResponse = (localStorage: LocalStorageApi, shopId: string, page: number) => (response: StatsPage | Exception) => {
+  if(isException(response)) return errorState(response);
+  else {
+    localStorage.set_item(STATS_PAGE(shopId, page), {...response})
+    return promoStatisticsState(response);
   }
 }
+
+export const getPromoStatisticsCreator =
+    (promoStatisticApi: PromoStatisticApi, localStorage: LocalStorageApi): GetPromoStatistics =>
+    async (shopId: string, page: number = 1): Promise<PromoStatisticsState> => {
+      const localData = localStorage.get_item<StatsPage>(STATS_PAGE(shopId, page));
+      if(localData === null) {
+        return promoStatisticApi(shopId, page).then(handleResponse(localStorage, shopId, page));
+      }else return promoStatisticsState(localData);
+    }
+

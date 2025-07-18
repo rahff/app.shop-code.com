@@ -1,8 +1,8 @@
 import { Observable, of } from 'rxjs';
-import { PaymentGateway } from '../../core/Subscription/spi/PaymentGateway.ts';
+import { CheckoutApi } from '../../core/Subscription/spi/CheckoutApi.ts';
 
 
-export class FakePaymentGateway implements PaymentGateway {
+export class FakePaymentGateway implements CheckoutApi {
 
 
   public constructor() {}

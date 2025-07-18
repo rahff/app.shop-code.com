@@ -1,6 +1,4 @@
 import {CashierData} from '../../AddCashier/api/data';
-import {Observable} from 'rxjs';
+import {Exception} from "../../Common/api/Exception.ts";
 
-export interface CashierListApi {
-  get_cashier_list(account_id: string): Observable<CashierData[]>;
-}
+export type CashierListApi = () => Promise<CashierData[] | Exception>;

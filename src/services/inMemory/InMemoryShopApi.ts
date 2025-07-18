@@ -1,5 +1,5 @@
 import {Observable} from 'rxjs';
-import {ShopApi} from "../../core/CreateShop/spi/ShopApi.ts";
+import {ShopApi} from "../../core/CreateShop/spi/CreateShopApi.ts";
 import {ShopData} from "../../core/CreateShop/api/data.ts";
 
 

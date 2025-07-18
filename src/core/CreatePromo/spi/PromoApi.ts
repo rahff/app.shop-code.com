@@ -1,6 +1,4 @@
 import {PromoData} from '../api/data';
-import {Observable} from 'rxjs';
+import {Exception} from "../../Common/api/Exception.ts";
 
-export interface PromoApi {
-  save_promo(promo_data: PromoData): Observable<PromoData>;
-}
+export type SavePromoApi = (promo_data: PromoData) => Promise<PromoData | Exception>;

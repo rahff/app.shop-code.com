@@ -1,6 +1,6 @@
-import {Observable} from 'rxjs';
 import {ShopData} from '../../CreateShop/api/data';
+import {Exception} from "../../Common/api/Exception.ts";
 
-export interface ShopListApi {
-  get_account_shops(account_ref: string): Observable<ShopData[]>;
-}
+
+
+export type ShopListApi = () => Promise<ShopData[] | Exception>;

@@ -1,43 +1,35 @@
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import UpgradePlanView from './UpgradePlanView';
+import {DASHBOARD_ROUTE} from "../../core/Common/constants.ts";
+import {
+  checkoutRedirectionInitialState,
+  CheckoutRedirectionState,
+  GetCheckoutUrl
+} from "../../core/Subscription/api/GetCheckoutUrl.ts";
 
 interface UpgradePlanPageProps {
-  onUpgrade?: () => void;
-  onCancel?: () => void;
+  redirectUser: () => void;
+  getCheckoutUrl: GetCheckoutUrl
 }
 
-const UpgradePlanPage: React.FC<UpgradePlanPageProps> = ({
-  onUpgrade,
-  onCancel
-}) => {
+const UpgradePlanPage: React.FC<UpgradePlanPageProps> = ({redirectUser, getCheckoutUrl}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const navigateToDashboard = () => {
-    // Clear any route-specific state and navigate to dashboard
-    window.history.pushState(null, '', '/');
-    window.location.reload();
-  };
-
-  const handleGoBack = () => {
-    // Navigate back to dashboard instead of previous page
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    onCancel ? onCancel() : navigateToDashboard();
+    redirectUser(DASHBOARD_ROUTE)
   };
 
   const handleUpgrade = (planId: string) => {
     setIsLoading(true);
     setError(null);
-    
-    // Simulate API call for plan upgrade
-    setTimeout(() => {
-      console.log('Upgrading to plan:', planId);
+    getCheckoutUrl(planId).then((response: CheckoutRedirectionState) => {
       setIsLoading(false);
-      // Navigate back to dashboard on success
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      onUpgrade ? onUpgrade() : navigateToDashboard();
-    }, 2000);
+      if (response.checkoutUrl){
+        window.location.href = response.checkoutUrl;
+      }else setError(response.error?.message)
+
+    })
   };
 
   return (
@@ -46,7 +38,7 @@ const UpgradePlanPage: React.FC<UpgradePlanPageProps> = ({
       <header className="bg-white border-b border-gray-200 px-4 py-4 sm:px-6 lg:px-8">
         <div className="flex items-center space-x-4">
           <button
-            onClick={handleGoBack}
+            onClick={navigateToDashboard}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
             aria-label="Go back to dashboard"
           >
@@ -63,6 +55,7 @@ const UpgradePlanPage: React.FC<UpgradePlanPageProps> = ({
       <main className="py-8">
         <UpgradePlanView
           onUpgrade={handleUpgrade}
+          handleGoBack={navigateToDashboard}
           isLoading={isLoading}
           error={error}
           currentPlan="basic"

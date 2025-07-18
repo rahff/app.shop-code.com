@@ -1,4 +1,4 @@
-// src/components/CreateShop/CreateShopForm.tsx
+// src/components/CreateShopApi/CreateShopForm.tsx
 import React, { useEffect, useState } from 'react';
 import { MapPin, AlertCircle, Store } from 'lucide-react';
 import { ShopFormData } from '../../core/CreateShop/api/data';

@@ -47,3 +47,8 @@ export class InternalServerError implements Exception {
 export class UnauthenticatedUser implements Exception {
   public constructor(public message: string = "Unauthenticated user") {}
 }
+
+
+export const isException =  <T extends Object> (response: T | Exception): response is Exception => {
+  return 'message' in response && true;
+}

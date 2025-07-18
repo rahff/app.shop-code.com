@@ -3,9 +3,10 @@ import {PromoData, PromoFormData} from '../../CreatePromo/api/data';
 import {ShopData, ShopFormData} from '../../CreateShop/api/data';
 import {PromoStatisticsState, PromoStats} from '../../PromoStatistics/api/data';
 import {UserProfile} from '../../UserSession/api/data';
-import {ShopStatisticsState} from '../../ShopStatistics/api/data';
+import {ShopStatistics} from '../../ShopStatistics/api/data';
 import {image_uri} from '../../UploadImage/api/UploadFile';
 import {Authentication} from "../../Model/Authentication.ts";
+import {CashierData} from "../../AddCashier/api/data.ts";
 
 
 export const fake_promo: CouponData = {
@@ -217,7 +218,7 @@ export const fake_promo_stats_state: PromoStatisticsState = {
   error: null
 }
 
-export const fake_shop_stats: ShopStatisticsState = {
+export const fake_shop_stats: ShopStatistics = {
   name: "Quick de la Violette",
   collected_customers: 789,
   collected_revenue: 8560,
@@ -225,7 +226,7 @@ export const fake_shop_stats: ShopStatisticsState = {
   nbr_of_promo: 12
 }
 
-export const fake_shop_statistics: ShopStatisticsState = {
+export const fake_shop_statistics: ShopStatistics = {
   name: "Quick",
   nbr_of_promo: 22,
   conversion_rate: 95,
@@ -234,5 +235,9 @@ export const fake_shop_statistics: ShopStatisticsState = {
 }
 
 
-export const fake_cashier_data = {username: "test", id: "cashier_id"};
+export const fake_cashier_data: CashierData[] = [
+  {username: "Rahff", id: "cashier_id_123"},
+  {username: "Jojo", id: "cashier_id_456"},
+  {username: "Vivi", id: "cashier_id_789"},
+];
 export const fake_cashier_credentials = {username: "test", password: "123456"}

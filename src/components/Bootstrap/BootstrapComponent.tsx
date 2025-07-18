@@ -5,7 +5,8 @@ import {userSession} from "../../factory/userSessionFactory.ts";
 import {useAuth} from "react-oidc-context";
 import {getAuthentication} from "../../functions.ts";
 import {Authentication} from "../../core/Model/Authentication.ts";
-import {AppRoute} from "../../App.tsx";
+import {AppRoute} from "../../core/Common/api/CommonTypes.ts";
+
 
 
 
@@ -31,7 +32,7 @@ const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser, o
       if(authentication) onAuthentication(authentication);
       setLoadingText(t('bootstrap.loadingSession'));
       userSession.load(authentication).then((redirection) => {
-        redirectUser(redirection.path as AppRoute);
+        redirectUser(redirection.path);
       })
       return;
     }else {

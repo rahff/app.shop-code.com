@@ -1,4 +1,4 @@
-import {ShopStatisticApi} from '../spi/ShopStatisticApi';
+import {GetShopStatisticApi} from '../spi/GetShopStatisticApi.ts';
 import SpyObj = jasmine.SpyObj;
 import {LocalStorageApi} from '../../Common/spi/LocalStorageApi';
 import {InMemoryLocalStorage} from '../../Common/test-utils/in_memory.spec';
@@ -11,7 +11,7 @@ import {SELECTED_SHOP_KEY} from '../../Common/constants';
 
 describe("ShopStatistics: A Business User want see statistics", () => {
 
-  let statistic_api: SpyObj<ShopStatisticApi>;
+  let statistic_api: SpyObj<GetShopStatisticApi>;
   let local_storage: LocalStorageApi;
   let shop_statistics: ShopStatistics;
   const shop_id = fake_shop_data.id;

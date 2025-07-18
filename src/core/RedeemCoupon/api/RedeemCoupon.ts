@@ -1,19 +1,15 @@
 import {CouponData} from '../../ScanQrcode/api/data';
 import {TransactionInfo} from './data';
-import {Observable} from 'rxjs';
 import {CashDrawerApi} from '../spi/CashDrawerApi';
-import {CouponPuncher} from '../rules/CouponPuncher';
+import {CouponPuncher} from "../rules/CouponPuncher.ts";
 
 
+export type RedeemCoupon = (coupon: CouponData, transaction_infos: TransactionInfo) => Promise<boolean>
 
-export class RedeemCoupon {
-
-  public constructor(private cash_drawer_api: CashDrawerApi,
-                     private coupon_puncher: CouponPuncher) {}
-
-  public redeem(coupon: CouponData, transaction_infos: TransactionInfo): Observable<boolean> {
-    const redeem_coupon_data = this.coupon_puncher.punch_coupon(coupon, transaction_infos);
-    return this.cash_drawer_api.store_coupon(redeem_coupon_data);
-  }
-}
+export const redeemCouponCreator =
+    (cash_drawer_api: CashDrawerApi, coupon_puncher: CouponPuncher) =>
+    (coupon: CouponData, transaction_infos: TransactionInfo): Promise<boolean> => {
+      const redeem_coupon_data = coupon_puncher(coupon, transaction_infos);
+      return cash_drawer_api(redeem_coupon_data);
+    }
 

@@ -1,5 +1,5 @@
-import {SubscriptionManager} from './SubscriptionManager';
-import {PaymentGateway} from '../spi/PaymentGateway';
+import {SubscriptionManager} from './GetCheckoutUrl.ts';
+import {CheckoutApi} from '../spi/CheckoutApi.ts';
 import SpyObj = jasmine.SpyObj;
 import {LOGIN_URL} from '../../Common/constants';
 import {of, throwError} from 'rxjs';
@@ -7,7 +7,7 @@ import {UnauthenticatedUser} from '../../Common/api/Exception';
 
 describe('SubscriptionManager: A business User upgrade its subscription', () => {
   const STRIPE_URL = "https://www.stripe.com/123";
-  let payment_gateway: SpyObj<PaymentGateway>;
+  let payment_gateway: SpyObj<CheckoutApi>;
 
   beforeEach(() => {
     payment_gateway = jasmine.createSpyObj("PaymentGateway", ["create_subscription"]);

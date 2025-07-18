@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import AddCashierForm from './AddCashierForm';
-import {addCashierFactory} from "../../factory/addCashierFactory.ts";
+import {AddCashier} from "../../core/AddCashier/api/AddCashier.ts";
 
 
-const addCashierModule = addCashierFactory()
 interface AddCashierViewProps {
   onComplete: () => void;
   onCancel: () => void;
+  addCashier: AddCashier;
 }
 
-const AddCashierView: React.FC<AddCashierViewProps> = ({onComplete, onCancel}) => {
+const AddCashierView: React.FC<AddCashierViewProps> = ({onComplete, onCancel, addCashier}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,7 +23,7 @@ const AddCashierView: React.FC<AddCashierViewProps> = ({onComplete, onCancel}) =
     setIsLoading(true);
     setError(null);
     
-    addCashierModule.add_cashier(credentials).then(() => {
+    addCashier(credentials).then(() => {
       setIsLoading(false);
       onComplete();
     });

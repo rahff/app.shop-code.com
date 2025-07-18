@@ -1,9 +1,8 @@
-import {catchError, first, map, Observable, of} from 'rxjs';
 import {ShopListApi} from '../spi/ShopListApi';
 import {LocalStorageApi} from '../../Common/spi/LocalStorageApi';
 import {ShopData} from '../../CreateShop/api/data';
 import {SHOP_LIST_KEY} from '../../Common/constants';
-import {Exception} from '../../Common/api/Exception';
+import {Exception, isException} from '../../Common/api/Exception';
 
 
 export interface ShopListState {
@@ -11,35 +10,30 @@ export interface ShopListState {
   error: { message: string } | null;
 }
 
-const shop_list_initial_state: ShopListState = {shops: [], error: null};
+export type GetShopList = () => Promise<ShopListState>;
 
-export class ShopList {
+const shopListState = (data: ShopData[]): ShopListState => ({shops: data, error: null});
 
-  public state: ShopListState = {...shop_list_initial_state};
-  public constructor(private shop_list_api: ShopListApi, private local_storage: LocalStorageApi) {}
+const errorState = (error: any): ShopListState => ({shops: [], error: error.message});
 
-  public shops(user_id: string): Observable<boolean> {
-    const local_shop_list = this.local_storage.get_item<ShopData[]>(SHOP_LIST_KEY);
-    if(local_shop_list) {
-      this.state.shops = local_shop_list;
-      return of(true);
-    }
-    return this.shop_list_api.get_account_shops(user_id)
-      .pipe(
-        first(),
-        map(this.set_state.bind(this)),
-        catchError(this.handle_error.bind(this))
-      );
-  }
-
-  private set_state(shops: ShopData[]): boolean {
-    this.local_storage.set_item(SHOP_LIST_KEY, shops);
-    this.state.shops = shops;
-    return true;
-  }
-
-  private handle_error(error: Exception) {
-    this.state.error = {message: error.message};
-    return of(false);
-  }
+const persistShopList = (sessionStorage: LocalStorageApi) => (data: ShopData[]): ShopListState => {
+  sessionStorage.set_item(SHOP_LIST_KEY, data);
+  return shopListState(data);
 }
+
+const handleResponse = (localStorage: LocalStorageApi) => {
+  return (response: ShopData[] | Exception) => {
+    if (isException(response)) return errorState(response);
+    else return persistShopList(localStorage)(response);
+  };
+}
+
+export const getShopListCreator =
+    (shopListApi: ShopListApi, localStorage: LocalStorageApi): GetShopList =>
+    async () => {
+      const localData = localStorage.get_item<ShopData[]>(SHOP_LIST_KEY);
+      if (localData === null) {
+        return shopListApi().then(handleResponse(localStorage))
+      }else return shopListState(localData);
+    }
+

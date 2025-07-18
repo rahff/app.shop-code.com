@@ -4,5 +4,6 @@ export class NativeDateTimeProvider implements DateTimeProvider {
     now(): Date {
         return new Date();
     }
-
 }
+
+export const nativeDateTimeProvider = new NativeDateTimeProvider();

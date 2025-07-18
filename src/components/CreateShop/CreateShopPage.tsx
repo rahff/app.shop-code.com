@@ -1,26 +1,28 @@
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import CreateShopForm from './CreateShopForm';
-import {ShopData, ShopFormData} from '../../core/CreateShop/api/data';
-import {AppRoute} from "../../App.tsx";
-import {DASHBOARD_ROUTE, MY_SHOPS_ROUTE} from "../../core/Common/constants.ts";
+import {ShopFormData} from '../../core/CreateShop/api/data';
+import {DASHBOARD_ROUTE, } from "../../core/Common/constants.ts";
+import {CreateShop} from "../../core/CreateShop/api/CreateShopApi.ts";
+import {AppRoute} from "../../core/Common/api/CommonTypes.ts";
 
 
 interface CreateShopPageProps {
   redirectUser: (destination: AppRoute, error?: string) => void;
-  createShop: (shop: ShopFormData) => Promise<ShopData>;
+  createShop: CreateShop;
+  userId: string;
 }
 
 
-const CreateShopPage: React.FC<CreateShopPageProps> = ({redirectUser, createShop}) => {
+const CreateShopPage: React.FC<CreateShopPageProps> = ({redirectUser, createShop, userId}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (formData: ShopFormData) => {
     setIsLoading(true);
     setError(null);
-    createShop(formData).then(() => {
-      redirectUser(MY_SHOPS_ROUTE);
+    createShop(formData, userId).then((redirection) => {
+      redirectUser(redirection.path);
     });
   };
 

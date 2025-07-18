@@ -2,26 +2,27 @@ import React, {useEffect, useState} from 'react';
 import { ChevronLeft, ChevronRight, Calendar, TrendingUp, Users, Euro, Loader2 } from 'lucide-react';
 import {promoStatisticsFactory} from "../../factory/promoStatisticsFactory.ts";
 import {PromoStatisticsState} from "../../core/PromoStatistics/api/data.ts";
+import {GetPromoStatistics} from "../../core/PromoStatistics/api/PromoStatistics.ts";
 
 const promoStatistics = promoStatisticsFactory();
 
+interface PromoStatsTableComponentProps {
+  getPromoStatistics: GetPromoStatistics;
+  shopId: string;
+}
 
-const PromoStatsTable: React.FC = () => {
+const PromoStatsTable: React.FC<PromoStatsTableComponentProps> = ({getPromoStatistics, shopId}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [state, setState] = useState<PromoStatisticsState | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const onInit = () => {
-      setIsLoading(true);
-      return promoStatistics.get_promo_statistics().subscribe(() => {
-        setState({...promoStatistics.state});
-        setIsLoading(false);
-      })
-    }
-    const subscription = onInit();
-    return () => subscription.unsubscribe();
-  }, [])
+    setIsLoading(true);
+    getPromoStatistics(shopId, currentPage).then((state) => {
+      setState(state);
+      setIsLoading(false);
+    });
+  }, [currentPage])
 
   // Show loader while data is loading
   if (isLoading || !state) {

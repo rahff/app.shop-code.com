@@ -6,7 +6,7 @@ import {ShopData} from "../../core/CreateShop/api/data.ts";
 import {ShopListState} from "../../core/ListShops/api/ShopList.ts";
 import {AppRoute} from "../../App.tsx";
 import {CREATE_SHOP_ROUTE} from "../../core/Common/constants.ts";
-import {shop_list_initial_state} from "../../services/external/getShopList.ts";
+import {shop_list_initial_state} from "../../services/external/getShopListApi.ts";
 
 
 interface ShopListComponentProps {

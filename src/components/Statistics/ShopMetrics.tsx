@@ -1,15 +1,25 @@
 import React, {useEffect, useState} from 'react';
 import { TrendingUp, Users, Euro, Gift, Loader2 } from 'lucide-react';
-import {ShopStatisticsState} from "../../core/ShopStatistics/api/data.ts";
 import {shopStatisticsFactory} from "../../factory/shopStatisticsFactory.ts";
+import {
+  GetShopStatistics,
+  shopStatisticsInitialState,
+  ShopStatisticsState
+} from "../../core/ShopStatistics/api/ShopStatistics.ts";
 
-
+interface ShopStatisticsComponentProps {
+  getShopStatistics: GetShopStatistics;
+  shopId: string;
+}
 const shopStatistics = shopStatisticsFactory();
 
-const ShopMetrics: React.FC = () => {
-  const [state, setState] = useState<ShopStatisticsState | null>(null);
+const ShopMetrics: React.FC<ShopStatisticsComponentProps> = ({getShopStatistics, shopId}) => {
+  const [state, setState] = useState<ShopStatisticsState>(shopStatisticsInitialState);
 
   useEffect(() => {
+    getShopStatistics(shopId).then((state) => {
+      setState(state)
+    })
     const onInit = () => {
       return shopStatistics.shop_stats().subscribe(() => {
         setState({...shopStatistics.state!});
@@ -20,7 +30,7 @@ const ShopMetrics: React.FC = () => {
   }, []);
 
   // Show loader while data is loading
-  if (!state) {
+  if (!state.shopStats) {
     return (
       <div className="mb-6 sm:mb-8">
         <div className="flex items-center justify-center py-12">
@@ -36,28 +46,28 @@ const ShopMetrics: React.FC = () => {
   const metrics = [
     {
       label: 'Conversion Rate',
-      value: `${state.conversion_rate}%`,
+      value: `${state.shopStats.conversion_rate}%`,
       icon: TrendingUp,
       color: 'text-green-600',
       bgColor: 'bg-green-50'
     },
     {
       label: 'Collected Customers',
-      value: state.collected_customers.toLocaleString(),
+      value: state.shopStats.collected_customers.toLocaleString(),
       icon: Users,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50'
     },
     {
       label: 'Total Revenue',
-      value: `€${state.collected_revenue.toLocaleString()}`,
+      value: `€${state.shopStats.collected_revenue.toLocaleString()}`,
       icon: Euro,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50'
     },
     {
       label: 'Active Promos',
-      value: state.nbr_of_promo.toString(),
+      value: state.shopStats.nbr_of_promo.toString(),
       icon: Gift,
       color: 'text-orange-600',
       bgColor: 'bg-orange-50'
@@ -67,7 +77,7 @@ const ShopMetrics: React.FC = () => {
   return (
     <div className="mb-6 sm:mb-8">
       <div className="mb-4 sm:mb-6">
-        <h2 className="text-xl sm:text-2xl font-bold text-[#2B2C34] font-['Inter'] mb-2">{state.name} Overview</h2>
+        <h2 className="text-xl sm:text-2xl font-bold text-[#2B2C34] font-['Inter'] mb-2">{state.shopStats.name} Overview</h2>
         <p className="text-[#A0A0A8] text-sm sm:text-base">Key performance metrics for your shop</p>
       </div>
       

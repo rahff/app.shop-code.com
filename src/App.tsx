@@ -30,25 +30,33 @@ import {
 import {AuthProvider} from 'react-oidc-context';
 import {Config} from "./config.ts";
 import {fetchConfig} from "./services/external/fetchConfig.ts";
-import {getPromoList} from "./services/external/getPromoList.ts";
-import {getShopList} from "./services/external/getShopList.ts";
-import {createShop} from "./services/external/createShop.ts";
+import {shopListApiCreator} from "./services/external/getShopListApi.ts";
+import {createShopApi} from "./services/external/createShopApi.ts";
+import {redeemCouponCreator} from "./core/RedeemCoupon/api/RedeemCoupon.ts";
+import {cashDrawerApiCreator} from "./services/external/cashDrawerApi.ts";
+import {punch_couponCreator} from "./core/RedeemCoupon/rules/CouponPuncher.ts";
+import {nativeDateTimeProvider} from "./services/browser/NativeDateTimeProvider.ts";
+import {cryptoIdGenerator} from "./services/browser/CryptoIdGenerator.ts";
+import {addCashierCreator} from "./core/AddCashier/api/AddCashier.ts";
+import {addCashierApiCreator} from "./services/external/addCashierApi.ts";
+import {sessionStorageBrowserApi} from "./services/browser/SessionStorageBrowserApi.ts";
+import {createShopCreator} from "./core/CreateShop/api/CreateShopApi.ts";
+import {shopFactoryCreator} from "./core/CreateShop/rules/ShopFactory.ts";
+import {nativeDateProvider} from "./services/browser/NativeDateProvider.ts";
+import {AppRoute} from "./core/Common/api/CommonTypes.ts";
+import {listCashierCreator} from "./core/ListCashiers/api/ListCashiers.ts";
+import {cashierListApiCreator} from "./services/external/cashierListApi.ts";
+import {getShopListCreator} from "./core/ListShops/api/ShopList.ts";
+import {createPromoCreator} from "./core/CreatePromo/api/CreatePromo.ts";
+import {savePromoApiCreator} from "./services/external/savePromoApi.ts";
+import {promoValidatorCreator} from "./core/CreatePromo/rules/PromoValidation.ts";
+import {getPromoListCreator} from "./core/ListPromos/api/PromoList.ts";
+import {getPromoListApiCreator} from "./services/external/getPromoListApi.ts";
+import {getPromoStatisticsCreator} from "./core/PromoStatistics/api/PromoStatistics.ts";
+import {promoStatisticsApiCreator} from "./services/external/promoStatisticApi.ts";
+import {getShopStatisticsCreator} from "./core/ShopStatistics/api/ShopStatistics.ts";
+import {shopStatisticApiCreator} from "./services/external/shopStatisticApi.ts";
 
-export type AppRoute =
-    typeof APP_ROUTE |
-    typeof REFRESH_SESSION_ROUTE|
-    typeof MY_SHOPS_ROUTE |
-    typeof DASHBOARD_ROUTE |
-    typeof ERROR_PAGE_ROUTE |
-    typeof CREATE_PROMO_ROUTE |
-    typeof CREATE_SHOP_ROUTE |
-    typeof SET_CONFIG_ROUTE |
-    'region-picker' |
-    'upload-error' |
-    'redeem-coupon' |
-    'upgrade-plan' |
-    'add-cashier' |
-    'help-support';
 
 const nullConfig = {
   "cognito": {
@@ -83,7 +91,7 @@ function App() {
     if (localConfig === null) {
       setAppRoute(SET_CONFIG_ROUTE);
       return;
-    }else {
+    } else {
       setConfig(JSON.parse(localConfig))
       setAppRoute(APP_ROUTE);
     }
@@ -112,6 +120,7 @@ function App() {
   // Handle choose another shop - return to shop list
   const handleChooseAnotherShop = useCallback(() => {
     setAppRoute(MY_SHOPS_ROUTE);
+    setActiveRoute('promos');
   }, []);
 
   // Handle scan success - navigate to redeem coupon
@@ -178,24 +187,76 @@ function App() {
   const renderDashboardContent = () => {
     switch (activeRoute) {
       case 'promos':
-        return <PromoListComponent redirectUser={redirectUser} getPromoList={ getPromoList(config.apiEndpoints.shopPromo, userSession.its_selected_shop().id, authentication!.token)} />;
+        return <PromoListComponent
+            redirectUser={redirectUser}
+            shopId={userSession.its_selected_shop().id}
+            getPromoList={
+              getPromoListCreator(
+                  getPromoListApiCreator(
+                      config.apiEndpoints.shopPromo,
+                      authentication!.token
+                  ),
+                  sessionStorageBrowserApi
+              )
+            }
+        />;
       case 'statistics':
-        return <Statistics />;
+        return <Statistics
+            getShopStatistics={
+                getShopStatisticsCreator(
+                    shopStatisticApiCreator(
+                        config.apiEndpoints.shopPromo,
+                        authentication!.token
+                    ),
+                    sessionStorageBrowserApi
+                )
+            }
+            shopId={userSession.its_selected_shop().id}
+            getPromoStatistics={
+              getPromoStatisticsCreator(
+                  promoStatisticsApiCreator(
+                      config.apiEndpoints.shopPromo,
+                      authentication!.token
+                  ),
+                  sessionStorageBrowserApi
+              )
+            }
+        />;
       case 'scan':
         return (
-          <div className="h-full">
-            <QrcodeScannerView
-              onScanSuccess={handleScanSuccess}
-              onScanError={handleScanError}
-              isActive={true}
-              onClose={handleScanClose}
-            />
-          </div>
+            <div className="h-full">
+              <QrcodeScannerView
+                  onScanSuccess={handleScanSuccess}
+                  onScanError={handleScanError}
+                  isActive={true}
+                  onClose={handleScanClose}
+              />
+            </div>
         );
       case 'settings':
-        return <Settings redirectUser={redirectUser} account_ref={authentication!.account_ref!} />;
+        return <Settings
+            redirectUser={redirectUser}
+            listCashiers={
+              listCashierCreator(
+                  cashierListApiCreator(config.apiEndpoints.userSide, authentication!.token),
+                  sessionStorageBrowserApi
+              )
+            }
+        />;
       default:
-        return <PromoListComponent redirectUser={redirectUser} getPromoList={ getPromoList(config.apiEndpoints.shopPromo, userSession.its_selected_shop().id, authentication!.token)} />;
+        return <PromoListComponent
+            redirectUser={redirectUser}
+            shopId={userSession.its_selected_shop().id}
+            getPromoList={
+              getPromoListCreator(
+                  getPromoListApiCreator(
+                      config.apiEndpoints.shopPromo,
+                      authentication!.token
+                  ),
+                  sessionStorageBrowserApi
+              )
+            }
+        />;
     }
   };
 
@@ -204,24 +265,59 @@ function App() {
 
     case APP_ROUTE:
       return <AuthProvider {...config.cognito}>
-                <BootstrapComponent redirectUser={redirectUser} onAuthentication={onAuthentication} />;
+                <BootstrapComponent
+                    redirectUser={redirectUser}
+                    onAuthentication={onAuthentication}
+                />;
              </AuthProvider>
 
     case REFRESH_SESSION_ROUTE:
-      return <RefreshSessionComponent redirectUser={redirectUser} onAuthentication={onAuthentication} />;
+      return <RefreshSessionComponent
+                redirectUser={redirectUser}
+                onAuthentication={onAuthentication}
+              />;
 
     case MY_SHOPS_ROUTE:
       return <ShopListComponent
-        onShopSelect={handleShopSelect}
-        getShopList={getShopList(config.apiEndpoints.shopPromo, authentication!.account_ref!)}
-        redirectUser={redirectUser}
+          onShopSelect={handleShopSelect}
+          getShopList={
+            getShopListCreator(
+              shopListApiCreator(
+                  config.apiEndpoints.shopPromo,
+                  authentication!.token
+              ),
+              sessionStorageBrowserApi)
+          }
+          redirectUser={redirectUser}
       />;
 
     case CREATE_PROMO_ROUTE:
-      return <CreatePromoPage redirectUser={redirectUser} />;
+      return <CreatePromoPage
+          redirectUser={redirectUser}
+          createPromo={createPromoCreator(
+                savePromoApiCreator(
+                    config.apiEndpoints.shopPromo,
+                    authentication!.token
+                ),
+                promoValidatorCreator(nativeDateProvider),
+                sessionStorageBrowserApi)}
+          shopId={userSession.its_selected_shop().id}
+              />;
 
     case CREATE_SHOP_ROUTE:
-      return <CreateShopPage redirectUser={redirectUser} createShop={createShop(config.apiEndpoints.shopPromo, authentication!.account_ref!, authentication!.token)} />;
+      return <CreateShopPage
+          userId={authentication!.user_id}
+          redirectUser={redirectUser}
+          createShop={
+            createShopCreator(
+                createShopApi(
+                    config.apiEndpoints.shopPromo,
+                    authentication!.token
+                ),
+                shopFactoryCreator(nativeDateProvider),
+                sessionStorageBrowserApi
+            )
+          }/>;
 
     case 'redeem-coupon':
       return (
@@ -229,6 +325,15 @@ function App() {
           couponData={scannedCoupon!}
           onComplete={handleRedeemComplete}
           onCancel={handleRedeemCancel}
+          redeemCoupon={
+          redeemCouponCreator(
+              cashDrawerApiCreator(
+                  config.apiEndpoints.shopPromo,
+                  authentication!.token
+              ),
+              punch_couponCreator(nativeDateTimeProvider, cryptoIdGenerator)
+          )
+        }
         />
       );
 
@@ -245,6 +350,15 @@ function App() {
         <AddCashierView
           onComplete={handleAddCashierComplete}
           onCancel={handleAddCashierCancel}
+          addCashier={
+            addCashierCreator(
+                addCashierApiCreator(
+                    config.apiEndpoints.shopPromo,
+                    authentication!.token
+                ),
+                sessionStorageBrowserApi
+            )
+          }
         />
       );
 
@@ -256,9 +370,11 @@ function App() {
       );
 
     case SET_CONFIG_ROUTE:
-      return <RegionPickerComponentPage redirectUser={redirectUser}
-                                        onConfigReceived={onConfigReceived}
-                                        fetchConfig={fetchConfig} />;
+      return <RegionPickerComponentPage
+          redirectUser={redirectUser}
+          onConfigReceived={onConfigReceived}
+          fetchConfig={fetchConfig}
+      />;
 
     case ERROR_PAGE_ROUTE:
       return (
@@ -270,11 +386,17 @@ function App() {
     case DASHBOARD_ROUTE:
       return (
         <div className="flex flex-col h-screen bg-gray-50">
-          <Header onChooseAnotherShop={handleChooseAnotherShop} userProfile={userSession.its_profile()!} />
+          <Header
+              onChooseAnotherShop={handleChooseAnotherShop}
+              userProfile={userSession.its_profile()!}
+          />
           <main className="flex-1 overflow-auto pb-20">
             {renderDashboardContent()}
           </main>
-          <BottomNavigation activeRoute={activeRoute} onRouteChange={setActiveRoute} />
+          <BottomNavigation
+              activeRoute={activeRoute}
+              onRouteChange={setActiveRoute}
+          />
         </div>
       );
 
