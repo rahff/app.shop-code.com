@@ -148,8 +148,6 @@ function App() {
     // Handle scan error
     const handleScanError = (error: string) => {
         console.error('Scan error:', error);
-        // Return to promos view on error
-        setActiveRoute('promos');
     };
 
     // Handle scan close/cancel - return to promos

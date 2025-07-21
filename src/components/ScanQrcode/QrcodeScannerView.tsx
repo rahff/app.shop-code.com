@@ -37,11 +37,9 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
     }
   };
 
-  const handleScanError = (error: unknown) => {
+  const handleScanError = (error: any) => {
     console.error('QR Scan Error:', error);
     setError("Scan failed. Please try again.");
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
     onScanError(error.message || "Scan failed");
   };
 
@@ -97,7 +95,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
                   onScan={handleScanResult}
                   onError={handleScanError}
                   constraints={{
-                    facingMode: 'environment' // Use back camera on mobile
+                    facingMode: 'environment'
                   }}
                   styles={{
                     container: {
