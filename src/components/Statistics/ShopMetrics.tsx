@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { TrendingUp, Users, Euro, Gift, Loader2 } from 'lucide-react';
-import {shopStatisticsFactory} from "../../factory/shopStatisticsFactory.ts";
+
 import {
   GetShopStatistics,
   shopStatisticsInitialState,
@@ -11,22 +11,13 @@ interface ShopStatisticsComponentProps {
   getShopStatistics: GetShopStatistics;
   shopId: string;
 }
-const shopStatistics = shopStatisticsFactory();
+
 
 const ShopMetrics: React.FC<ShopStatisticsComponentProps> = ({getShopStatistics, shopId}) => {
   const [state, setState] = useState<ShopStatisticsState>(shopStatisticsInitialState);
 
   useEffect(() => {
-    getShopStatistics(shopId).then((state) => {
-      setState(state)
-    })
-    const onInit = () => {
-      return shopStatistics.shop_stats().subscribe(() => {
-        setState({...shopStatistics.state!});
-      });
-    };
-    const subscription = onInit();
-    return () => subscription.unsubscribe();
+    getShopStatistics(shopId).then(setState)
   }, []);
 
   // Show loader while data is loading

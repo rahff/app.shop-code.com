@@ -17,10 +17,30 @@ export const authorizationHeaders = (token: string) => {
 }
 
 
-export const fakePostFetch: Fetch = (_url: string, config?: RequestInit) => {
-  const body = JSON.parse(config!.body!.toString());
+export const fakePostFetch = (customResponse: any | null): Fetch => (_url: string, config?: RequestInit) => {
+  const body = customResponse ? customResponse : JSON.parse(config!.body!.toString());
   const response: Response = new Response(JSON.stringify(body));
   return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(response);
+    },500)
+  })
+}
+
+export const fakeUploadFetch: Fetch = (_url: string, _config?: RequestInit) => {
+
+  const response: Response = new Response(null, {
+    status: 200,
+    statusText: 'OK',
+    headers: {
+      'ETag': '"fake-etag-1234567890"',
+      'x-amz-id-2': 'fake-id-2',
+      'x-amz-request-id': 'fake-request-id',
+      'Content-Length': '0',
+    },
+  });
+
+return new Promise(resolve => {
     setTimeout(() => {
       resolve(response);
     },500)
@@ -69,5 +89,22 @@ export const handleResponse = <T> (response: Response): Promise<T | Exception> =
     default: return Promise.resolve(new InternalServerError());
   }
 }
+
+export const handleUploadResponse = (response: Response): Promise<{success: boolean} | Exception> => {
+  switch (response.status) {
+    case 200:
+      return Promise.resolve({success: true});
+
+    case 401:
+      return Promise.resolve(new UnauthenticatedUser());
+
+    case 403:
+      return Promise.resolve(new UpgradedPlanRequired());
+
+    case 500:
+    default:
+      return Promise.resolve(new InternalServerError());
+  }
+};
 
 export type HttpService<T> = (fetch: Fetch) => (endpoint: string, token: string) => T;

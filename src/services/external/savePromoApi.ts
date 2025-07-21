@@ -16,4 +16,4 @@ export const _savePromoApiCreator: HttpService<SavePromoApi> =
 export const savePromoApiCreator =
     environment === "production" ?
     _savePromoApiCreator(fetch) :
-    _savePromoApiCreator(fakePostFetch);
+    _savePromoApiCreator(fakePostFetch(null));

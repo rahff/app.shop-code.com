@@ -16,7 +16,6 @@ import AddCashierView from './components/AddCashier/AddCashierView.tsx';
 import HelpSupportView from './components/HelpSupport/HelpSupportView.tsx';
 import ErrorPage from './components/ErrorPage/ErrorPage.tsx';
 import RegionPickerComponentPage from './components/RegionPicker/RegionPickerComponentPage.tsx';
-import {userSession} from "./factory/userSessionFactory.ts";
 import {ShopData} from "./core/CreateShop/api/data.ts";
 import { CouponData } from './core/ScanQrcode/api/data';
 import {Authentication} from "./core/Model/Authentication.ts";
@@ -56,268 +55,290 @@ import {getPromoStatisticsCreator} from "./core/PromoStatistics/api/PromoStatist
 import {promoStatisticsApiCreator} from "./services/external/promoStatisticApi.ts";
 import {getShopStatisticsCreator} from "./core/ShopStatistics/api/ShopStatistics.ts";
 import {shopStatisticApiCreator} from "./services/external/shopStatisticApi.ts";
+import {getCheckoutUrlCreator} from "./core/Subscription/api/GetCheckoutUrl.ts";
+import {checkoutApiCreator} from "./services/external/checkoutApi.ts";
+import {UserProfile} from "./core/UserSession/api/data.ts";
+import {loadUserSessionCreator} from "./core/UserSession/api/UserSession.ts";
+import {userProfileApiCreator} from "./services/external/userProfileApi.ts";
+import {localStorageApi} from "./services/browser/LocalStorageBrowserApi.ts";
+import {getUploadUrlCreator, uploadFileCreator} from "./core/UploadImage/api/UploadFile.ts";
+import {getUploadUrlApiCreator} from "./services/external/getUploadUrlApi.ts";
+import {uploadFileApi} from "./services/external/uploadFileApi.ts";
+import {sendHelpSupportMessageCreator} from "./core/HelpSupport Message/api/HelpSupportMessage.ts";
+import {helpSupportMessageApi} from "./services/external/helpSupportMessageApi.ts";
 
 
 const nullConfig = {
-  "cognito": {
-    "authority": "",
-    "client_id": "",
-    "redirect_uri": "",
-    "response_type": "code",
-    "scope": "email openid profile",
-    "automaticSilentRenew": true
-  },
-  "apiEndpoints": {
-    "userSide": "",
-    "shopPromo": ""
-  }
+    "cognito": {
+        "authority": "",
+        "client_id": "",
+        "redirect_uri": "",
+        "response_type": "code",
+        "scope": "email openid profile",
+        "automaticSilentRenew": true
+    },
+    "apiEndpoints": {
+        "userSide": "",
+        "shopPromo": ""
+    }
 } as const;
 
 function App() {
-  const [appRoute, setAppRoute] = useState<AppRoute>(SET_CONFIG_ROUTE);
-  const [activeRoute, setActiveRoute] = useState('promos');
-  const [scannedCoupon, setScannedCoupon] = useState<CouponData | null>(null);
-  const [authentication, setAuthentication] = useState<Authentication | null>(null);
-  const [config, setConfig] = useState<Config>(nullConfig);
+    const [appRoute, setAppRoute] = useState<AppRoute>(SET_CONFIG_ROUTE);
+    const [activeRoute, setActiveRoute] = useState('promos');
+    const [scannedCoupon, setScannedCoupon] = useState<CouponData | null>(null);
+    const [authentication, setAuthentication] = useState<Authentication | null>(null);
+    const [config, setConfig] = useState<Config>(nullConfig);
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+    const [shop, setShop] = useState<ShopData | null>(null);
 
 
-  const onConfigReceived = (appConfig: Config) => {
-    localStorage.setItem("config", JSON.stringify(appConfig));
-    setConfig(appConfig);
-  }
-  // Check for region selection before proceeding to bootstrap
-  const checkConfig = useCallback(() => {
-    const localConfig = localStorage.getItem('config');
-    if (localConfig === null) {
-      setAppRoute(SET_CONFIG_ROUTE);
-      return;
-    } else {
-      setConfig(JSON.parse(localConfig))
-      setAppRoute(APP_ROUTE);
+    const onConfigReceived = (appConfig: Config) => {
+        localStorage.setItem("config", JSON.stringify(appConfig));
+        setConfig(appConfig);
     }
-  }, []);
+    // Check for region selection before proceeding to bootstrap
+    const checkConfig = useCallback(() => {
+        const localConfig = localStorage.getItem('config');
+        if (localConfig === null) {
+            setAppRoute(SET_CONFIG_ROUTE);
+            return;
+        } else {
+            setConfig(JSON.parse(localConfig))
+            setAppRoute(APP_ROUTE);
+        }
+    }, []);
 
-  // Initialize app with region check
-  useEffect(() => {
-    checkConfig();
-  }, [checkConfig]);
+    // Initialize app with region check
+    useEffect(() => {
+        checkConfig();
+    }, [checkConfig]);
 
-  // Handle bootstrap completion - determines initial app destination
-  const redirectUser = useCallback((destination: AppRoute) => {
-    setAppRoute(destination);
-  }, []);
+    // Handle bootstrap completion - determines initial app destination
+    const redirectUser = useCallback((destination: AppRoute) => {
+        setAppRoute(destination);
+    }, []);
 
-  const onAuthentication = useCallback((authentication: Authentication) => {
-    setAuthentication(authentication);
-  }, [])
+    const onUserProfileLoaded = useCallback((userProfile: UserProfile) => {
+        setUserProfile(userProfile);
+    }, [])
 
-  // Handle shop selection - enter main dashboard
-  const handleShopSelect = useCallback((shop: ShopData) => {
-    userSession.shop_selected(shop);
-    setAppRoute(DASHBOARD_ROUTE);
-  }, []);
+    const onAuthentication = useCallback((authentication: Authentication) => {
+        setAuthentication(authentication);
+    }, [])
 
-  // Handle choose another shop - return to shop list
-  const handleChooseAnotherShop = useCallback(() => {
-    setAppRoute(MY_SHOPS_ROUTE);
-    setActiveRoute('promos');
-  }, []);
+    // Handle shop selection - enter main dashboard
+    const handleShopSelect = useCallback((shop: ShopData) => {
+        setShop(shop);
+        setAppRoute(DASHBOARD_ROUTE);
+    }, []);
 
-  // Handle scan success - navigate to redeem coupon
-  const handleScanSuccess = (coupon: CouponData) => {
-    setScannedCoupon(coupon);
-    setAppRoute('redeem-coupon');
-  };
+    // Handle choose another shop - return to shop list
+    const handleChooseAnotherShop = useCallback(() => {
+        setAppRoute(MY_SHOPS_ROUTE);
+        setActiveRoute('promos');
+    }, []);
 
-  // Handle scan error
-  const handleScanError = (error: string) => {
-    console.error('Scan error:', error);
-    // Return to promos view on error
-    setActiveRoute('promos');
-  };
+    // Handle scan success - navigate to redeem coupon
+    const handleScanSuccess = (coupon: CouponData) => {
+        setScannedCoupon(coupon);
+        setAppRoute('redeem-coupon');
+    };
 
-  // Handle scan close/cancel - return to promos
-  const handleScanClose = () => {
-    setActiveRoute('promos');
-  };
+    // Handle scan error
+    const handleScanError = (error: string) => {
+        console.error('Scan error:', error);
+        // Return to promos view on error
+        setActiveRoute('promos');
+    };
 
-  // Handle redeem completion - return to dashboard
-  const handleRedeemComplete = () => {
-    setScannedCoupon(null);
-    setAppRoute(DASHBOARD_ROUTE);
-    setActiveRoute('promos');
-  };
+    // Handle scan close/cancel - return to promos
+    const handleScanClose = () => {
+        setActiveRoute('promos');
+    };
 
-  // Handle redeem cancel - return to dashboard
-  const handleRedeemCancel = () => {
-    setScannedCoupon(null);
-    setAppRoute(DASHBOARD_ROUTE);
-    setActiveRoute('promos');
-  };
+    // Handle redeem completion - return to dashboard
+    const handleRedeemComplete = () => {
+        setScannedCoupon(null);
+        setAppRoute(DASHBOARD_ROUTE);
+        setActiveRoute('promos');
+    };
 
-  // Handle upgrade plan actions
-  const handleUpgradeComplete = () => {
-    setAppRoute(DASHBOARD_ROUTE);
-    setActiveRoute('settings');
-  };
+    // Handle redeem cancel - return to dashboard
+    const handleRedeemCancel = () => {
+        setScannedCoupon(null);
+        setAppRoute(DASHBOARD_ROUTE);
+        setActiveRoute('promos');
+    };
 
-  const handleUpgradeCancel = () => {
-    setAppRoute(DASHBOARD_ROUTE);
-    setActiveRoute('settings');
-  };
+    // Handle add cashier actions
+    const handleAddCashierComplete = () => {
+        setAppRoute(DASHBOARD_ROUTE);
+        setActiveRoute('settings');
+    };
 
-  // Handle add cashier actions
-  const handleAddCashierComplete = () => {
-    setAppRoute(DASHBOARD_ROUTE);
-    setActiveRoute('settings');
-  };
+    const handleAddCashierCancel = () => {
+        setAppRoute(DASHBOARD_ROUTE);
+        setActiveRoute('settings');
+    };
 
-  const handleAddCashierCancel = () => {
-    setAppRoute(DASHBOARD_ROUTE);
-    setActiveRoute('settings');
-  };
+    // Handle help support actions
+    const handleHelpSupportCancel = () => {
+        setAppRoute(DASHBOARD_ROUTE);
+        setActiveRoute('settings');
+    };
 
-  // Handle help support actions
-  const handleHelpSupportCancel = () => {
-    setAppRoute(DASHBOARD_ROUTE);
-    setActiveRoute('settings');
-  };
+    // Render dashboard content based on active route
+    const renderDashboardContent = () => {
+        switch (activeRoute) {
+            case 'promos':
+                return <PromoListComponent
+                    redirectUser={redirectUser}
+                    shopId={shop!.id}
+                    getPromoList={
+                        getPromoListCreator(
+                            getPromoListApiCreator(
+                                config.apiEndpoints.shopPromo,
+                                authentication!.token
+                            ),
+                            sessionStorageBrowserApi
+                        )
+                    }
+                />;
+            case 'statistics':
+                return <Statistics
+                    getShopStatistics={
+                        getShopStatisticsCreator(
+                            shopStatisticApiCreator(
+                                config.apiEndpoints.shopPromo,
+                                authentication!.token
+                            ),
+                            sessionStorageBrowserApi
+                        )
+                    }
+                    shopId={shop!.id}
+                    getPromoStatistics={
+                        getPromoStatisticsCreator(
+                            promoStatisticsApiCreator(
+                                config.apiEndpoints.shopPromo,
+                                authentication!.token
+                            ),
+                            sessionStorageBrowserApi
+                        )
+                    }
+                />;
+            case 'scan':
+                return (
+                    <div className="h-full">
+                        <QrcodeScannerView
+                            onScanSuccess={handleScanSuccess}
+                            onScanError={handleScanError}
+                            isActive={true}
+                            onClose={handleScanClose}
+                        />
+                    </div>
+                );
+            case 'settings':
+                return <Settings
+                    redirectUser={redirectUser}
+                    listCashiers={
+                        listCashierCreator(
+                            cashierListApiCreator(config.apiEndpoints.userSide, authentication!.token),
+                            sessionStorageBrowserApi
+                        )
+                    }
+                />;
+            default:
+                return <PromoListComponent
+                    redirectUser={redirectUser}
+                    shopId={shop!.id}
+                    getPromoList={
+                        getPromoListCreator(
+                            getPromoListApiCreator(
+                                config.apiEndpoints.shopPromo,
+                                authentication!.token
+                            ),
+                            sessionStorageBrowserApi
+                        )
+                    }
+                />;
+        }
+    };
 
-  // Render dashboard content based on active route
-  const renderDashboardContent = () => {
-    switch (activeRoute) {
-      case 'promos':
-        return <PromoListComponent
-            redirectUser={redirectUser}
-            shopId={userSession.its_selected_shop().id}
-            getPromoList={
-              getPromoListCreator(
-                  getPromoListApiCreator(
-                      config.apiEndpoints.shopPromo,
-                      authentication!.token
-                  ),
-                  sessionStorageBrowserApi
-              )
-            }
-        />;
-      case 'statistics':
-        return <Statistics
-            getShopStatistics={
-                getShopStatisticsCreator(
-                    shopStatisticApiCreator(
+    // Main app rendering logic
+    switch (appRoute) {
+
+        case APP_ROUTE:
+            return <AuthProvider {...config.cognito}>
+                <BootstrapComponent
+                    setUserProfile={onUserProfileLoaded}
+                    redirectUser={redirectUser}
+                    onAuthentication={onAuthentication}
+                    loadUserSession={
+                        loadUserSessionCreator(
+                            userProfileApiCreator(
+                                config.apiEndpoints.userSide),
+                            localStorageApi)
+                    }
+                />;
+            </AuthProvider>
+
+        case REFRESH_SESSION_ROUTE:
+            return <RefreshSessionComponent
+                redirectUser={redirectUser}
+                onAuthentication={onAuthentication}
+            />;
+
+        case MY_SHOPS_ROUTE:
+            return <ShopListComponent
+                onShopSelect={handleShopSelect}
+                getShopList={
+                    getShopListCreator(
+                        shopListApiCreator(
+                            config.apiEndpoints.shopPromo,
+                            authentication!.token
+                        ),
+                        sessionStorageBrowserApi)
+                }
+                redirectUser={redirectUser}
+            />;
+
+        case CREATE_PROMO_ROUTE:
+            return <CreatePromoPage
+                uploadFile={uploadFileCreator(uploadFileApi)}
+                getUploadUrl={getUploadUrlCreator(getUploadUrlApiCreator(config.apiEndpoints.userSide, authentication!.token), cryptoIdGenerator)}
+                redirectUser={redirectUser}
+                createPromo={createPromoCreator(
+                    savePromoApiCreator(
                         config.apiEndpoints.shopPromo,
                         authentication!.token
                     ),
-                    sessionStorageBrowserApi
-                )
-            }
-            shopId={userSession.its_selected_shop().id}
-            getPromoStatistics={
-              getPromoStatisticsCreator(
-                  promoStatisticsApiCreator(
-                      config.apiEndpoints.shopPromo,
-                      authentication!.token
-                  ),
-                  sessionStorageBrowserApi
-              )
-            }
-        />;
-      case 'scan':
-        return (
-            <div className="h-full">
-              <QrcodeScannerView
-                  onScanSuccess={handleScanSuccess}
-                  onScanError={handleScanError}
-                  isActive={true}
-                  onClose={handleScanClose}
-              />
-            </div>
-        );
-      case 'settings':
-        return <Settings
-            redirectUser={redirectUser}
-            listCashiers={
-              listCashierCreator(
-                  cashierListApiCreator(config.apiEndpoints.userSide, authentication!.token),
-                  sessionStorageBrowserApi
-              )
-            }
-        />;
-      default:
-        return <PromoListComponent
-            redirectUser={redirectUser}
-            shopId={userSession.its_selected_shop().id}
-            getPromoList={
-              getPromoListCreator(
-                  getPromoListApiCreator(
-                      config.apiEndpoints.shopPromo,
-                      authentication!.token
-                  ),
-                  sessionStorageBrowserApi
-              )
-            }
-        />;
-    }
-  };
+                    promoValidatorCreator(nativeDateProvider),
+                    sessionStorageBrowserApi)}
+                shopId={shop!.id}
+            />;
 
-  // Main app rendering logic
-  switch (appRoute) {
-
-    case APP_ROUTE:
-      return <AuthProvider {...config.cognito}>
-                <BootstrapComponent
-                    redirectUser={redirectUser}
-                    onAuthentication={onAuthentication}
-                />;
-             </AuthProvider>
-
-    case REFRESH_SESSION_ROUTE:
-      return <RefreshSessionComponent
+        case CREATE_SHOP_ROUTE:
+            return <CreateShopPage
+                uploadFile={uploadFileCreator(uploadFileApi)}
+                userId={authentication!.user_id}
                 redirectUser={redirectUser}
-                onAuthentication={onAuthentication}
-              />;
-
-    case MY_SHOPS_ROUTE:
-      return <ShopListComponent
-          onShopSelect={handleShopSelect}
-          getShopList={
-            getShopListCreator(
-              shopListApiCreator(
-                  config.apiEndpoints.shopPromo,
-                  authentication!.token
-              ),
-              sessionStorageBrowserApi)
-          }
-          redirectUser={redirectUser}
-      />;
-
-    case CREATE_PROMO_ROUTE:
-      return <CreatePromoPage
-          redirectUser={redirectUser}
-          createPromo={createPromoCreator(
-                savePromoApiCreator(
-                    config.apiEndpoints.shopPromo,
-                    authentication!.token
-                ),
-                promoValidatorCreator(nativeDateProvider),
-                sessionStorageBrowserApi)}
-          shopId={userSession.its_selected_shop().id}
-              />;
-
-    case CREATE_SHOP_ROUTE:
-      return <CreateShopPage
-          userId={authentication!.user_id}
-          redirectUser={redirectUser}
-          createShop={
-            createShopCreator(
-                createShopApi(
-                    config.apiEndpoints.shopPromo,
-                    authentication!.token
-                ),
-                shopFactoryCreator(nativeDateProvider),
-                sessionStorageBrowserApi
-            )
-          }/>;
+                createShop={createShopCreator(
+                    createShopApi(
+                        config.apiEndpoints.shopPromo,
+                        authentication!.token
+                    ),
+                    shopFactoryCreator(nativeDateProvider),
+                    sessionStorageBrowserApi
+                )} getUploadUrl={
+                    getUploadUrlCreator(
+                        getUploadUrlApiCreator(
+                            config.apiEndpoints.userSide,
+                            authentication!.token),
+                            cryptoIdGenerator
+                        )
+                    }
+            />;
 
     case 'redeem-coupon':
       return (
@@ -340,8 +361,14 @@ function App() {
     case 'upgrade-plan':
       return (
         <UpgradePlanView
-          onUpgrade={handleUpgradeComplete}
-          onCancel={handleUpgradeCancel}
+            redirectUser={redirectUser}
+            userPlan={userProfile!.userPlan}
+            getCheckoutUrl={
+                getCheckoutUrlCreator(checkoutApiCreator(
+                    config.apiEndpoints.userSide,
+                    authentication!.token)
+                )
+            }
         />
       );
 
@@ -365,6 +392,11 @@ function App() {
     case 'help-support':
       return (
         <HelpSupportView
+            sendHelpSupportMessage={
+            sendHelpSupportMessageCreator(
+                helpSupportMessageApi(config.apiEndpoints.userSide)
+            )
+        }
           onCancel={handleHelpSupportCancel}
         />
       );
@@ -388,7 +420,7 @@ function App() {
         <div className="flex flex-col h-screen bg-gray-50">
           <Header
               onChooseAnotherShop={handleChooseAnotherShop}
-              userProfile={userSession.its_profile()!}
+              userProfile={userProfile!}
           />
           <main className="flex-1 overflow-auto pb-20">
             {renderDashboardContent()}

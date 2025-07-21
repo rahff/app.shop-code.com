@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {QrCode} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import {userSession} from "../../factory/userSessionFactory.ts";
 import {useAuth} from "react-oidc-context";
 import {getAuthentication} from "../../functions.ts";
 import {Authentication} from "../../core/Model/Authentication.ts";
 import {AppRoute} from "../../core/Common/api/CommonTypes.ts";
+import {LoadUserSession} from "../../core/UserSession/api/UserSession.ts";
+import {UserProfile} from "../../core/UserSession/api/data.ts";
 
 
 
@@ -13,11 +14,13 @@ import {AppRoute} from "../../core/Common/api/CommonTypes.ts";
 interface BootstrapComponentProps {
   redirectUser: (destination: AppRoute, error?: string) => void;
   onAuthentication: (authentication: Authentication) => void;
+  setUserProfile: (userProfile: UserProfile) => void;
+  loadUserSession: LoadUserSession;
 }
 
 
 
-const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser, onAuthentication }) => {
+const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser, onAuthentication, loadUserSession, setUserProfile }) => {
   const { t } = useTranslation('global');
   const [loadingText, setLoadingText] = useState(t('bootstrap.initializing'));
   const auth = useAuth();
@@ -31,8 +34,9 @@ const BootstrapComponent: React.FC<BootstrapComponentProps> = ({ redirectUser, o
       const authentication: Authentication = getAuthentication(auth.user!)!;
       if(authentication) onAuthentication(authentication);
       setLoadingText(t('bootstrap.loadingSession'));
-      userSession.load(authentication).then((redirection) => {
-        redirectUser(redirection.path);
+      loadUserSession(authentication).then((state) => {
+        if(state.userProfile) setUserProfile(state.userProfile);
+        redirectUser(state.redirection.path);
       })
       return;
     }else {

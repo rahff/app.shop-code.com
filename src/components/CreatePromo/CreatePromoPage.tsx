@@ -5,6 +5,7 @@ import { PromoFormData } from '../../core/CreatePromo/api/data';
 import {DASHBOARD_ROUTE} from "../../core/Common/constants.ts";
 import {AppRoute} from "../../core/Common/api/CommonTypes.ts";
 import {CreatePromo} from "../../core/CreatePromo/api/CreatePromo.ts";
+import {GetUploadUrl, UploadFile} from "../../core/UploadImage/api/UploadFile.ts";
 
 
 
@@ -12,11 +13,13 @@ interface CreatePromoPageProps {
   redirectUser: (destination: AppRoute, error?: string) => void;
   createPromo: CreatePromo;
   shopId: string;
+  getUploadUrl: GetUploadUrl;
+  uploadFile: UploadFile;
 }
 
 
 
-const CreatePromoPage: React.FC<CreatePromoPageProps> = ({redirectUser, createPromo, shopId}) => {
+const CreatePromoPage: React.FC<CreatePromoPageProps> = ({redirectUser, createPromo, shopId, getUploadUrl, uploadFile}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,18 +33,7 @@ const CreatePromoPage: React.FC<CreatePromoPageProps> = ({redirectUser, createPr
   };
 
   const navigateToDashboard = () => {
-    // Navigate to dashboard using redirectUser
     redirectUser(DASHBOARD_ROUTE);
-  };
-
-  const handleGoBack = () => {
-    // Navigate back to dashboard instead of previous page
-    navigateToDashboard();
-  };
-
-  const handleCancel = () => {
-    // Always navigate to dashboard on cancel
-    navigateToDashboard();
   };
 
   return (
@@ -50,7 +42,7 @@ const CreatePromoPage: React.FC<CreatePromoPageProps> = ({redirectUser, createPr
       <header className="bg-white border-b border-gray-200 px-4 py-4 sm:px-6 lg:px-8">
         <div className="flex items-center space-x-4">
           <button
-            onClick={handleGoBack}
+            onClick={navigateToDashboard}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
             aria-label="Go back to dashboard"
           >
@@ -66,11 +58,12 @@ const CreatePromoPage: React.FC<CreatePromoPageProps> = ({redirectUser, createPr
       {/* Main Content */}
       <main className="py-8">
         <CreatePromoForm
+          uploadFile={uploadFile}
+          getUploadUrl={getUploadUrl}
           onSubmit={handleSubmit}
           isLoading={isLoading}
           error={error}
-          onCancel={handleCancel}
-          redirectUser={redirectUser}
+          onCancel={navigateToDashboard}
         />
       </main>
     </div>

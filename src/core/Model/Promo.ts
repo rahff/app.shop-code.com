@@ -1,7 +1,7 @@
 import {PromoData, PromoFormData} from '../CreatePromo/api/data';
 import {InvalidDateRange} from '../Common/api/Exception';
 import {err, ok, Result} from '../Common/api/CommonTypes';
-import {image_uri} from '../UploadImage/api/UploadFile';
+import {imageUri} from '../UploadImage/api/UploadFile';
 
 export class Promo {
   public id: string;
@@ -17,7 +17,7 @@ export class Promo {
     this.name = form_data.name;
     this.created_at = created_at;
     this.description = form_data.description;
-    this.coupon_img = image_uri(form_data.id, form_data.file_extension)
+    this.coupon_img = imageUri(form_data.id, form_data.file_extension)
     this.validity_date_start = form_data.validity_date_start;
     this.validity_date_end = form_data.validity_date_end;
     this.id = form_data.id;

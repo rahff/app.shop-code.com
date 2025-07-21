@@ -4,7 +4,7 @@ import {ShopData, ShopFormData} from '../../CreateShop/api/data';
 import {PromoStatisticsState, PromoStats} from '../../PromoStatistics/api/data';
 import {UserProfile} from '../../UserSession/api/data';
 import {ShopStatistics} from '../../ShopStatistics/api/data';
-import {image_uri} from '../../UploadImage/api/UploadFile';
+import {imageUri} from '../../UploadImage/api/UploadFile';
 import {Authentication} from "../../Model/Authentication.ts";
 import {CashierData} from "../../AddCashier/api/data.ts";
 
@@ -56,7 +56,7 @@ export const form_data_with_invalid_date_range: PromoFormData = {
 export const fake_shop_data: ShopData = {
   name: "Quick du Marais",
   account_ref: user_id,
-  logo: image_uri("shop_id", "png"),
+  logo: imageUri("shop_id", "png"),
   id: "shop_id",
   location: "Paris 15eme",
   createdAt: '2025-06-12',
@@ -70,7 +70,7 @@ export const fake_promo_data: PromoData = {
   description: create_promo_with_valid_form_data.description,
   validity_date_end: create_promo_with_valid_form_data.validity_date_end,
   validity_date_start: create_promo_with_valid_form_data.validity_date_start,
-  coupon_img: image_uri("promo_id", "png"),
+  coupon_img: imageUri("promo_id", "png"),
   name: create_promo_with_valid_form_data.name
 };
 
@@ -104,7 +104,7 @@ export const shop_promo_list: PromoData[] = [{
   id: "promo_id",
   name: "Black Friday",
   description: "-50% on all items",
-  coupon_img: image_uri("promo_id", "png"),
+  coupon_img: imageUri("promo_id", "png"),
   validity_date_start: "2025-05-03",
   validity_date_end: "2025-05-04",
   created_at: "2025-05-02"
@@ -132,6 +132,7 @@ export const fake_user_profile: UserProfile = {
   user_name: "rahff@gmail.com",
   role: "Business",
   region: "eu-west-3",
+  userPlan: "basic",
   account_usage: {
     nbr_of_promos: {current: 8, limit: 20},
     nbr_of_shop: {current: 2, limit: 2},

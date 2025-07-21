@@ -3,16 +3,18 @@ import React, { useEffect, useState } from 'react';
 import { MapPin, AlertCircle, Store } from 'lucide-react';
 import { ShopFormData } from '../../core/CreateShop/api/data';
 import FileUploadWidget from '../UploadImage/FileUploadWidget';
-import { AppRoute } from "../../App.tsx";
-import { uploadFileFactory } from "../../factory/uploadFileFactory.ts";
 import { ERROR_PAGE_ROUTE } from "../../core/Common/constants.ts";
+import {AppRoute} from "../../core/Common/api/CommonTypes.ts";
+import {GetUploadUrl, UploadFile} from "../../core/UploadImage/api/UploadFile.ts";
 
 interface CreateShopFormProps {
   onSubmit: (formData: ShopFormData) => void;
-  isLoading?: boolean;
-  error?: string | null;
-  onCancel?: () => void;
+  isLoading: boolean;
+  error: string | null;
+  onCancel: () => void;
   redirectUser: (path: AppRoute) => void;
+  getUploadUrl: GetUploadUrl,
+  uploadFile: UploadFile
 }
 
 const CreateShopForm: React.FC<CreateShopFormProps> = ({
@@ -20,7 +22,9 @@ const CreateShopForm: React.FC<CreateShopFormProps> = ({
   isLoading = false,
   error,
   onCancel,
-  redirectUser
+  uploadFile,
+  redirectUser,
+  getUploadUrl
 }) => {
   const [formData, setFormData] = useState<ShopFormData>({
     name: '',
@@ -34,22 +38,19 @@ const CreateShopForm: React.FC<CreateShopFormProps> = ({
   const [signedUrl, setSignedUrl] = useState<string | null>(null);
   const [fileIdentifier, setFileIdentifier] = useState<string | null>(null);
   const [uploadComplete, setUploadComplete] = useState(false);
-  const [uploadService] = useState(() => uploadFileFactory());
 
   // Get signed URL when component mounts
   useEffect(() => {
-    uploadService.get_upload_url().subscribe({
-      next: () => {
-        setSignedUrl(uploadService.upload_state.signed_url);
-        setFileIdentifier(uploadService.upload_state.file_identifier);
-        setFormData(prev => ({
-          ...prev,
-          file_identifier: uploadService.upload_state.file_identifier || ''
-        }));
-      },
-      error: () => redirectUser(ERROR_PAGE_ROUTE)
-    });
-  }, [uploadService, redirectUser]);
+    getUploadUrl().then(state => {
+      setSignedUrl(state.signedUrl);
+      setFileIdentifier(state.fileIdentifier);
+      setFormData(prev => ({
+        ...prev,
+        file_identifier: state.fileIdentifier || ''
+      }));
+      if(state.error) redirectUser(ERROR_PAGE_ROUTE);
+    })
+  }, []);
 
   // Form validation using design system patterns
   const validateForm = (): boolean => {
@@ -196,19 +197,17 @@ const CreateShopForm: React.FC<CreateShopFormProps> = ({
             <Store className="w-5 h-5 mr-2 text-[#6C63FF]" />
             Shop Logo
           </h3>
-          
           <FileUploadWidget
-            signedUrl={signedUrl}
-            selectedFile={selectedFile}
-            fileIdentifier={fileIdentifier}
-            onFileSelect={handleFileSelect}
-            onFileRemove={handleFileRemove}
-            onUploadComplete={handleUploadComplete}
-            onUploadError={handleUploadError}
-            label="Upload Shop Logo"
-            description="PNG, JPG or SVG (MAX. 2MB)"
-            maxSize={2}
+              signedUrl={signedUrl}
+              selectedFile={selectedFile}
+              fileIdentifier={fileIdentifier}
+              onFileSelect={handleFileSelect}
+              onFileRemove={handleFileRemove}
+              onUploadComplete={handleUploadComplete}
+              onUploadError={handleUploadError}
+              uploadFile={uploadFile}
           />
+
           
           {validationErrors.file && (
             <p className="mt-2 text-sm text-red-600" role="alert">

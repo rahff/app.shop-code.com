@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Send, Mail, MessageCircle, AlertCircle, CheckCircle } from 'lucide-react';
+import {SendHelpSupportMessage} from "../../core/HelpSupport Message/api/HelpSupportMessage.ts";
 
 interface HelpSupportViewProps {
-  onCancel?: () => void;
+  onCancel: () => void;
+  sendHelpSupportMessage: SendHelpSupportMessage
 }
 
-const HelpSupportView: React.FC<HelpSupportViewProps> = ({ onCancel }) => {
+const HelpSupportView: React.FC<HelpSupportViewProps> = ({ onCancel, sendHelpSupportMessage }) => {
   const [formData, setFormData] = useState({
     email: '',
     subject: '',
@@ -45,29 +47,22 @@ const HelpSupportView: React.FC<HelpSupportViewProps> = ({ onCancel }) => {
     
     setIsSubmitting(true);
     setSubmitStatus('idle');
-    
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Support request submitted:', formData);
-      setIsSubmitting(false);
-      setSubmitStatus('success');
-      
-      // Reset form after successful submission
-      setTimeout(() => {
-        setFormData({ email: '', subject: '', message: '' });
-        setSubmitStatus('idle');
-      }, 3000);
-    }, 2000);
+
+    sendHelpSupportMessage({customerEmail: formData.email, subject: formData.subject, message: formData.message})
+        .then((res) => {
+          if(res.success) {
+            setIsSubmitting(false);
+            setSubmitStatus('success');
+            setFormData({ email: '', subject: '', message: '' });
+            setSubmitStatus('idle');
+          }else {
+            setSubmitStatus('error');
+          }
+        })
   };
 
   const handleGoBack = () => {
-    if (onCancel) {
-      onCancel();
-    } else {
-      // Navigate back to dashboard
-      window.history.pushState(null, '', '/');
-      window.location.reload();
-    }
+    onCancel();
   };
 
   const supportOptions = [

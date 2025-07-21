@@ -17,4 +17,5 @@ export interface UserProfile {
   user_name: string;
   region: string | null;
   account_usage: AccountUsage;
+  userPlan: string;
 }

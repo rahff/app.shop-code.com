@@ -1,48 +1,58 @@
-import {catchError, first, map, Observable, of} from 'rxjs';
-import {UploadFileApi} from '../spi/UploadFileApi';
-import {Exception} from '../../Common/api/Exception';
+
+import {GetUploadUrlApi, UploadFileApi} from '../spi/UploadFileApi';
+import {Exception, isException} from '../../Common/api/Exception';
 import {IdGenerator} from '../../Common/spi/IdGenerator';
 
 export type UploadStatus = "None" | "Pending" | "Ok" | "Failed";
 export interface UploadState {
-  signed_url: string | null;
-  upload_status: UploadStatus;
+  signedUrl: string | null;
+  uploadStatus: UploadStatus;
   error: {message: string} | null;
-  file_identifier: string | null;
+  fileIdentifier: string | null;
 }
 
-export const image_uri = (id: string, ext: string): string => {
+const uploadInitialState: UploadState = {signedUrl: null, error: null, uploadStatus: "None", fileIdentifier: null};
+
+export const imageUri = (id: string, ext: string): string => {
   return `https://images.shop-code.com/${id}.${ext}`;
 }
 
-const upload_initial_state: UploadState = {signed_url: null, error: null, upload_status: "None", file_identifier: null};
+const errorState = (exception: Exception): UploadState => 
+    ({...uploadInitialState, error: {message: exception.message}});
 
-export class UploadFile {
+const uploadState = (signedUrl: string, fileIdentifier: string): UploadState =>
+    ({...uploadInitialState, signedUrl, fileIdentifier});
 
-  public upload_state: UploadState = {...upload_initial_state};
-  public constructor(private upload_api: UploadFileApi, private id_generator: IdGenerator) {}
+const successUploadState = (signedUrl: string, fileIdentifier: string): UploadState =>
+    ({signedUrl, fileIdentifier, uploadStatus: "Ok", error: null});
 
-  public get_upload_url(): Observable<boolean> {
-    return this.upload_api.get_signed_url()
-      .pipe(
-        map(this.set_state.bind(this)),
-        catchError(this.handle_error.bind(this))
-      );
-  }
+const handleUploadResponse =
+    (file: File, url: string) =>
+    (response: {success: boolean} | Exception) => {
+        if(isException(response)) return errorState(response);
+        else return successUploadState(url, file.name)
+    }
+const handleResponse = 
+    (idGenerator: IdGenerator) => 
+    (response: {signedUrl: string} | Exception): UploadState => {
+      if(isException(response)) return errorState(response);
+      else {
+        const id = idGenerator.generate();
+        return uploadState(response.signedUrl, id);
+      }
+    }
 
-  private set_state(url: string): boolean {
-    this.upload_state.signed_url = url;
-    this.upload_state.file_identifier = this.id_generator.generate();
-    return true;
-  }
+export type GetUploadUrl = () => Promise<UploadState>;
 
-  public upload(file: File, url: string): Observable<boolean> {
-    return this.upload_api.upload_file(file, url)
-      .pipe(first(), catchError(this.handle_error.bind(this)));
-  }
+export const getUploadUrlCreator = 
+    (getUploadUrlApi: GetUploadUrlApi, idGenerator: IdGenerator): GetUploadUrl =>
+    async () => getUploadUrlApi().then(handleResponse(idGenerator));
 
-  private handle_error(_: Exception) {
-    this.upload_state.error = {message: _.message};
-    return of(false);
-  }
-}
+export type UploadFile = (file: File, url: string) => Promise<UploadState>;
+
+export const uploadFileCreator =
+    (uploadFileApi: UploadFileApi): UploadFile =>
+    (file: File, url: string) => uploadFileApi(file, url).then(handleUploadResponse(file, url))
+
+
+

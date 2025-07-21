@@ -1,20 +1,17 @@
 // src/components/UploadImage/FileUploadWidget.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import { Upload, X, CheckCircle, AlertCircle, Image, Loader2 } from 'lucide-react';
-import { uploadFileFactory } from '../../factory/uploadFileFactory';
+import {UploadFile} from "../../core/UploadImage/api/UploadFile.ts";
 
 interface FileUploadWidgetProps {
   signedUrl: string | null;
   selectedFile: File | null;
   fileIdentifier: string | null;
-  onFileSelect?: (file: File) => void;
-  onFileRemove?: () => void;
-  onUploadComplete?: () => void;
-  onUploadError?: () => void;
-  label?: string;
-  description?: string;
-  accept?: string;
-  maxSize?: number; // in MB
+  onFileSelect: (file: File) => void;
+  onFileRemove: () => void;
+  onUploadComplete: () => void;
+  onUploadError: () => void;
+  uploadFile: UploadFile
 }
 
 const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
@@ -22,12 +19,10 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
   selectedFile,
   onFileSelect,
   onFileRemove,
+  uploadFile,
   onUploadComplete,
   onUploadError,
-  label = "Upload File",
-  description = "PNG, JPG, JPEG",
-  accept = "image/*",
-  maxSize = 5
+
 }) => {
   const [dragActive, setDragActive] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
@@ -36,7 +31,6 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
   const [uploadComplete, setUploadComplete] = useState(false);
   const [uploadError, setUploadError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const uploadFileService = uploadFileFactory();
 
   // Auto-upload when signedUrl and selectedFile are available
   useEffect(() => {
@@ -61,56 +55,29 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
   }, [selectedFile]);
 
   const handleUpload = async () => {
-    if (!signedUrl || !selectedFile) return;
-
+    if(!selectedFile || ! signedUrl) return;
     setIsUploading(true);
     setUploadError(false);
-    setUploadProgress(0);
-
-    try {
-      // Simulate upload progress
-      const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-          }
-          return prev + 10;
-        });
-      }, 100);
-
-      const success = await uploadFileService.upload(selectedFile, signedUrl).toPromise();
-      
-      clearInterval(progressInterval);
-      setUploadProgress(100);
-      
-      if (success) {
-        setUploadComplete(true);
-        onUploadComplete?.();
-      } else {
+    setUploadProgress(50);
+    uploadFile(selectedFile, signedUrl).then((state) => {
+      if(state.error) {
         setUploadError(true);
-        onUploadError?.();
+        onUploadError();
+        setIsUploading(false);
       }
-    } catch (error: unknown) {
-      console.log(error);
-      setUploadError(true);
-      onUploadError?.();
-    } finally {
+      setUploadProgress(100);
+      setUploadComplete(true);
       setIsUploading(false);
-    }
+      onUploadComplete();
+    })
   };
 
   const validateFile = (file: File): string | null => {
-    // Check file size
-    if (file.size > maxSize * 1024 * 1024) {
-      return `File size must be less than ${maxSize}MB`;
-    }
 
     // Check file type for images
-    if (accept.includes('image/') && !file.type.startsWith('image/')) {
+    if (!file.type.startsWith('image/')) {
       return 'Please select a valid image file';
     }
-
     return null;
   };
 
@@ -193,7 +160,7 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
       <input
         ref={fileInputRef}
         type="file"
-        accept={accept}
+        accept={'image/'}
         onChange={handleInputChange}
         className="hidden"
         disabled={isUploading}
@@ -217,7 +184,7 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
         } ${isUploading ? 'pointer-events-none opacity-75' : ''}`}
         role="button"
         tabIndex={0}
-        aria-label={`Upload ${label.toLowerCase()}`}
+        aria-label={"Upload image"}
         onKeyDown={(e) => {
           if ((e.key === 'Enter' || e.key === ' ') && !isUploading) {
             e.preventDefault();
@@ -307,7 +274,7 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
               <Upload className={`w-8 h-8 mb-3 ${uploadError ? 'text-red-400' : 'text-[#A0A0A8]'}`} />
             )}
             <p className={`text-sm font-medium mb-1 ${uploadError ? 'text-red-600' : 'text-[#2B2C34]'}`}>
-              {isUploading ? 'Uploading...' : label}
+              {isUploading ? 'Uploading...' : "image"}
             </p>
             {!isUploading && (
               <>
@@ -315,7 +282,7 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
                   <span className="font-semibold">Click to upload</span> or drag and drop
                 </p>
                 <p className={`text-xs mt-1 ${uploadError ? 'text-red-500' : 'text-[#A0A0A8]'}`}>
-                  {description}
+                  {"I don't know what it's doing here ..."}
                 </p>
               </>
             )}

@@ -19,4 +19,4 @@ const _cashDrawerApiCreator =
 
 export const cashDrawerApiCreator = environment === "production" ?
     _cashDrawerApiCreator(fetch) :
-    _cashDrawerApiCreator(fakePostFetch);
+    _cashDrawerApiCreator(fakePostFetch(null));

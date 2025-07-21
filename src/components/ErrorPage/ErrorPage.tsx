@@ -1,8 +1,8 @@
 import React from 'react';
 import { AlertTriangle, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import {AppRoute} from "../../App.tsx";
 import {APP_ROUTE} from "../../core/Common/constants.ts";
+import {AppRoute} from "../../core/Common/api/CommonTypes.ts";
 
 interface UploadErrorPageProps {
   redirectUser: (path: AppRoute) => void;

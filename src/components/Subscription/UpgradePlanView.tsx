@@ -1,6 +1,8 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Crown, Check, ArrowRight, AlertCircle, ArrowLeft } from 'lucide-react';
-
+import {GetCheckoutUrl} from "../../core/Subscription/api/GetCheckoutUrl.ts";
+import {AppRoute} from "../../core/Common/api/CommonTypes.ts";
+import {DASHBOARD_ROUTE} from "../../core/Common/constants.ts";
 
 interface PlanFeature {
   name: string;
@@ -18,20 +20,14 @@ interface Plan {
 }
 
 interface UpgradePlanViewProps {
-  onUpgrade: (planId: string) => void;
-  onCancel: () => void;
-  isLoading: boolean;
-  error: string | null;
-  currentPlan: string;
+  getCheckoutUrl: GetCheckoutUrl;
+  redirectUser: (path: AppRoute) => void;
+  userPlan: string
 }
 
-const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({
-  onUpgrade,
-  onCancel,
-  isLoading = false,
-  error,
-  currentPlan = 'basic'
-}) => {
+const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({getCheckoutUrl, redirectUser, userPlan}) => {
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   // Plans based on the pricing.md file
   const plans: Plan[] = [
     {
@@ -88,23 +84,32 @@ const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({
     }
   ];
 
+  const handleOnUpgrade = (planId: string) => {
+    setIsLoading(true);
+    getCheckoutUrl(planId).then((response) => {
+      if(response.checkoutUrl === null) {
+        setIsLoading(false);
+       setError(response.error.message);
+      }
+      else window.location.href = response.checkoutUrl.url;
+    });
+  }
 
 
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
       {/* Back Arrow - Top Left */}
-      {onCancel && (
         <div className="mb-6">
           <button
-            onClick={handleGoBack}
+            onClick={() => redirectUser(DASHBOARD_ROUTE)}
             className="flex items-center space-x-2 text-[#A0A0A8] hover:text-[#6C63FF] transition-colors duration-200 group"
             aria-label="Go back"
           >
             <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-200"/>
             <span className="text-sm font-medium">Back to Settings</span>
           </button>
-        </div>
-      )}
+  </div>
+
 
       <div className="text-center mb-8 sm:mb-12">
         <div className="w-16 h-16 bg-gradient-to-br from-[#6C63FF] to-[#5845E9] rounded-xl flex items-center justify-center mx-auto mb-6">
@@ -135,7 +140,7 @@ const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({
               plan.recommended
                 ? 'border-[#6C63FF] shadow-lg scale-105'
                 : 'border-gray-200 hover:border-[#6C63FF]/30'
-            } ${currentPlan.toLowerCase() === plan.id ? 'ring-2 ring-[#6C63FF]/20' : ''}`}
+            } ${userPlan.toLowerCase() === plan.id ? 'ring-2 ring-[#6C63FF]/20' : ''}`}
           >
             {/* Recommended Badge */}
             {plan.recommended && (
@@ -147,7 +152,7 @@ const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({
             )}
 
             {/* Current Plan Badge */}
-            {currentPlan.toLowerCase() === plan.id && (
+            {userPlan.toLowerCase() === plan.id && (
               <div className="absolute top-4 right-4">
                 <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">
                   Current Plan
@@ -195,10 +200,10 @@ const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({
 
             {/* Action Button */}
             <button
-              onClick={() => onUpgrade(plan.id)}
-              disabled={isLoading || currentPlan.toLowerCase() === plan.id}
+              onClick={handleOnUpgrade}
+              disabled={isLoading || userPlan.toLowerCase() === plan.id}
               className={`w-full py-3 px-6 rounded-lg font-medium transition-all duration-200 flex items-center justify-center space-x-2 ${
-                currentPlan.toLowerCase() === plan.id
+                userPlan.toLowerCase() === plan.id
                   ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
                   : plan.recommended
                   ? 'bg-[#6C63FF] text-white hover:bg-[#5845E9] shadow-lg hover:shadow-xl'
@@ -210,7 +215,7 @@ const UpgradePlanView: React.FC<UpgradePlanViewProps> = ({
                   <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                   <span>Processing...</span>
                 </>
-              ) : currentPlan.toLowerCase() === plan.id ? (
+              ) : userPlan.toLowerCase() === plan.id ? (
                 <span>Current Plan</span>
               ) : plan.id === 'personalized' ? (
                 <>

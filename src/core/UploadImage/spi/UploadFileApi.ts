@@ -1,6 +1,7 @@
-import {Observable} from 'rxjs';
+import {Exception} from "../../Common/api/Exception.ts";
 
-export interface UploadFileApi {
-  get_signed_url(): Observable<string>;
-  upload_file(file: File, url: string): Observable<boolean>;
-}
+
+export type GetUploadUrlApi = () => Promise<{signedUrl: string} | Exception>;
+
+export type UploadFileApi = (file: File, url: string) => Promise<{success: boolean} | Exception>
+

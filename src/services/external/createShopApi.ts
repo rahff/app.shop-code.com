@@ -19,4 +19,4 @@ export const createShopApiCreator =
 
 export const createShopApi = environment === "production" ?
   createShopApiCreator(fetch) :
-  createShopApiCreator(fakePostFetch);
+  createShopApiCreator(fakePostFetch(null));

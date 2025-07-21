@@ -18,4 +18,4 @@ const _addCashierApiCreator =
 export const addCashierApiCreator = environment
     === "production" ?
     _addCashierApiCreator(fetch) :
-    _addCashierApiCreator(fakePostFetch);
+    _addCashierApiCreator(fakePostFetch(null));

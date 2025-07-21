@@ -1,10 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import { ChevronLeft, ChevronRight, Calendar, TrendingUp, Users, Euro, Loader2 } from 'lucide-react';
-import {promoStatisticsFactory} from "../../factory/promoStatisticsFactory.ts";
 import {PromoStatisticsState} from "../../core/PromoStatistics/api/data.ts";
 import {GetPromoStatistics} from "../../core/PromoStatistics/api/PromoStatistics.ts";
 
-const promoStatistics = promoStatisticsFactory();
 
 interface PromoStatsTableComponentProps {
   getPromoStatistics: GetPromoStatistics;
