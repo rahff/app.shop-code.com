@@ -28,6 +28,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
     
     // Try to parse as coupon data and call success handler
     try {
+      console.log("scanResult", result);
       const couponData = JSON.parse(scanResult);
       onScanSuccess(couponData);
     } catch (parseError: unknown) {
