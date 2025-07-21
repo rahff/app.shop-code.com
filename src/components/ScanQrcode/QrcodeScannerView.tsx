@@ -1,5 +1,5 @@
 // src/components/ScanQrcode/QrcodeScannerView.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Camera, AlertCircle, CheckCircle, QrCode, X } from 'lucide-react';
 import {IDetectedBarcode, Scanner} from '@yudiel/react-qr-scanner';
 import { CouponData } from '../../core/ScanQrcode/api/data';
@@ -20,16 +20,51 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  
+  // 🔧 Race condition fix: Add mounting delay state
+  const [isScannerReady, setIsScannerReady] = useState(false);
+  const [cameraConstraints, setCameraConstraints] = useState<MediaTrackConstraints>({});
+
+  // 🎯 Initialize camera constraints with mobile/desktop fallback logic
+  useEffect(() => {
+    const initializeCameraConstraints = () => {
+      // Detect if we're likely on a mobile device
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                      (navigator.maxTouchPoints && navigator.maxTouchPoints > 2);
+      
+      if (isMobile) {
+        // Mobile: Prefer rear camera (environment) for QR scanning
+        setCameraConstraints({ facingMode: 'environment' });
+      } else {
+        // Desktop: Use front camera or let browser decide
+        setCameraConstraints({ facingMode: 'user' });
+      }
+    };
+
+    initializeCameraConstraints();
+  }, []);
+
+  // 🚀 Delayed scanner mounting to prevent race condition
+  const initializeScanner = useCallback(() => {
+    // Use requestAnimationFrame to ensure DOM is fully rendered
+    requestAnimationFrame(() => {
+      // Add additional small delay to ensure Scanner's internal refs are attached
+      setTimeout(() => {
+        setIsScannerReady(true);
+      }, 100); // 100ms delay ensures internal video/canvas refs are ready
+    });
+  }, []);
 
   const handleScanResult = (result: IDetectedBarcode[]) => {
-    setScanResult(result.map((r) => r.rawValue).join(''));
+    const scannedData = result.map((r) => r.rawValue).join('');
+    setScanResult(scannedData);
     setSuccess("QR Code scanned successfully!");
     setError(null);
     
     // Try to parse as coupon data and call success handler
     try {
       console.log("scanResult", result);
-      const couponData = JSON.parse(scanResult);
+      const couponData = JSON.parse(scannedData);
       onScanSuccess(couponData);
     } catch (parseError: unknown) {
       setError("Invalid qrcode!")
@@ -39,6 +74,38 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
 
   const handleScanError = (error: any) => {
     console.error('QR Scan Error:', error);
+    
+    // 🔄 Handle OverconstrainedError with fallback logic
+    if (error.name === 'OverconstrainedError' || error.message?.includes('constraint')) {
+      console.log('Camera constraint failed, attempting fallback...');
+      
+      // Try fallback constraints
+      if (cameraConstraints.facingMode === 'environment') {
+        // Fallback from rear to front camera
+        setCameraConstraints({ facingMode: 'user' });
+        setError("Rear camera unavailable, switching to front camera...");
+        
+        // Retry scanner initialization after constraint change
+        setTimeout(() => {
+          setError(null);
+          setIsScannerReady(false);
+          initializeScanner();
+        }, 500);
+        return;
+      } else {
+        // Final fallback: remove facingMode constraint entirely
+        setCameraConstraints({});
+        setError("Specific camera unavailable, using default...");
+        
+        setTimeout(() => {
+          setError(null);
+          setIsScannerReady(false);
+          initializeScanner();
+        }, 500);
+        return;
+      }
+    }
+    
     setError("Scan failed. Please try again.");
     onScanError(error.message || "Scan failed");
   };
@@ -48,10 +115,15 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
     setError(null);
     setSuccess(null);
     setScanResult('');
+    setIsScannerReady(false);
+    
+    // 🎯 Initialize scanner with proper timing
+    initializeScanner();
   };
 
   const stopScanning = () => {
     setIsScanning(false);
+    setIsScannerReady(false);
   };
 
   const handleClose = () => {
@@ -89,13 +161,17 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
         {/* Scanner Area */}
         <div className="p-4">
           <div className="relative bg-gray-900 rounded-lg overflow-hidden aspect-square mb-4">
-            {isScanning ? (
+            {isScanning && isScannerReady ? (
               <div className="w-full h-full relative">
+                {/* 🎯 Scanner component with race condition fix */}
                 <Scanner
                   onScan={handleScanResult}
                   onError={handleScanError}
                   constraints={{
-                    facingMode: 'environment'
+                    ...cameraConstraints,
+                    // Additional constraints for better mobile experience
+                    width: { ideal: 640 },
+                    height: { ideal: 480 }
                   }}
                   styles={{
                     container: {
@@ -129,6 +205,15 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                     <span className="text-sm">Scanning...</span>
                   </div>
+                </div>
+              </div>
+            ) : isScanning && !isScannerReady ? (
+              // 🔄 Loading state while scanner initializes
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center text-white">
+                  <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
+                  <p className="text-white">Initializing camera...</p>
+                  <p className="text-white/70 text-sm mt-1">Please wait</p>
                 </div>
               </div>
             ) : (
