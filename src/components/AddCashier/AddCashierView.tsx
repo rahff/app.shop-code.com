@@ -8,9 +8,10 @@ interface AddCashierViewProps {
   onComplete: () => void;
   onCancel: () => void;
   addCashier: AddCashier;
+  userPoolId: string;
 }
 
-const AddCashierView: React.FC<AddCashierViewProps> = ({onComplete, onCancel, addCashier}) => {
+const AddCashierView: React.FC<AddCashierViewProps> = ({onComplete, onCancel, addCashier, userPoolId}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,7 +24,7 @@ const AddCashierView: React.FC<AddCashierViewProps> = ({onComplete, onCancel, ad
     setIsLoading(true);
     setError(null);
     
-    addCashier(credentials).then(() => {
+    addCashier({...credentials, userPoolId}).then(() => {
       setIsLoading(false);
       onComplete();
     });

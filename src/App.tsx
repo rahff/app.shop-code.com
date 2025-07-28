@@ -69,6 +69,7 @@ import {helpSupportMessageApi} from "./services/external/helpSupportMessageApi.t
 
 
 const nullConfig = {
+    "userPoolId": "",
     "cognito": {
         "authority": "",
         "client_id": "",
@@ -267,19 +268,28 @@ function App() {
     switch (appRoute) {
 
         case APP_ROUTE:
-            return <AuthProvider {...config.cognito}>
-                <BootstrapComponent
-                    setUserProfile={onUserProfileLoaded}
+            if(config === nullConfig) {
+                return <RegionPickerComponentPage
                     redirectUser={redirectUser}
-                    onAuthentication={onAuthentication}
-                    loadUserSession={
-                        loadUserSessionCreator(
-                            userProfileApiCreator(
-                                config.apiEndpoints.userSide),
-                            localStorageApi)
-                    }
+                    onConfigReceived={onConfigReceived}
+                    fetchConfig={fetchConfig}
                 />;
-            </AuthProvider>
+            }else {
+                return <AuthProvider {...config.cognito}>
+                    <BootstrapComponent
+                        setUserProfile={onUserProfileLoaded}
+                        redirectUser={redirectUser}
+                        onAuthentication={onAuthentication}
+                        loadUserSession={
+                            loadUserSessionCreator(
+                                userProfileApiCreator(
+                                    config.apiEndpoints.userSide),
+                                localStorageApi)
+                        }
+                    />;
+                </AuthProvider>
+            }
+
 
         case REFRESH_SESSION_ROUTE:
             return <RefreshSessionComponent
@@ -373,6 +383,7 @@ function App() {
     case 'add-cashier':
       return (
         <AddCashierView
+          userPoolId={config.userPoolId}
           onComplete={handleAddCashierComplete}
           onCancel={handleAddCashierCancel}
           addCashier={
@@ -381,7 +392,8 @@ function App() {
                     config.apiEndpoints.shopPromo,
                     authentication!.token
                 ),
-                sessionStorageBrowserApi
+                sessionStorageBrowserApi,
+                cryptoIdGenerator
             )
           }
         />

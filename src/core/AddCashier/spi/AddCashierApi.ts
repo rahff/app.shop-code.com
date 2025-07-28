@@ -1,3 +1,3 @@
-import {CashierData} from '../api/data';
+import {AddCashierRequest, CashierData} from '../api/data';
 
-export type AddCashierApi = (cashier_credentials: {username: string, password: string}) => Promise<CashierData>;
+export type AddCashierApi = (cashier_credentials: AddCashierRequest ) => Promise<CashierData>;

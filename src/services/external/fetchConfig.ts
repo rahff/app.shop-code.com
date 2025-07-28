@@ -1,5 +1,6 @@
-import {Config, RegionCode} from "../../config.ts";
-import {Fetch} from "../common.ts";
+import {Config, devConfig, RegionCode} from "../../config.ts";
+import {fakeGetFetch, Fetch} from "../common.ts";
+import {environment} from "../../environment.ts";
 
 
 const configUrl = (region: RegionCode) => `https://config.shop-code.com/${region}.json`
@@ -11,4 +12,7 @@ export const fetchConfigCreator =
     return  await response.json() as Config;
 }
 
-export const fetchConfig = fetchConfigCreator(fetch);
+export const fetchConfig =
+    environment === "production" ?
+    fetchConfigCreator(fetch) :
+        fetchConfigCreator(fakeGetFetch({...devConfig}));
