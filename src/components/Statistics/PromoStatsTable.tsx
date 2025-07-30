@@ -200,7 +200,7 @@ const PromoStatsTable: React.FC<PromoStatsTableComponentProps> = ({getPromoStati
           </div>
           
           <button
-            onClick={() => promoStatistics.get_promo_statistics(++state.promo_stats.page)}
+            onClick={() => getPromoStatistics(shopId, ++state.promo_stats.page)}
             disabled={currentPage === state.promo_stats.nbr_of_page}
             className="p-2 rounded-lg border border-gray-300 text-[#2B2C34] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
           >
