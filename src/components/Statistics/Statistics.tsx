@@ -6,20 +6,15 @@ import PromoStatsList from './PromoStatsList';
 import {GetPromoStatistics} from "../../core/PromoStatistics/api/PromoStatistics.ts";
 import {GetShopStatistics} from "../../core/ShopStatistics/api/ShopStatistics.ts";
 
-
 interface StatisticsPropsComponent {
     shopId: string;
     getPromoStatistics: GetPromoStatistics;
     getShopStatistics: GetShopStatistics;
 }
 
-
-
-
 const Statistics: React.FC<StatisticsPropsComponent> = ({getPromoStatistics, shopId, getShopStatistics}) => {
   const { t } = useTranslation('global');
   const [selectedSort, setSelectedSort] = React.useState<SortOption>('revenue');
-
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
