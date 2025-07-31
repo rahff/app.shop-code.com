@@ -2,15 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { Calendar, TrendingUp, Users, Euro, Loader2, Plus } from 'lucide-react';
 import { PromoStatisticsState, PromoStats } from "../../core/PromoStatistics/api/data.ts";
 import { GetPromoStatistics } from "../../core/PromoStatistics/api/PromoStatistics.ts";
-import { FilterState } from './FilterBannerActions';
+import { SortOption } from './SortControls';
+import TopPromoCard from './TopPromoCard';
 
 interface PromoStatsListProps {
   getPromoStatistics: GetPromoStatistics;
   shopId: string;
-  filters: FilterState;
+  selectedSort: SortOption;
 }
 
-const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, shopId, filters }) => {
+const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, shopId, selectedSort }) => {
   const [promos, setPromos] = useState<PromoStats[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -25,11 +26,7 @@ const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, sho
     
     getPromoStatistics(shopId).then((state: PromoStatisticsState) => {
       if (state.promo_stats?.data) {
-        // Sort by created_at descending (most recent first)
-        const sortedData = [...state.promo_stats.data].sort((a, b) => 
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
-        setPromos(sortedData);
+        setPromos(state.promo_stats.data);
         setLastEvaluatedKey(state.promo_stats.last_evaluated_key);
         setHasMoreData(!!state.promo_stats.last_evaluated_key);
       }
@@ -37,18 +34,28 @@ const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, sho
     });
   }, [getPromoStatistics, shopId]);
 
-  // Apply filters to promos
-  const filteredPromos = promos.filter((promo) => {
-    return Object.entries(filters).every(([key, filter]) => {
-      const value = promo[key as keyof PromoStats] as number;
-      const { min, max } = filter;
-      
-      if (min !== null && value < min) return false;
-      if (max !== null && value > max) return false;
-      
-      return true;
+  // Sort promos based on selected criterion
+  const sortedPromos = React.useMemo(() => {
+    const sorted = [...promos].sort((a, b) => {
+      switch (selectedSort) {
+        case 'revenue':
+          return b.total_revenue - a.total_revenue;
+        case 'customers':
+          return b.collected_customers - a.collected_customers;
+        case 'conversion':
+          return b.total_conversion - a.total_conversion;
+        case 'issued':
+          return b.nbr_of_issues - a.nbr_of_issues;
+        default:
+          return b.total_revenue - a.total_revenue;
+      }
     });
-  });
+    return sorted;
+  }, [promos, selectedSort]);
+
+  // Get top promo and remaining promos
+  const topPromo = sortedPromos[0];
+  const remainingPromos = sortedPromos.slice(1);
 
   const handleLoadMore = () => {
     if (hasMoreData && lastEvaluatedKey) {
@@ -56,11 +63,7 @@ const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, sho
       
       getPromoStatistics(shopId, lastEvaluatedKey).then((state: PromoStatisticsState) => {
         if (state.promo_stats?.data) {
-          // Sort new data and append to existing promos
-          const sortedNewData = [...state.promo_stats.data].sort((a, b) => 
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-          );
-          setPromos(prev => [...prev, ...sortedNewData]);
+          setPromos(prev => [...prev, ...state.promo_stats.data]);
           setLastEvaluatedKey(state.promo_stats.last_evaluated_key);
           setHasMoreData(!!state.promo_stats.last_evaluated_key);
         }
@@ -87,8 +90,8 @@ const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, sho
     return (
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="p-4 sm:p-6 border-b border-gray-200">
-          <h3 className="text-lg sm:text-xl font-semibold text-[#2B2C34] font-['Inter']">Recent Promos</h3>
-          <p className="text-[#A0A0A8] text-sm mt-1">Latest promotional campaigns and their performance</p>
+          <h3 className="text-lg sm:text-xl font-semibold text-[#2B2C34] font-['Inter']">Performance Rankings</h3>
+          <p className="text-[#A0A0A8] text-sm mt-1">Your promotional campaigns ranked by performance</p>
         </div>
         <div className="flex items-center justify-center py-16">
           <div className="flex flex-col items-center space-y-4">
@@ -100,39 +103,53 @@ const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, sho
     );
   }
 
-  return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="p-4 sm:p-6 border-b border-gray-200">
-        <h3 className="text-lg sm:text-xl font-semibold text-[#2B2C34] font-['Inter']">Recent Promos</h3>
-        <p className="text-[#A0A0A8] text-sm mt-1">
-          Latest promotional campaigns and their performance
-          {filteredPromos.length !== promos.length && (
-            <span className="ml-2 text-[#6C63FF]">({filteredPromos.length} of {promos.length} shown)</span>
-          )}
-        </p>
-      </div>
-
-      {filteredPromos.length === 0 ? (
+  if (!topPromo) {
+    return (
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="text-center py-12">
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <TrendingUp className="w-8 h-8 text-gray-400" />
           </div>
           <h3 className="text-lg font-semibold text-[#2B2C34] mb-2">No promos found</h3>
-          <p className="text-[#A0A0A8]">
-            {promos.length === 0 
-              ? "No promotional campaigns available yet."
-              : "No promos match your current filter criteria."
-            }
-          </p>
+          <p className="text-[#A0A0A8]">No promotional campaigns available yet.</p>
         </div>
-      ) : (
-        <>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Top Promo Card */}
+      <TopPromoCard 
+        promo={topPromo} 
+        sortCriterion={selectedSort}
+        onViewDetails={(promo) => {
+          console.log('Navigate to promo details:', promo.id);
+          // TODO: Implement navigation to promo details
+        }}
+      />
+
+      {/* Remaining Promos List */}
+      {remainingPromos.length > 0 && (
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="p-4 sm:p-6 border-b border-gray-200">
+            <h3 className="text-lg sm:text-xl font-semibold text-[#2B2C34] font-['Inter']">Other High Performers</h3>
+            <p className="text-[#A0A0A8] text-sm mt-1">
+              Remaining campaigns sorted by {selectedSort === 'revenue' ? 'revenue' : selectedSort === 'customers' ? 'customer acquisition' : selectedSort === 'conversion' ? 'conversion rate' : 'popularity'}
+            </p>
+          </div>
+
           {/* Mobile Card View */}
           <div className="block lg:hidden divide-y divide-gray-200">
-            {filteredPromos.map((promo) => (
+            {remainingPromos.map((promo, index) => (
               <div key={promo.id} className="p-4">
                 <div className="flex justify-between items-start mb-3">
-                  <h4 className="font-semibold text-[#2B2C34] flex-1 pr-2">{promo.name}</h4>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-[#6C63FF]/10 rounded-lg flex items-center justify-center text-sm font-bold text-[#6C63FF]">
+                      #{index + 2}
+                    </div>
+                    <h4 className="font-semibold text-[#2B2C34] flex-1 pr-2">{promo.name}</h4>
+                  </div>
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 flex-shrink-0">
                     {promo.nbr_of_issues} issues
                   </span>
@@ -169,7 +186,7 @@ const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, sho
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-[#2B2C34] uppercase tracking-wider">
-                    Promo Name
+                    Rank & Promo Name
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-[#2B2C34] uppercase tracking-wider">
                     Validity Range
@@ -189,11 +206,18 @@ const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, sho
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {filteredPromos.map((promo) => (
+                {remainingPromos.map((promo, index) => (
                   <tr key={promo.id} className="hover:bg-gray-50 transition-colors duration-150">
                     <td className="px-6 py-4">
-                      <div className="font-medium text-[#2B2C34]">{promo.name}</div>
-                      <div className="text-sm text-[#A0A0A8]">Created {formatDate(promo.created_at)}</div>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-[#6C63FF]/10 rounded-lg flex items-center justify-center text-sm font-bold text-[#6C63FF]">
+                          #{index + 2}
+                        </div>
+                        <div>
+                          <div className="font-medium text-[#2B2C34]">{promo.name}</div>
+                          <div className="text-sm text-[#A0A0A8]">Created {formatDate(promo.created_at)}</div>
+                        </div>
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-2 text-sm text-[#2B2C34]">
@@ -252,7 +276,7 @@ const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, sho
               </button>
             </div>
           )}
-        </>
+        </div>
       )}
     </div>
   );
