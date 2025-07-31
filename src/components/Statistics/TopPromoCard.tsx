@@ -21,7 +21,7 @@ const TopPromoCard: React.FC<TopPromoCardProps> = ({
       year: 'numeric'
     });
   };
-
+  console.log("top promo: ", promo)
   const getSortLabel = (criterion: SortOption) => {
     switch (criterion) {
       case 'revenue': return 'Top Revenue Generator';

@@ -112,20 +112,50 @@ export const shop_promo_list: PromoData[] = [{
 
 export const promo_id = "promo_id";
 
-export const fake_promo_statistics: PromoStats = {
-  id: "123",
-  name: "Promo 1",
-  created_at: "2025-04-15",
-  shop_id: "shop_id",
-  collected_customers: 55,
-  nbr_of_issues: 62,
-  total_conversion: 60,
-  total_revenue: 2100,
-  validity_range: {
-    start: "2025-04-22",
-    end: "2025-04-30",
-  }
-}
+export const fake_promo_statistics: PromoStats[] = [
+      {
+        id: "123",
+        name: "Promo 1",
+        created_at: "2025-04-15",
+        shop_id: "shop_id",
+        collected_customers: 55,
+        nbr_of_issues: 62,
+        total_conversion: 60,
+        total_revenue: 2100,
+        validity_range: {
+          start: "2025-04-22",
+          end: "2025-04-30",
+        }
+      },
+      {
+        id: "456",
+        name: "Promo 2",
+        created_at: "2025-04-16",
+        shop_id: "shop_id",
+        collected_customers: 55,
+        nbr_of_issues: 59,
+        total_conversion: 45,
+        total_revenue: 1550,
+        validity_range: {
+          start: "2025-04-18",
+          end: "2025-04-24",
+        }
+      },
+      {
+        id: "789",
+        name: "Promo 3",
+        created_at: "2025-04-17",
+        shop_id: "shop_id",
+        collected_customers: 89,
+        nbr_of_issues: 102,
+        total_conversion: 79,
+        total_revenue: 2302,
+        validity_range: {
+          start: "2025-04-28",
+          end: "2025-05-04",
+        }
+      }
+]
 
 export const fake_user_profile: UserProfile = {
   account_ref: user_id,
@@ -144,6 +174,7 @@ export const fake_user_profile_signup: UserProfile = {
   account_ref: user_id,
   user_name: "rahff@gmail.com",
   role: "Business",
+  userPlan: "basic",
   region: null,
   account_usage: {
     nbr_of_promos: {current: 0, limit: 20},
@@ -155,7 +186,6 @@ export const fake_user_profile_signup: UserProfile = {
 
 export const fake_promo_stats_state: PromoStatisticsState = {
   promo_stats: {
-    nbr_of_page: 1,
     data: [
       {
         id: '1',
@@ -213,7 +243,6 @@ export const fake_promo_stats_state: PromoStatisticsState = {
         collected_customers: 78
       }
     ],
-    page: 1,
     per_page: 1
   },
   error: null

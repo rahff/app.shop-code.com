@@ -23,6 +23,11 @@ export class SessionStorageBrowserApi implements LocalStorageApi {
         this.set_item(key, [...items, value]);
     }
 
+    public add_items<T>(key: string, values: T[]) {
+        const items: T[] = JSON.parse(localStorage.getItem(key) || "[]");
+        this.set_item(key, items.concat(values));
+    }
+
     public clear(): void {
         sessionStorage.clear();
     }

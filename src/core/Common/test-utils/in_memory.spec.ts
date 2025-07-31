@@ -22,4 +22,9 @@ export class InMemoryLocalStorage implements LocalStorageApi {
   public clear() {
     this.data = {};
   }
+
+  public add_items<T>(key: string, values: T[]) {
+    const items: T[] = JSON.parse(this.data[key] || "[]");
+    this.set_item(key, items.concat(values));
+  }
 }

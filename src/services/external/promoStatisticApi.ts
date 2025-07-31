@@ -24,7 +24,7 @@ export const promoStatisticsApiCreator =
     environment === "production" ?
         _promoStatisticsApiCreator(fetch) :
         _promoStatisticsApiCreator(fakeGetFetch<StatsPage>({
-          data: [{...fake_promo_statistics}], 
+          data: [...fake_promo_statistics],
           per_page: 5, 
           last_evaluated_key: { primary_key: "shop_id", sort_key: "2025-01-15T10:00:00Z" }
         }));
