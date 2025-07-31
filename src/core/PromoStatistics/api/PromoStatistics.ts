@@ -21,22 +21,26 @@ const errorState = (exception: Exception): PromoStatisticsState =>
 
 const promoStatisticsState = (promoStatsPage: StatsPage): PromoStatisticsState => ({promo_stats: promoStatsPage, error: null})
 
-export type GetPromoStatistics = (shopId: string, page?: number) => Promise<PromoStatisticsState>;
+export type GetPromoStatistics = (shopId: string, lastEvaluatedKey?: { primary_key: string; sort_key: string }) => Promise<PromoStatisticsState>;
 
-const handleResponse = (localStorage: LocalStorageApi, shopId: string, page: number) => (response: StatsPage | Exception) => {
+const handleResponse = (localStorage: LocalStorageApi, shopId: string, cacheKey: string) => (response: StatsPage | Exception) => {
   if(isException(response)) return errorState(response);
   else {
-    localStorage.set_item(STATS_PAGE(shopId, page), {...response});
+    localStorage.set_item(cacheKey, {...response});
     return promoStatisticsState(response);
   }
 }
 
 export const getPromoStatisticsCreator =
     (promoStatisticApi: PromoStatisticApi, localStorage: LocalStorageApi): GetPromoStatistics =>
-    async (shopId: string, page: number = 1): Promise<PromoStatisticsState> => {
-      const localData = localStorage.get_item<StatsPage>(STATS_PAGE(shopId, page));
+    async (shopId: string, lastEvaluatedKey?: { primary_key: string; sort_key: string }): Promise<PromoStatisticsState> => {
+      const cacheKey = lastEvaluatedKey 
+        ? `${shopId}_stats_${lastEvaluatedKey.primary_key}_${lastEvaluatedKey.sort_key}`
+        : `${shopId}_stats_initial`;
+      
+      const localData = localStorage.get_item<StatsPage>(cacheKey);
       if(localData === null) {
-        return promoStatisticApi(shopId, page).then(handleResponse(localStorage, shopId, page));
+        return promoStatisticApi(shopId, lastEvaluatedKey).then(handleResponse(localStorage, shopId, cacheKey));
       }else return promoStatisticsState(localData);
     }
 

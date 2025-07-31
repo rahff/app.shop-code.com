@@ -11,35 +11,34 @@ interface PromoStatsListProps {
 }
 
 const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, shopId, filters }) => {
-  const [allPromos, setAllPromos] = useState<PromoStats[]>([]);
-  const [displayedPromos, setDisplayedPromos] = useState<PromoStats[]>([]);
+  const [promos, setPromos] = useState<PromoStats[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [lastEvaluatedKey, setLastEvaluatedKey] = useState<{ primary_key: string; sort_key: string } | undefined>();
-  const [hasMoreData, setHasMoreData] = useState(true);
-
-  const ITEMS_PER_LOAD = 5;
+  const [hasMoreData, setHasMoreData] = useState(false);
 
   // Load initial data
   useEffect(() => {
     setIsLoading(true);
-    getPromoStatistics(shopId, 1).then((state: PromoStatisticsState) => {
-      if (state.promo_stats.data) {
+    setPromos([]);
+    setLastEvaluatedKey(undefined);
+    
+    getPromoStatistics(shopId).then((state: PromoStatisticsState) => {
+      if (state.promo_stats?.data) {
         // Sort by created_at descending (most recent first)
         const sortedData = [...state.promo_stats.data].sort((a, b) => 
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
-        setAllPromos(sortedData);
-        setDisplayedPromos(sortedData.slice(0, ITEMS_PER_LOAD));
+        setPromos(sortedData);
         setLastEvaluatedKey(state.promo_stats.last_evaluated_key);
-        setHasMoreData(state.promo_stats.last_evaluated_key !== undefined);
+        setHasMoreData(!!state.promo_stats.last_evaluated_key);
       }
       setIsLoading(false);
     });
   }, [getPromoStatistics, shopId]);
 
-  // Apply filters to displayed promos
-  const filteredPromos = displayedPromos.filter((promo) => {
+  // Apply filters to promos
+  const filteredPromos = promos.filter((promo) => {
     return Object.entries(filters).every(([key, filter]) => {
       const value = promo[key as keyof PromoStats] as number;
       const { min, max } = filter;
@@ -52,22 +51,25 @@ const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, sho
   });
 
   const handleLoadMore = () => {
-    if (displayedPromos.length < allPromos.length) {
-      // Load more from existing data
-      const nextBatch = allPromos.slice(displayedPromos.length, displayedPromos.length + ITEMS_PER_LOAD);
-      setDisplayedPromos(prev => [...prev, ...nextBatch]);
-    } else if (hasMoreData && lastEvaluatedKey) {
-      // Load more from API (if we had pagination support)
+    if (hasMoreData && lastEvaluatedKey) {
       setIsLoadingMore(true);
-      // For now, we'll just simulate no more data since the mock doesn't support pagination
-      setTimeout(() => {
-        setHasMoreData(false);
+      
+      getPromoStatistics(shopId, lastEvaluatedKey).then((state: PromoStatisticsState) => {
+        if (state.promo_stats?.data) {
+          // Sort new data and append to existing promos
+          const sortedNewData = [...state.promo_stats.data].sort((a, b) => 
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          );
+          setPromos(prev => [...prev, ...sortedNewData]);
+          setLastEvaluatedKey(state.promo_stats.last_evaluated_key);
+          setHasMoreData(!!state.promo_stats.last_evaluated_key);
+        }
         setIsLoadingMore(false);
-      }, 500);
+      });
     }
   };
 
-  const canLoadMore = displayedPromos.length < allPromos.length || hasMoreData;
+  const canLoadMore = hasMoreData;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -104,8 +106,8 @@ const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, sho
         <h3 className="text-lg sm:text-xl font-semibold text-[#2B2C34] font-['Inter']">Recent Promos</h3>
         <p className="text-[#A0A0A8] text-sm mt-1">
           Latest promotional campaigns and their performance
-          {filteredPromos.length !== displayedPromos.length && (
-            <span className="ml-2 text-[#6C63FF]">({filteredPromos.length} of {displayedPromos.length} shown)</span>
+          {filteredPromos.length !== promos.length && (
+            <span className="ml-2 text-[#6C63FF]">({filteredPromos.length} of {promos.length} shown)</span>
           )}
         </p>
       </div>
@@ -117,7 +119,7 @@ const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, sho
           </div>
           <h3 className="text-lg font-semibold text-[#2B2C34] mb-2">No promos found</h3>
           <p className="text-[#A0A0A8]">
-            {displayedPromos.length === 0 
+            {promos.length === 0 
               ? "No promotional campaigns available yet."
               : "No promos match your current filter criteria."
             }
