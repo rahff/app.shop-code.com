@@ -55,9 +55,3 @@ const Statistics: React.FC<StatisticsPropsComponent> = ({getPromoStatistics, sho
 };
 
 export default Statistics;
-      />
-    </div>
-  );
-};
-
-export default Statistics;
