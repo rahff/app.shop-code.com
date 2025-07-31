@@ -18,10 +18,12 @@ export interface DateRange {
 
 
 export interface StatsPage {
-  page: number;
   data: PromoStats[];
   per_page: number;
-  nbr_of_page: number;
+  last_evaluated_key?: {
+    primary_key: string;
+    sort_key: string;
+  };
 }
 
 export interface PromoStatisticsState {

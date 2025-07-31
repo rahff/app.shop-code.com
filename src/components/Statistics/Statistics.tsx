@@ -1,21 +1,33 @@
 import React from 'react';
-import ShopMetrics from './ShopMetrics';
-import PromoStatsTable from './PromoStatsTable';
+import FilterBannerActions, { FilterState } from './FilterBannerActions';
+import PromoStatsList from './PromoStatsList';
 import {GetPromoStatistics} from "../../core/PromoStatistics/api/PromoStatistics.ts";
-import {GetShopStatistics} from "../../core/ShopStatistics/api/ShopStatistics.ts";
 
 
 interface StatisticsPropsComponent {
     shopId: string;
     getPromoStatistics: GetPromoStatistics;
-    getShopStatistics: GetShopStatistics;
 }
 
 
 
 
-const Statistics: React.FC<StatisticsPropsComponent> = ({getPromoStatistics, shopId, getShopStatistics}) => {
+const Statistics: React.FC<StatisticsPropsComponent> = ({getPromoStatistics, shopId}) => {
+  const [filters, setFilters] = React.useState<FilterState>({
+    nbr_of_issues: { min: null, max: null },
+    total_conversion: { min: null, max: null },
+    total_revenue: { min: null, max: null },
+    collected_customers: { min: null, max: null }
+  });
 
+  const handleResetFilters = () => {
+    setFilters({
+      nbr_of_issues: { min: null, max: null },
+      total_conversion: { min: null, max: null },
+      total_revenue: { min: null, max: null },
+      collected_customers: { min: null, max: null }
+    });
+  };
 
 
   return (
@@ -25,13 +37,16 @@ const Statistics: React.FC<StatisticsPropsComponent> = ({getPromoStatistics, sho
         <p className="text-[#A0A0A8] text-sm sm:text-base">Track your promotional campaigns performance and customer engagement</p>
       </div>
 
-      <ShopMetrics
-          shopId={shopId}
-          getShopStatistics={getShopStatistics}
+      <FilterBannerActions
+        filters={filters}
+        onFiltersChange={setFilters}
+        onResetFilters={handleResetFilters}
       />
-      <PromoStatsTable
-          getPromoStatistics={getPromoStatistics}
-          shopId={shopId}
+      
+      <PromoStatsList
+        getPromoStatistics={getPromoStatistics}
+        shopId={shopId}
+        filters={filters}
       />
     </div>
   );

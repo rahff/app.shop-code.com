@@ -9,10 +9,9 @@ import {STATS_PAGE} from '../../Common/constants';
 
 export const promo_statistic_initial_state: PromoStatisticsState = {
   promo_stats: {
-    page: 1,
     data: [],
     per_page: 0,
-    nbr_of_page: 1
+    last_evaluated_key: undefined
   },
   error: null,
 }
@@ -27,7 +26,7 @@ export type GetPromoStatistics = (shopId: string, page?: number) => Promise<Prom
 const handleResponse = (localStorage: LocalStorageApi, shopId: string, page: number) => (response: StatsPage | Exception) => {
   if(isException(response)) return errorState(response);
   else {
-    localStorage.set_item(STATS_PAGE(shopId, page), {...response})
+    localStorage.set_item(STATS_PAGE(shopId, page), {...response});
     return promoStatisticsState(response);
   }
 }

@@ -19,4 +19,4 @@ const _promoStatisticsApiCreator: HttpService<PromoStatisticApi> =
 export const promoStatisticsApiCreator =
     environment === "production" ?
         _promoStatisticsApiCreator(fetch) :
-        _promoStatisticsApiCreator(fakeGetFetch<StatsPage>({data: [{...fake_promo_statistics}], per_page: 1, page: 1, nbr_of_page: 1}));
+        _promoStatisticsApiCreator(fakeGetFetch<StatsPage>({data: [{...fake_promo_statistics}], per_page: 5, last_evaluated_key: undefined}));
