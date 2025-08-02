@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Download, User, ExternalLink, Mail, Calendar, QrCode } from 'lucide-react';
+import { Download, User, ExternalLink, Mail, Calendar, QrCode } from 'lucide-react';
 import Loader from '../Common/Loader';
 
 interface AccountLink {
@@ -21,9 +21,7 @@ type SortDirection = 'asc' | 'desc';
 
 const CustomersView: React.FC = () => {
   const [customers, setCustomers] = useState<CustomerProfile[]>([]);
-  const [filteredCustomers, setFilteredCustomers] = useState<CustomerProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState<SortField>('createdAt');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
@@ -81,15 +79,12 @@ const CustomersView: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Filter and sort customers
+  // Sort customers
   useEffect(() => {
-    let filtered = customers.filter(customer =>
-      customer.displayName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customer.code.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    let sorted = [...customers];
 
     // Sort customers
-    filtered.sort((a, b) => {
+    sorted.sort((a, b) => {
       let aValue: string | number = a[sortField];
       let bValue: string | number = b[sortField];
 
@@ -105,8 +100,8 @@ const CustomersView: React.FC = () => {
       }
     });
 
-    setFilteredCustomers(filtered);
-  }, [customers, searchTerm, sortField, sortDirection]);
+    setCustomers(sorted);
+  }, [sortField, sortDirection]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -151,7 +146,7 @@ const CustomersView: React.FC = () => {
     const headers = ['Display Name', 'Code', 'Platform', 'Account URL', 'Created At'];
     const csvContent = [
       headers.join(','),
-      ...filteredCustomers.map(customer => [
+      ...customers.map(customer => [
         `"${customer.displayName}"`,
         customer.code,
         customer.accountLink.platform,
@@ -201,16 +196,9 @@ const CustomersView: React.FC = () => {
     <div className="space-y-6">
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#A0A0A8]" />
-          <input
-            type="text"
-            placeholder="Search by name or code..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-[#A0A0A8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6C63FF]/20 focus:border-[#6C63FF] transition-colors"
-            aria-label="Search customers by display name or code"
-          />
+        <div className="flex-1">
+          <h2 className="text-xl font-bold text-[#2B2C34] font-['Inter']">Customer Profiles</h2>
+          <p className="text-[#A0A0A8] text-sm">Manage your customer database and export data</p>
         </div>
         
         <button
@@ -304,7 +292,7 @@ const CustomersView: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredCustomers.map((customer) => (
+              {customers.map((customer) => (
                 <tr key={customer.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4">
                     <button
@@ -363,7 +351,7 @@ const CustomersView: React.FC = () => {
 
       {/* Mobile Cards */}
       <div className="lg:hidden space-y-4">
-        {filteredCustomers.map((customer) => (
+        {customers.map((customer) => (
           <div key={customer.id} className="bg-white rounded-xl border border-gray-200 p-4">
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1">
@@ -417,8 +405,7 @@ const CustomersView: React.FC = () => {
 
       {/* Results Summary */}
       <div className="text-center text-sm text-[#A0A0A8]">
-        Showing {filteredCustomers.length} of {customers.length} customers
-        {searchTerm && ` matching "${searchTerm}"`}
+        Showing {customers.length} customers
       </div>
     </div>
   );
