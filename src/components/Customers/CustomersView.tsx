@@ -2,70 +2,67 @@ import React, { useState, useEffect } from 'react';
 import { Download, User, ExternalLink, Mail, Calendar, QrCode } from 'lucide-react';
 import Loader from '../Common/Loader';
 
-interface AccountLink {
-  platform: 'facebook' | 'instagram' | 'tiktok' | 'email';
-  url: string;
-}
+type IdProvider = 'facebook' | 'instagram' | 'tiktok' | 'email';
 
 interface CustomerProfile {
   id: string;
-  displayName: string;
-  code: string;
-  qrCodeUrl: string;
-  accountLink: AccountLink;
-  createdAt: string;
+  shop_id: string;
+  username: string;
+  account_link: string;
+  id_provider: IdProvider;
+  traffic_origin: string;
 }
 
-type SortField = 'displayName' | 'code' | 'createdAt';
+type SortField = 'username' | 'id_provider' | 'traffic_origin';
 type SortDirection = 'asc' | 'desc';
 
 const CustomersView: React.FC = () => {
   const [customers, setCustomers] = useState<CustomerProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [sortField, setSortField] = useState<SortField>('createdAt');
+  const [sortField, setSortField] = useState<SortField>('username');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   // Mock data
   const mockCustomers: CustomerProfile[] = [
     {
       id: '1',
-      displayName: 'Sarah Johnson',
-      code: 'CUST001',
-      qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=CUST001',
-      accountLink: { platform: 'facebook', url: 'https://facebook.com/sarah.johnson' },
-      createdAt: '2025-01-15T10:30:00Z'
+      shop_id: 'shop_123',
+      username: 'sarah.johnson',
+      account_link: 'https://facebook.com/sarah.johnson',
+      id_provider: 'facebook',
+      traffic_origin: 'facebook_ads'
     },
     {
       id: '2',
-      displayName: 'Mike Chen',
-      code: 'CUST002',
-      qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=CUST002',
-      accountLink: { platform: 'instagram', url: 'https://instagram.com/mike_chen' },
-      createdAt: '2025-01-14T15:45:00Z'
+      shop_id: 'shop_123',
+      username: 'mike_chen',
+      account_link: 'https://instagram.com/mike_chen',
+      id_provider: 'instagram',
+      traffic_origin: 'instagram_story'
     },
     {
       id: '3',
-      displayName: 'Emma Rodriguez',
-      code: 'CUST003',
-      qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=CUST003',
-      accountLink: { platform: 'email', url: 'mailto:emma.rodriguez@email.com' },
-      createdAt: '2025-01-13T09:20:00Z'
+      shop_id: 'shop_123',
+      username: 'emma.rodriguez',
+      account_link: 'mailto:emma.rodriguez@email.com',
+      id_provider: 'email',
+      traffic_origin: 'email_campaign'
     },
     {
       id: '4',
-      displayName: 'Alex Thompson',
-      code: 'CUST004',
-      qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=CUST004',
-      accountLink: { platform: 'tiktok', url: 'https://tiktok.com/@alexthompson' },
-      createdAt: '2025-01-12T14:10:00Z'
+      shop_id: 'shop_123',
+      username: 'alex.thompson',
+      account_link: 'https://tiktok.com/@alexthompson',
+      id_provider: 'tiktok',
+      traffic_origin: 'tiktok_video'
     },
     {
       id: '5',
-      displayName: 'Lisa Wang',
-      code: 'CUST005',
-      qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=CUST005',
-      accountLink: { platform: 'facebook', url: 'https://facebook.com/lisa.wang' },
-      createdAt: '2025-01-11T11:30:00Z'
+      shop_id: 'shop_123',
+      username: 'lisa.wang',
+      account_link: 'https://facebook.com/lisa.wang',
+      id_provider: 'facebook',
+      traffic_origin: 'facebook_post'
     }
   ];
 
@@ -88,11 +85,6 @@ const CustomersView: React.FC = () => {
       let aValue: string | number = a[sortField];
       let bValue: string | number = b[sortField];
 
-      if (sortField === 'createdAt') {
-        aValue = new Date(aValue as string).getTime();
-        bValue = new Date(bValue as string).getTime();
-      }
-
       if (sortDirection === 'asc') {
         return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
       } else {
@@ -108,7 +100,7 @@ const CustomersView: React.FC = () => {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setSortField(field);
-      setSortDirection(field === 'createdAt' ? 'desc' : 'asc');
+      setSortDirection('asc');
     }
   };
 
@@ -122,8 +114,8 @@ const CustomersView: React.FC = () => {
     }
   };
 
-  const getPlatformColor = (platform: string) => {
-    switch (platform) {
+  const getPlatformColor = (provider: IdProvider) => {
+    switch (provider) {
       case 'facebook': return 'text-blue-600 bg-blue-50';
       case 'instagram': return 'text-pink-600 bg-pink-50';
       case 'tiktok': return 'text-gray-800 bg-gray-50';
@@ -132,26 +124,15 @@ const CustomersView: React.FC = () => {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
   const handleExportCSV = () => {
-    const headers = ['Display Name', 'Code', 'Platform', 'Account URL', 'Created At'];
+    const headers = ['Username', 'Account Link', 'ID Provider', 'Traffic Origin'];
     const csvContent = [
       headers.join(','),
       ...customers.map(customer => [
-        `"${customer.displayName}"`,
-        customer.code,
-        customer.accountLink.platform,
-        `"${customer.accountLink.url}"`,
-        customer.createdAt
+        `"${customer.username}"`,
+        `"${customer.account_link}"`,
+        customer.id_provider,
+        customer.traffic_origin
       ].join(','))
     ].join('\n');
 
@@ -166,11 +147,11 @@ const CustomersView: React.FC = () => {
     document.body.removeChild(link);
   };
 
-  const handleAccountLinkClick = (accountLink: AccountLink) => {
-    if (accountLink.platform === 'email') {
-      window.location.href = accountLink.url;
+  const handleAccountLinkClick = (customer: CustomerProfile) => {
+    if (customer.id_provider === 'email') {
+      window.location.href = customer.account_link;
     } else {
-      window.open(accountLink.url, '_blank', 'noopener,noreferrer');
+      window.open(customer.account_link, '_blank', 'noopener,noreferrer');
     }
   };
 
@@ -186,7 +167,7 @@ const CustomersView: React.FC = () => {
         </div>
         <h3 className="text-xl font-semibold text-[#2B2C34] mb-2">No customer profiles found</h3>
         <p className="text-[#A0A0A8] max-w-md mx-auto">
-          Ask your shop owner to Generate QR-codes via promo.shop-code.com.
+          No customers have signed up yet. Share your promotional campaigns to start collecting customer profiles.
         </p>
       </div>
     );
@@ -219,20 +200,46 @@ const CustomersView: React.FC = () => {
               <tr>
                 <th 
                   className="px-6 py-4 text-left text-xs font-semibold text-[#2B2C34] uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-                  onClick={() => handleSort('displayName')}
-                  aria-sort={sortField === 'displayName' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
+                  onClick={() => handleSort('username')}
+                  aria-sort={sortField === 'username' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
                   role="columnheader"
                   tabIndex={0}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
-                      handleSort('displayName');
+                      handleSort('username');
                     }
                   }}
                 >
                   <div className="flex items-center space-x-1">
-                    <span>Customer Name</span>
-                    {sortField === 'displayName' && (
+                    <span>Username</span>
+                    {sortField === 'username' && (
+                      <span className="text-[#6C63FF]">
+                        {sortDirection === 'asc' ? '↑' : '↓'}
+                      </span>
+                    )}
+                  </div>
+                </th>
+                <th 
+                  className="px-6 py-4 text-left text-xs font-semibold text-[#2B2C34] uppercase tracking-wider">
+                  Account Link
+                </th>
+                <th 
+                  className="px-6 py-4 text-left text-xs font-semibold text-[#2B2C34] uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                  onClick={() => handleSort('id_provider')}
+                  aria-sort={sortField === 'id_provider' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
+                  role="columnheader"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleSort('id_provider');
+                    }
+                  }}
+                >
+                  <div className="flex items-center space-x-1">
+                    <span>ID Provider</span>
+                    {sortField === 'id_provider' && (
                       <span className="text-[#6C63FF]">
                         {sortDirection === 'asc' ? '↑' : '↓'}
                       </span>
@@ -241,48 +248,20 @@ const CustomersView: React.FC = () => {
                 </th>
                 <th 
                   className="px-6 py-4 text-left text-xs font-semibold text-[#2B2C34] uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-                  onClick={() => handleSort('code')}
-                  aria-sort={sortField === 'code' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
+                  onClick={() => handleSort('traffic_origin')}
+                  aria-sort={sortField === 'traffic_origin' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
                   role="columnheader"
                   tabIndex={0}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
-                      handleSort('code');
+                      handleSort('traffic_origin');
                     }
                   }}
                 >
                   <div className="flex items-center space-x-1">
-                    <span>Code</span>
-                    {sortField === 'code' && (
-                      <span className="text-[#6C63FF]">
-                        {sortDirection === 'asc' ? '↑' : '↓'}
-                      </span>
-                    )}
-                  </div>
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-[#2B2C34] uppercase tracking-wider">
-                  QR Code
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-[#2B2C34] uppercase tracking-wider">
-                  Account
-                </th>
-                <th 
-                  className="px-6 py-4 text-left text-xs font-semibold text-[#2B2C34] uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-                  onClick={() => handleSort('createdAt')}
-                  aria-sort={sortField === 'createdAt' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
-                  role="columnheader"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      handleSort('createdAt');
-                    }
-                  }}
-                >
-                  <div className="flex items-center space-x-1">
-                    <span>Created</span>
-                    {sortField === 'createdAt' && (
+                    <span>Traffic Origin</span>
+                    {sortField === 'traffic_origin' && (
                       <span className="text-[#6C63FF]">
                         {sortDirection === 'asc' ? '↑' : '↓'}
                       </span>
@@ -296,12 +275,12 @@ const CustomersView: React.FC = () => {
                 <tr key={customer.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4">
                     <button
-                      onClick={() => handleAccountLinkClick(customer.accountLink)}
+                      onClick={() => handleAccountLinkClick(customer)}
                       className="flex items-center space-x-2 text-[#6C63FF] hover:text-[#5845E9] font-medium transition-colors"
-                      aria-label={`Open ${customer.displayName}'s ${customer.accountLink.platform} profile`}
+                      aria-label={`Open ${customer.username}'s ${customer.id_provider} profile`}
                     >
-                      <span>{customer.displayName}</span>
-                      {customer.accountLink.platform === 'email' ? (
+                      <span>{customer.username}</span>
+                      {customer.id_provider === 'email' ? (
                         <Mail className="w-4 h-4" />
                       ) : (
                         <ExternalLink className="w-4 h-4" />
@@ -309,38 +288,26 @@ const CustomersView: React.FC = () => {
                     </button>
                   </td>
                   <td className="px-6 py-4 text-[#2B2C34] font-mono text-sm">
-                    {customer.code}
+                    {customer.account_link}
                   </td>
                   <td className="px-6 py-4">
                     <button
-                      onClick={() => window.open(customer.qrCodeUrl, '_blank')}
-                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                      aria-label={`Download QR code for ${customer.displayName}`}
+                      onClick={() => handleAccountLinkClick(customer)}
+                      className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium transition-colors hover:opacity-80 ${getPlatformColor(customer.id_provider)}`}
+                      title={`Click to open ${customer.id_provider} profile`}
+                      aria-label={`Open ${customer.username}'s ${customer.id_provider} profile`}
                     >
-                      <QrCode className="w-5 h-5 text-[#6C63FF]" />
-                    </button>
-                  </td>
-                  <td className="px-6 py-4">
-                    <button
-                      onClick={() => handleAccountLinkClick(customer.accountLink)}
-                      className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium transition-colors hover:opacity-80 ${getPlatformColor(customer.accountLink.platform)}`}
-                      title={`Click to open ${customer.accountLink.platform} profile`}
-                      aria-label={`Open ${customer.displayName}'s ${customer.accountLink.platform} profile`}
-                    >
-                      <span>{getPlatformIcon(customer.accountLink.platform)}</span>
-                      <span className="capitalize">{customer.accountLink.platform}</span>
-                      {customer.accountLink.platform === 'email' ? (
+                      <span>{getPlatformIcon(customer.id_provider)}</span>
+                      <span className="capitalize">{customer.id_provider}</span>
+                      {customer.id_provider === 'email' ? (
                         <Mail className="w-3 h-3" />
                       ) : (
                         <ExternalLink className="w-3 h-3" />
                       )}
                     </button>
                   </td>
-                  <td className="px-6 py-4 text-[#A0A0A8] text-sm">
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="w-4 h-4" />
-                      <span>{formatDate(customer.createdAt)}</span>
-                    </div>
+                  <td className="px-6 py-4 text-[#2B2C34] text-sm">
+                    {customer.traffic_origin}
                   </td>
                 </tr>
               ))}
@@ -356,48 +323,36 @@ const CustomersView: React.FC = () => {
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1">
                 <button
-                  onClick={() => handleAccountLinkClick(customer.accountLink)}
+                  onClick={() => handleAccountLinkClick(customer)}
                   className="flex items-center space-x-2 text-[#6C63FF] hover:text-[#5845E9] font-medium transition-colors mb-1"
-                  aria-label={`Open ${customer.displayName}'s ${customer.accountLink.platform} profile`}
+                  aria-label={`Open ${customer.username}'s ${customer.id_provider} profile`}
                 >
-                  <span className="text-lg font-semibold">{customer.displayName}</span>
-                  {customer.accountLink.platform === 'email' ? (
+                  <span className="text-lg font-semibold">{customer.username}</span>
+                  {customer.id_provider === 'email' ? (
                     <Mail className="w-4 h-4" />
                   ) : (
                     <ExternalLink className="w-4 h-4" />
                   )}
                 </button>
-                <p className="text-sm text-[#A0A0A8] font-mono">{customer.code}</p>
+                <p className="text-sm text-[#A0A0A8]">From: {customer.traffic_origin}</p>
               </div>
-              <button
-                onClick={() => window.open(customer.qrCodeUrl, '_blank')}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                aria-label={`Download QR code for ${customer.displayName}`}
-              >
-                <QrCode className="w-5 h-5 text-[#6C63FF]" />
-              </button>
             </div>
             
             <div className="flex items-center justify-between">
               <button
-                onClick={() => handleAccountLinkClick(customer.accountLink)}
-                className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium transition-colors hover:opacity-80 ${getPlatformColor(customer.accountLink.platform)}`}
-                title={`Click to open ${customer.accountLink.platform} profile`}
-                aria-label={`Open ${customer.displayName}'s ${customer.accountLink.platform} profile`}
+                onClick={() => handleAccountLinkClick(customer)}
+                className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium transition-colors hover:opacity-80 ${getPlatformColor(customer.id_provider)}`}
+                title={`Click to open ${customer.id_provider} profile`}
+                aria-label={`Open ${customer.username}'s ${customer.id_provider} profile`}
               >
-                <span>{getPlatformIcon(customer.accountLink.platform)}</span>
-                <span className="capitalize">{customer.accountLink.platform}</span>
-                {customer.accountLink.platform === 'email' ? (
+                <span>{getPlatformIcon(customer.id_provider)}</span>
+                <span className="capitalize">{customer.id_provider}</span>
+                {customer.id_provider === 'email' ? (
                   <Mail className="w-3 h-3" />
                 ) : (
                   <ExternalLink className="w-3 h-3" />
                 )}
               </button>
-              
-              <div className="flex items-center space-x-2 text-sm text-[#A0A0A8]">
-                <Calendar className="w-4 h-4" />
-                <span>{formatDate(customer.createdAt)}</span>
-              </div>
             </div>
           </div>
         ))}
