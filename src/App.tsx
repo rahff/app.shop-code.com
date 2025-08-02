@@ -227,6 +227,8 @@ function App() {
                         )
                     }
                 />;
+            case 'customers':
+                return <CustomersTab />;
             case 'scan':
                 return (
                     <div className="h-full">
@@ -312,8 +314,6 @@ function App() {
                 redirectUser={redirectUser}
             />;
 
-        case 'customers':
-            return <CustomersTab />;
         case CREATE_PROMO_ROUTE:
             return <CreatePromoPage
                 uploadFile={uploadFileCreator(uploadFileApi)}
