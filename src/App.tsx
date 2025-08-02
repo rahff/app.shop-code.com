@@ -310,10 +310,10 @@ function App() {
                         sessionStorageBrowserApi)
                 }
                 redirectUser={redirectUser}
-        case 'customers':
-            return <CustomersTab />;
             />;
 
+        case 'customers':
+            return <CustomersTab />;
         case CREATE_PROMO_ROUTE:
             return <CreatePromoPage
                 uploadFile={uploadFileCreator(uploadFileApi)}
