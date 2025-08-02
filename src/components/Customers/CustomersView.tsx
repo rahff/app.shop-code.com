@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Download, User, ExternalLink, Mail, ChevronDown, Search, Filter } from 'lucide-react';
+import { Download, User, ExternalLink, Mail } from 'lucide-react';
 import Loader from '../Common/Loader';
 
 type IdProvider = 'facebook' | 'instagram' | 'tiktok' | 'email';
@@ -13,14 +13,9 @@ interface CustomerProfile {
   traffic_origin: string;
 }
 
-type SortField = 'username' | 'id_provider' | 'traffic_origin';
-type SortDirection = 'asc' | 'desc';
-
 const CustomersView: React.FC = () => {
   const [customers, setCustomers] = useState<CustomerProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [sortField, setSortField] = useState<SortField>('username');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
   // Mock data
   const mockCustomers: CustomerProfile[] = [
@@ -99,31 +94,6 @@ const CustomersView: React.FC = () => {
 
     return () => clearTimeout(timer);
   }, []);
-
-  // Sort customers
-  const sortedCustomers = React.useMemo(() => {
-    let sorted = [...customers];
-    sorted.sort((a, b) => {
-      let aValue: string = a[sortField];
-      let bValue: string = b[sortField];
-
-      if (sortDirection === 'asc') {
-        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-      } else {
-        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
-      }
-    });
-    return sorted;
-  }, [customers, sortField, sortDirection]);
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('asc');
-    }
-  };
 
   const getPlatformIcon = (platform: string) => {
     switch (platform) {
@@ -222,31 +192,8 @@ const CustomersView: React.FC = () => {
 
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
-        <div className="flex items-center space-x-4">
-          <div className="text-sm text-[#A0A0A8]">
-            <span className="font-medium text-[#2B2C34]">{customers.length}</span> customers
-          </div>
-          
-          {/* Sort Dropdown */}
-          <div className="relative">
-            <select
-              value={`${sortField}-${sortDirection}`}
-              onChange={(e) => {
-                const [field, direction] = e.target.value.split('-') as [SortField, SortDirection];
-                setSortField(field);
-                setSortDirection(direction);
-              }}
-              className="appearance-none bg-white border border-gray-200 rounded-lg px-3 py-2 pr-8 text-sm font-medium text-[#2B2C34] focus:outline-none focus:ring-2 focus:ring-[#6C63FF]/20 focus:border-[#6C63FF] cursor-pointer"
-            >
-              <option value="username-asc">Name A-Z</option>
-              <option value="username-desc">Name Z-A</option>
-              <option value="id_provider-asc">Platform A-Z</option>
-              <option value="id_provider-desc">Platform Z-A</option>
-              <option value="traffic_origin-asc">Source A-Z</option>
-              <option value="traffic_origin-desc">Source Z-A</option>
-            </select>
-            <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#A0A0A8] pointer-events-none" />
-          </div>
+        <div className="text-sm text-[#A0A0A8]">
+          <span className="font-medium text-[#2B2C34]">{customers.length}</span> customers
         </div>
         
         <button
@@ -261,7 +208,7 @@ const CustomersView: React.FC = () => {
 
       {/* Customer Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-        {sortedCustomers.map((customer) => (
+        {customers.map((customer) => (
           <div
             key={customer.id}
             className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 hover:border-[#6C63FF]/20 group"
@@ -335,7 +282,7 @@ const CustomersView: React.FC = () => {
       {/* Results Summary */}
       <div className="mt-8 text-center">
         <p className="text-sm text-[#A0A0A8]">
-          Showing <span className="font-medium text-[#2B2C34]">{sortedCustomers.length}</span> customer profiles
+          Showing <span className="font-medium text-[#2B2C34]">{customers.length}</span> customer profiles
         </p>
       </div>
     </div>
