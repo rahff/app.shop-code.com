@@ -55,7 +55,7 @@ const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, sho
 
   // Get top promo and remaining promos
   const topPromo = sortedPromos[0];
-
+  const remainingPromo = sortedPromos.slice(1);
   const handleLoadMore = () => {
     if (hasMoreData && lastEvaluatedKey) {
       setIsLoadingMore(true);
@@ -128,7 +128,7 @@ const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, sho
         }}
       />
 
-      {promos.length > 0 && (
+      {remainingPromo.length > 0 && (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
           <div className="p-4 sm:p-6 border-b border-gray-200">
             <h3 className="text-lg sm:text-xl font-semibold text-[#2B2C34] font-['Inter']">Other High Performers</h3>
@@ -139,7 +139,7 @@ const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, sho
 
           {/* Mobile Card View */}
           <div className="block lg:hidden divide-y divide-gray-200">
-            {promos.map((promo, index) => (
+            {remainingPromo.map((promo, index) => (
               <div key={promo.id} className="p-4">
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex items-center space-x-3">
@@ -204,7 +204,7 @@ const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, sho
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {promos.map((promo, index) => (
+                {remainingPromo.map((promo, index) => (
                   <tr key={promo.id} className="hover:bg-gray-50 transition-colors duration-150">
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-3">

@@ -34,14 +34,6 @@ const Statistics: React.FC<StatisticsPropsComponent> = ({getPromoStatistics, sho
         selectedSort={selectedSort}
       />
 
-      {/* Bottom Sort Controls for Accessibility */}
-      <div className="mt-8 pt-6 border-t border-gray-200">
-        <SortControls
-          selectedSort={selectedSort}
-          onSortChange={setSelectedSort}
-          className="max-w-md mx-auto"
-        />
-      </div>
     </div>
   );
 };
