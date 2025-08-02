@@ -54,8 +54,6 @@ import {getPromoListCreator} from "./core/ListPromos/api/PromoList.ts";
 import {getPromoListApiCreator} from "./services/external/getPromoListApi.ts";
 import {getPromoStatisticsCreator} from "./core/PromoStatistics/api/PromoStatistics.ts";
 import {promoStatisticsApiCreator} from "./services/external/promoStatisticApi.ts";
-import {getShopStatisticsCreator} from "./core/ShopStatistics/api/ShopStatistics.ts";
-import {shopStatisticApiCreator} from "./services/external/shopStatisticApi.ts";
 import {getCheckoutUrlCreator} from "./core/Subscription/api/GetCheckoutUrl.ts";
 import {checkoutApiCreator} from "./services/external/checkoutApi.ts";
 import {UserProfile} from "./core/UserSession/api/data.ts";
