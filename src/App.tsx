@@ -207,15 +207,6 @@ function App() {
                 />;
             case 'statistics':
                 return <Statistics
-                    getShopStatistics={
-                        getShopStatisticsCreator(
-                            shopStatisticApiCreator(
-                                config.apiEndpoints.shopPromo,
-                                authentication!.token
-                            ),
-                            sessionStorageBrowserApi
-                        )
-                    }
                     shopId={shop!.id}
                     getPromoStatistics={
                         getPromoStatisticsCreator(
