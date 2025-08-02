@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart3, Gift, Settings, QrCode } from 'lucide-react';
+import { BarChart3, Gift, Settings, QrCode, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface BottomNavigationProps {
@@ -13,6 +13,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeRoute, onRout
   const menuItems = [
     { id: 'promos', label: t('navigation.promos'), icon: Gift },
     { id: 'statistics', label: t('navigation.statistics'), icon: BarChart3 },
+    { id: 'customers', label: 'Customers', icon: User },
     { id: 'scan', label: t('navigation.scan'), icon: QrCode },
     { id: 'settings', label: t('navigation.settings'), icon: Settings },
   ];

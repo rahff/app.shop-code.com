@@ -15,6 +15,7 @@ import UpgradePlanView from './components/Subscription/UpgradePlanView';
 import AddCashierView from './components/AddCashier/AddCashierView.tsx';
 import HelpSupportView from './components/HelpSupport/HelpSupportView.tsx';
 import ErrorPage from './components/ErrorPage/ErrorPage.tsx';
+import CustomersTab from './components/Customers/CustomersTab.tsx';
 import RegionPickerComponentPage from './components/RegionPicker/RegionPickerComponentPage.tsx';
 import {ShopData} from "./core/CreateShop/api/data.ts";
 import { CouponData } from './core/ScanQrcode/api/data';
@@ -309,6 +310,8 @@ function App() {
                         sessionStorageBrowserApi)
                 }
                 redirectUser={redirectUser}
+        case 'customers':
+            return <CustomersTab />;
             />;
 
         case CREATE_PROMO_ROUTE:
