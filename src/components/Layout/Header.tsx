@@ -11,14 +11,14 @@ const Header: React.FC<HeaderProps> = ({ userProfile }) => {
   const { t } = useTranslation('global');
 
   return (
-    <header className="glass-card border-0 border-b border-white/20 px-4 py-4 sm:px-6 lg:px-8 sticky top-0 z-50">
+    <header className="bg-white/95 backdrop-blur-sm border-b border-gray-200 px-4 py-4 sm:px-6 lg:px-8 sticky top-0 z-50">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-[#6C63FF] to-[#5845E9] rounded-2xl flex items-center justify-center shadow-lg animate-float">
+          <div className="w-12 h-12 bg-gradient-to-br from-[#6C63FF] to-[#5845E9] rounded-2xl flex items-center justify-center shadow-lg">
             <QrCode className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold gradient-text font-['Inter']">{t('bootstrap.title')}</h1>
+            <h1 className="text-xl font-bold text-[#2B2C34] font-['Inter']">{t('bootstrap.title')}</h1>
             <p className="text-sm text-[#A0A0A8] hidden sm:block">{t('navigation.dashboard')}</p>
           </div>
         </div>
@@ -30,7 +30,7 @@ const Header: React.FC<HeaderProps> = ({ userProfile }) => {
             </div>
             <div className="hidden sm:block">
               <p className="text-sm font-medium text-[#2B2C34]">{userProfile.user_name}</p>
-              <span className="modern-badge text-xs">{userProfile.role}</span>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#6C63FF]/10 text-[#6C63FF]">{userProfile.role}</span>
             </div>
           </div>
         </div>

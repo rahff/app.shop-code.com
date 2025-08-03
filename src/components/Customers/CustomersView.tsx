@@ -183,20 +183,20 @@ const CustomersView: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 p-4 sm:p-6 lg:p-8">
+    <div className="page-background p-4 sm:p-6 lg:p-8">
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center space-x-3 mb-4">
           <div className="w-10 h-10 bg-gradient-to-r from-[#6C63FF] to-[#5845E9] rounded-xl flex items-center justify-center shadow-lg">
             <User className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold gradient-text font-['Inter']">Customer Profiles</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-[#2B2C34] font-['Inter']">Customer Profiles</h1>
         </div>
         <p className="text-[#A0A0A8] text-sm sm:text-base">Manage your customer database and export data</p>
       </div>
 
       {/* Toolbar */}
-      <div className="glass-card p-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
+      <div className="clean-card p-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
         <div className="text-sm text-[#A0A0A8]">
           <span className="font-medium text-[#2B2C34]">{customers.length}</span> customers
         </div>

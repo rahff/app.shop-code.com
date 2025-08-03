@@ -106,13 +106,13 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 p-4 sm:p-6 lg:p-8">
+    <div className="page-background p-4 sm:p-6 lg:p-8">
       <div className="mb-6 sm:mb-8">
         <div className="flex items-center space-x-3 mb-4">
           <div className="w-10 h-10 bg-gradient-to-r from-[#6C63FF] to-[#5845E9] rounded-xl flex items-center justify-center shadow-lg">
             <Settings className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold gradient-text font-['Inter']">{t('settings.title')}</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-[#2B2C34] font-['Inter']">{t('settings.title')}</h1>
         </div>
         <p className="text-[#A0A0A8] text-sm sm:text-base">{t('settings.description')}</p>
       </div>
@@ -136,7 +136,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
                 <select
                   value={i18n.resolvedLanguage}
                   onChange={handleLanguageChange}
-                  className="modern-input px-4 py-2 text-[#2B2C34] font-medium"
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6C63FF]/20 focus:border-[#6C63FF] text-[#2B2C34] font-medium"
                   aria-label={t('settings.selectLanguage')}
                 >
                   <option value="en">🇬🇧 English</option>

@@ -22,16 +22,15 @@ const Loader: React.FC<LoaderProps> = ({
     >
       <div className="flex flex-col items-center space-y-6">
         <div className="relative">
-          <div className="w-16 h-16 bg-gradient-to-br from-[#6C63FF] to-[#5845E9] rounded-2xl flex items-center justify-center shadow-lg animate-pulse">
+          <div className="w-16 h-16 bg-gradient-to-br from-[#6C63FF] to-[#5845E9] rounded-2xl flex items-center justify-center shadow-lg">
             <Loader2
               className="animate-spin text-white"
               size={size}
               aria-hidden="true"
             />
           </div>
-          <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full animate-bounce"></div>
         </div>
-        <p className="text-[#A0A0A8] text-lg font-medium gradient-text">
+        <p className="text-[#A0A0A8] text-lg font-medium">
           {ariaLabel}
         </p>
         <div className="flex space-x-2">

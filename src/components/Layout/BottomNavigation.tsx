@@ -19,7 +19,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeRoute, onRout
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 glass-card border-0 border-t border-white/20 px-4 py-2 z-50 rounded-t-3xl">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 px-4 py-2 z-50 rounded-t-2xl shadow-lg">
       <div className="flex justify-around items-center max-w-md mx-auto">
         {menuItems.map((item) => {
           const Icon = item.icon;
@@ -29,16 +29,16 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeRoute, onRout
             <button
               key={item.id}
               onClick={() => onRouteChange(item.id)}
-              className={`flex flex-col items-center justify-center py-3 px-3 rounded-2xl transition-all duration-300 min-w-0 flex-1 transform hover:scale-105 ${
+              className={`flex flex-col items-center justify-center py-3 px-3 rounded-xl transition-all duration-300 min-w-0 flex-1 ${
                 isActive
-                  ? 'text-[#6C63FF] bg-gradient-to-br from-[#6C63FF]/10 to-[#5845E9]/10'
+                  ? 'text-[#6C63FF] bg-[#6C63FF]/10'
                   : 'text-[#A0A0A8] hover:text-[#6C63FF]'
               }`}
             >
-              <div className={`p-2 rounded-xl transition-all duration-300 ${
+              <div className={`p-2 rounded-lg transition-all duration-300 ${
                 isActive
-                  ? 'bg-gradient-to-br from-[#6C63FF] to-[#5845E9] shadow-lg'
-                  : 'hover:bg-white/50'
+                  ? 'bg-[#6C63FF] shadow-md'
+                  : 'hover:bg-gray-100'
               }`}>
                 <Icon className={`w-6 h-6 ${isActive ? 'text-white' : ''}`} />
               </div>
