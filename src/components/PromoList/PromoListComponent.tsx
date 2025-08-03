@@ -16,10 +16,9 @@ import {AppRoute} from "../../core/Common/api/CommonTypes.ts";
 interface PromoListComponentProps {
   redirectUser: (destination: AppRoute) => void;
   getPromoList: GetPromoList;
-  shopId: string;
 }
 
-const PromoListComponent: React.FC<PromoListComponentProps> = ({ redirectUser, getPromoList, shopId }) => {
+const PromoListComponent: React.FC<PromoListComponentProps> = ({ redirectUser, getPromoList }) => {
   const { t } = useTranslation('global');
   const [selectedPromo, setSelectedPromo] = useState<PromoData | null>(null);
   const [showDetails, setShowDetails] = useState(false);
@@ -28,7 +27,7 @@ const PromoListComponent: React.FC<PromoListComponentProps> = ({ redirectUser, g
 
   useEffect(() => {
     setIsLoadingPromo(true);
-    getPromoList(shopId).then((state) => {
+    getPromoList().then((state) => {
       setState(state);
       setIsLoadingPromo(false);
     })

@@ -18,23 +18,23 @@ const errorState = (exception: Exception): PromoStatisticsState =>
 
 const promoStatisticsState = (promoStats: StatsPage): PromoStatisticsState => ({promo_stats: {data: promoStats.data, last_evaluated_key: promoStats.last_evaluated_key}, error: null})
 
-export type GetPromoStatistics = (shopId: string, lastEvaluatedKey?: { primary_key: string; sort_key: string }) => Promise<PromoStatisticsState>;
+export type GetPromoStatistics = (lastEvaluatedKey?: { primary_key: string; sort_key: string }) => Promise<PromoStatisticsState>;
 
-const handleResponse = (localStorage: LocalStorageApi, shopId: string) => (response: StatsPage | Exception) => {
+const handleResponse = (localStorage: LocalStorageApi) => (response: StatsPage | Exception) => {
   if(isException(response)) return errorState(response);
   else {
-    localStorage.set_item(shopId, response);
+    localStorage.set_item('promo_stats', response);
     return promoStatisticsState(response);
   }
 }
 
-const handleLoadMoreResponse = (localStorage: LocalStorageApi, shopId: string) => (response: StatsPage | Exception) => {
+const handleLoadMoreResponse = (localStorage: LocalStorageApi) => (response: StatsPage | Exception) => {
     if(isException(response)) return errorState(response);
     else {
-        const statsPage = localStorage.get_item<StatsPage>(shopId);
+        const statsPage = localStorage.get_item<StatsPage>('promo_stats');
         if(statsPage) {
             const newStatsPage = {...statsPage, data: statsPage.data.concat(response.data), last_evaluated_key: response.last_evaluated_key};
-            localStorage.set_item(shopId, newStatsPage);
+            localStorage.set_item('promo_stats', newStatsPage);
             return promoStatisticsState(newStatsPage);
         }
         return promoStatisticsState(response);
@@ -43,13 +43,13 @@ const handleLoadMoreResponse = (localStorage: LocalStorageApi, shopId: string) =
 
 export const getPromoStatisticsCreator =
     (promoStatisticApi: PromoStatisticApi, localStorage: LocalStorageApi): GetPromoStatistics =>
-    async (shopId: string, lastEvaluatedKey?: { primary_key: string; sort_key: string }): Promise<PromoStatisticsState> => {
+    async (lastEvaluatedKey?: { primary_key: string; sort_key: string }): Promise<PromoStatisticsState> => {
       if(!!lastEvaluatedKey) {
-          return promoStatisticApi(shopId, lastEvaluatedKey).then(handleLoadMoreResponse(localStorage, shopId))
+          return promoStatisticApi(lastEvaluatedKey).then(handleLoadMoreResponse(localStorage))
       }
-      const localData = localStorage.get_item<StatsPage>(shopId);
+      const localData = localStorage.get_item<StatsPage>('promo_stats');
       if(localData === null) {
-        return promoStatisticApi(shopId, lastEvaluatedKey).then(handleResponse(localStorage, shopId));
+        return promoStatisticApi(lastEvaluatedKey).then(handleResponse(localStorage));
       }else return promoStatisticsState(localData);
     }
 

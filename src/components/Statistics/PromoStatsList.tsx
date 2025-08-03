@@ -7,11 +7,10 @@ import TopPromoCard from './TopPromoCard';
 
 interface PromoStatsListProps {
   getPromoStatistics: GetPromoStatistics;
-  shopId: string;
   selectedSort: SortOption;
 }
 
-const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, shopId, selectedSort }) => {
+const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, selectedSort }) => {
   const [promos, setPromos] = useState<PromoStats[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -24,7 +23,7 @@ const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, sho
     setPromos([]);
     setLastEvaluatedKey(undefined);
     
-    getPromoStatistics(shopId).then((state: PromoStatisticsState) => {
+    getPromoStatistics().then((state: PromoStatisticsState) => {
       console.log(state);
       setPromos([...state.promo_stats.data]);
       setLastEvaluatedKey(state.promo_stats.last_evaluated_key);
@@ -32,7 +31,7 @@ const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, sho
       setIsLoading(false);
       console.log("promos", promos);
     });
-  }, [getPromoStatistics, shopId]);
+  }, [getPromoStatistics]);
 
   // Sort promos based on selected criterion
   const sortedPromos = React.useMemo(() => {
@@ -60,7 +59,7 @@ const PromoStatsList: React.FC<PromoStatsListProps> = ({ getPromoStatistics, sho
     if (hasMoreData && lastEvaluatedKey) {
       setIsLoadingMore(true);
       
-      getPromoStatistics(shopId, lastEvaluatedKey).then((state: PromoStatisticsState) => {
+      getPromoStatistics(lastEvaluatedKey).then((state: PromoStatisticsState) => {
         if (state.promo_stats?.data) {
           setPromos(prev => [...prev, ...state.promo_stats.data]);
           setLastEvaluatedKey(state.promo_stats.last_evaluated_key);

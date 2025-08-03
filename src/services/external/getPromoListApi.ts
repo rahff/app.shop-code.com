@@ -11,8 +11,8 @@ export const promo_list_initial_state = {promos: [], error: null};
 export const _getPromoListApiCreator =
   (fetch: Fetch) =>
   (endpoint: string, token: string) =>
-  async (shopId: string): Promise<PromoData[] |  Exception> => {
-    return fetch(`${endpoint}/promos?shop_id=${shopId}`, {headers: authorizationHeaders(token)})
+  async (): Promise<PromoData[] |  Exception> => {
+    return fetch(`${endpoint}/promos`, {headers: authorizationHeaders(token)})
         .then(handleResponse<PromoData[]>)
 }
 

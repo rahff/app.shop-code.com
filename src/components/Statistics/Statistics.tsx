@@ -5,11 +5,10 @@ import PromoStatsList from './PromoStatsList';
 import {GetPromoStatistics} from "../../core/PromoStatistics/api/PromoStatistics.ts";
 
 interface StatisticsPropsComponent {
-    shopId: string;
     getPromoStatistics: GetPromoStatistics;
 }
 
-const Statistics: React.FC<StatisticsPropsComponent> = ({getPromoStatistics, shopId}) => {
+const Statistics: React.FC<StatisticsPropsComponent> = ({getPromoStatistics}) => {
   const { t } = useTranslation('global');
   const [selectedSort, setSelectedSort] = React.useState<SortOption>('revenue');
 
@@ -30,7 +29,6 @@ const Statistics: React.FC<StatisticsPropsComponent> = ({getPromoStatistics, sho
       {/* Promo Stats List with Top Promo */}
       <PromoStatsList
         getPromoStatistics={getPromoStatistics}
-        shopId={shopId}
         selectedSort={selectedSort}
       />
 

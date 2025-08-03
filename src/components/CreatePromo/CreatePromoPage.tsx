@@ -12,21 +12,20 @@ import {GetUploadUrl, UploadFile} from "../../core/UploadImage/api/UploadFile.ts
 interface CreatePromoPageProps {
   redirectUser: (destination: AppRoute, error?: string) => void;
   createPromo: CreatePromo;
-  shopId: string;
   getUploadUrl: GetUploadUrl;
   uploadFile: UploadFile;
 }
 
 
 
-const CreatePromoPage: React.FC<CreatePromoPageProps> = ({redirectUser, createPromo, shopId, getUploadUrl, uploadFile}) => {
+const CreatePromoPage: React.FC<CreatePromoPageProps> = ({redirectUser, createPromo, getUploadUrl, uploadFile}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (formData: PromoFormData) => {
     setIsLoading(true);
     setError(null);
-    createPromo(shopId, formData).then((redirection) => {
+    createPromo(formData).then((redirection) => {
       setIsLoading(false);
       redirectUser(redirection.path);
     });

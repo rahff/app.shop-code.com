@@ -31,7 +31,7 @@ const redirectToLoginState = (): UserSessionState =>
     ({userProfile: null, redirection: {path: LOGIN_ROUTE} });
 
 const redirectToShopListState = (userProfile: UserProfile): UserSessionState =>
-    ({userProfile, redirection: {path: MY_SHOPS_ROUTE} });
+    ({userProfile, redirection: {path: DASHBOARD_ROUTE} });
 
 const handleResponse =
     (localStorage: LocalStorageApi) =>

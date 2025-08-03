@@ -1,14 +1,13 @@
 import React from 'react';
-import { QrCode, ArrowLeft, Globe } from 'lucide-react';
+import { QrCode, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import {UserProfile} from "../../core/UserSession/api/data.ts";
 
 interface HeaderProps {
-  onChooseAnotherShop?: () => void;
   userProfile: UserProfile;
 }
 
-const Header: React.FC<HeaderProps> = ({ onChooseAnotherShop, userProfile }) => {
+const Header: React.FC<HeaderProps> = ({ userProfile }) => {
   const { t } = useTranslation('global');
 
   return (
@@ -25,18 +24,6 @@ const Header: React.FC<HeaderProps> = ({ onChooseAnotherShop, userProfile }) => 
         </div>
         
         <div className="flex items-center space-x-4">
-          {/* Choose Another Shop Button */}
-          {onChooseAnotherShop && (
-            <button
-              onClick={onChooseAnotherShop}
-              className="flex items-center space-x-2 px-4 py-2 border-2 border-[#6C63FF] text-[#6C63FF] rounded-lg font-medium hover:bg-[#6C63FF] hover:text-white transition-all duration-200 text-sm"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="hidden sm:inline">{t('navigation.chooseAnotherShop')}</span>
-              <span className="sm:hidden">{t('navigation.myShops')}</span>
-            </button>
-          )}
-          
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-[#6C63FF] rounded-full flex items-center justify-center">
               <span className="text-white text-sm font-semibold">{userProfile.user_name.slice(0,1).toUpperCase()}</span>

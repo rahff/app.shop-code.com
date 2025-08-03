@@ -9,11 +9,11 @@ import {fake_promo_statistics} from "../../core/Common/test-utils/fixture.spec.t
 const _promoStatisticsApiCreator: HttpService<PromoStatisticApi> =
     (fetch: Fetch) =>
     (endpoint: string, token: string): PromoStatisticApi =>
-    async (shopId: string, lastEvaluatedKey?: { primary_key: string; sort_key: string }) => {
-      let url = `${endpoint}/promo_statistics?shop_id=${shopId}`;
+    async (lastEvaluatedKey?: { primary_key: string; sort_key: string }) => {
+      let url = `${endpoint}/promo_statistics`;
       
       if (lastEvaluatedKey) {
-        url += `&last_key_pk=${encodeURIComponent(lastEvaluatedKey.primary_key)}&last_key_sk=${encodeURIComponent(lastEvaluatedKey.sort_key)}`;
+        url += `?last_key_pk=${encodeURIComponent(lastEvaluatedKey.primary_key)}&last_key_sk=${encodeURIComponent(lastEvaluatedKey.sort_key)}`;
       }
       
       return fetch(url, {headers: authorizationHeaders(token)}).then(handleResponse<StatsPage>);

@@ -18,7 +18,7 @@ const errorRedirection = async (response: Exception) => {
   return {path: ERROR_PAGE_ROUTE, params: {error: response.message}};
 }
 
-const handleResponse = (localStorage: LocalStorageApi) => {
+const handleResponse = (localStorage: LocalStorageApi, shopId: string) => {
   return async (response: PromoData | Exception) => {
     if (isException<PromoData>(response)) return errorRedirection(response);
     localStorage.add_item(promo_list_key(response.shop_id), response);
@@ -26,15 +26,17 @@ const handleResponse = (localStorage: LocalStorageApi) => {
   };
 }
 
-export type CreatePromo = (shopId: string, promoFormData: PromoFormData) => Promise<Redirection>;
+export type CreatePromo = (promoFormData: PromoFormData) => Promise<Redirection>;
 
 export const createPromoCreator =
     (savePromoApi: SavePromoApi, validator: PromoValidator, localStorage: LocalStorageApi) =>
-    async (shopId: string, promoFormData: PromoFormData): Promise<Redirection> => {
-      const promo_validation: Result<PromoData, InvalidDateRange> = validator(promoFormData, shopId);
+    async (promoFormData: PromoFormData): Promise<Redirection> => {
+      // Use a default shop_id since we removed the shop concept
+      const defaultShopId = 'default_shop';
+      const promo_validation: Result<PromoData, InvalidDateRange> = validator(promoFormData, defaultShopId);
       if(promo_validation.isOk()) {
         return savePromoApi(promo_validation.getValue())
-            .then(handleResponse(localStorage))
+            .then(handleResponse(localStorage, defaultShopId))
       }
       else return {path: CREATE_PROMO_ROUTE, params: {error: promo_validation.getError().message}};
     }

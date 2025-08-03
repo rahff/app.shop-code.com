@@ -1,14 +1,12 @@
 import {useState, useCallback, useEffect} from 'react';
 import BootstrapComponent from './components/Bootstrap/BootstrapComponent';
 import RefreshSessionComponent from './components/RefreshSession/RefreshSessionComponent';
-import ShopListComponent from './components/ShopList/ShopListComponent';
 import BottomNavigation from './components/Layout/BottomNavigation';
 import Header from './components/Layout/Header';
 import PromoListComponent from './components/PromoList/PromoListComponent.tsx';
 import Statistics from './components/Statistics/Statistics';
 import Settings from './components/Settings/Settings';
 import CreatePromoPage from './components/CreatePromo/CreatePromoPage';
-import CreateShopPage from './components/CreateShop/CreateShopPage';
 import QrcodeScannerView from './components/ScanQrcode/QrcodeScannerView';
 import RedeemCouponView from './components/RedeemCoupon/RedeemCouponView.tsx';
 import UpgradePlanView from './components/Subscription/UpgradePlanView';
@@ -17,21 +15,17 @@ import HelpSupportView from './components/HelpSupport/HelpSupportView.tsx';
 import ErrorPage from './components/ErrorPage/ErrorPage.tsx';
 import CustomersView from './components/Customers/CustomersView.tsx';
 import RegionPickerComponentPage from './components/RegionPicker/RegionPickerComponentPage.tsx';
-import {ShopData} from "./core/CreateShop/api/data.ts";
 import { CouponData } from './core/ScanQrcode/api/data';
 import {Authentication} from "./core/Model/Authentication.ts";
 import {
   APP_ROUTE, CREATE_PROMO_ROUTE, CREATE_SHOP_ROUTE,
   DASHBOARD_ROUTE,
   ERROR_PAGE_ROUTE,
-  MY_SHOPS_ROUTE,
   REFRESH_SESSION_ROUTE, SET_CONFIG_ROUTE
 } from "./core/Common/constants.ts";
 import {AuthProvider} from 'react-oidc-context';
 import {Config} from "./config.ts";
 import {fetchConfig} from "./services/external/fetchConfig.ts";
-import {shopListApiCreator} from "./services/external/getShopListApi.ts";
-import {createShopApi} from "./services/external/createShopApi.ts";
 import {redeemCouponCreator} from "./core/RedeemCoupon/api/RedeemCoupon.ts";
 import {cashDrawerApiCreator} from "./services/external/cashDrawerApi.ts";
 import {punch_couponCreator} from "./core/RedeemCoupon/rules/CouponPuncher.ts";
@@ -40,16 +34,13 @@ import {cryptoIdGenerator} from "./services/browser/CryptoIdGenerator.ts";
 import {addCashierCreator} from "./core/AddCashier/api/AddCashier.ts";
 import {addCashierApiCreator} from "./services/external/addCashierApi.ts";
 import {sessionStorageBrowserApi} from "./services/browser/SessionStorageBrowserApi.ts";
-import {createShopCreator} from "./core/CreateShop/api/CreateShopApi.ts";
-import {shopFactoryCreator} from "./core/CreateShop/rules/ShopFactory.ts";
-import {nativeDateProvider} from "./services/browser/NativeDateProvider.ts";
 import {AppRoute} from "./core/Common/api/CommonTypes.ts";
 import {listCashierCreator} from "./core/ListCashiers/api/ListCashiers.ts";
 import {cashierListApiCreator} from "./services/external/cashierListApi.ts";
-import {getShopListCreator} from "./core/ListShops/api/ShopList.ts";
 import {createPromoCreator} from "./core/CreatePromo/api/CreatePromo.ts";
 import {savePromoApiCreator} from "./services/external/savePromoApi.ts";
 import {promoValidatorCreator} from "./core/CreatePromo/rules/PromoValidation.ts";
+import {nativeDateProvider} from "./services/browser/NativeDateProvider.ts";
 import {getPromoListCreator} from "./core/ListPromos/api/PromoList.ts";
 import {getPromoListApiCreator} from "./services/external/getPromoListApi.ts";
 import {getPromoStatisticsCreator} from "./core/PromoStatistics/api/PromoStatistics.ts";
@@ -90,7 +81,6 @@ function App() {
     const [authentication, setAuthentication] = useState<Authentication | null>(null);
     const [config, setConfig] = useState<Config>(nullConfig);
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-    const [shop, setShop] = useState<ShopData | null>(null);
 
 
     const onConfigReceived = (appConfig: Config) => {
@@ -126,18 +116,6 @@ function App() {
     const onAuthentication = useCallback((authentication: Authentication) => {
         setAuthentication(authentication);
     }, [])
-
-    // Handle shop selection - enter main dashboard
-    const handleShopSelect = useCallback((shop: ShopData) => {
-        setShop(shop);
-        setAppRoute(DASHBOARD_ROUTE);
-    }, []);
-
-    // Handle choose another shop - return to shop list
-    const handleChooseAnotherShop = useCallback(() => {
-        setAppRoute(MY_SHOPS_ROUTE);
-        setActiveRoute('promos');
-    }, []);
 
     // Handle scan success - navigate to redeem coupon
     const handleScanSuccess = (coupon: CouponData) => {
@@ -192,7 +170,6 @@ function App() {
             case 'promos':
                 return <PromoListComponent
                     redirectUser={redirectUser}
-                    shopId={shop!.id}
                     getPromoList={
                         getPromoListCreator(
                             getPromoListApiCreator(
@@ -205,7 +182,6 @@ function App() {
                 />;
             case 'statistics':
                 return <Statistics
-                    shopId={shop!.id}
                     getPromoStatistics={
                         getPromoStatisticsCreator(
                             promoStatisticsApiCreator(
@@ -289,20 +265,6 @@ function App() {
                 onAuthentication={onAuthentication}
             />;
 
-        case MY_SHOPS_ROUTE:
-            return <ShopListComponent
-                onShopSelect={handleShopSelect}
-                getShopList={
-                    getShopListCreator(
-                        shopListApiCreator(
-                            config.apiEndpoints.shopPromo,
-                            authentication!.token
-                        ),
-                        sessionStorageBrowserApi)
-                }
-                redirectUser={redirectUser}
-            />;
-
         case CREATE_PROMO_ROUTE:
             return <CreatePromoPage
                 uploadFile={uploadFileCreator(uploadFileApi)}
@@ -315,29 +277,6 @@ function App() {
                     ),
                     promoValidatorCreator(nativeDateProvider),
                     sessionStorageBrowserApi)}
-                shopId={shop!.id}
-            />;
-
-        case CREATE_SHOP_ROUTE:
-            return <CreateShopPage
-                uploadFile={uploadFileCreator(uploadFileApi)}
-                userId={authentication!.user_id}
-                redirectUser={redirectUser}
-                createShop={createShopCreator(
-                    createShopApi(
-                        config.apiEndpoints.shopPromo,
-                        authentication!.token
-                    ),
-                    shopFactoryCreator(nativeDateProvider),
-                    sessionStorageBrowserApi
-                )} getUploadUrl={
-                    getUploadUrlCreator(
-                        getUploadUrlApiCreator(
-                            config.apiEndpoints.userSide,
-                            authentication!.token),
-                            cryptoIdGenerator
-                        )
-                    }
             />;
 
     case 'redeem-coupon':
@@ -421,7 +360,6 @@ function App() {
       return (
         <div className="flex flex-col h-screen bg-gray-50">
           <Header
-              onChooseAnotherShop={handleChooseAnotherShop}
               userProfile={userProfile!}
           />
           <main className="flex-1 overflow-auto pb-20">

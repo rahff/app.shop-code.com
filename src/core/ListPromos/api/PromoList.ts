@@ -13,7 +13,6 @@ export interface PromoListState {
 
 
 export type GetPromoList = (shopId: string) => Promise<PromoListState>
-
 const errorState = (response: Exception) => ({
   promos: [],
   error: {message: response.message}
@@ -24,20 +23,20 @@ const promoListState = (response: PromoData[]) => ({
   error: null
 })
 
-const handleResponse = (localStorage: LocalStorageApi, shopId: string) => (response: PromoData[] | Exception) => {
+const handleResponse = (localStorage: LocalStorageApi) => (response: PromoData[] | Exception) => {
   if(isException(response)) return errorState(response);
   else {
-    localStorage.set_item(promo_list_key(shopId), response);
+    localStorage.set_item('promo_list', response);
     return promoListState(response);
   }
 }
 
 export const getPromoListCreator =
     (promoListApi: PromoListApi, localStorage: LocalStorageApi): GetPromoList =>
-    async (shopId: string): Promise<PromoListState> => {
-      const localData = localStorage.get_item<PromoData[]>(promo_list_key(shopId));
+    async (): Promise<PromoListState> => {
+      const localData = localStorage.get_item<PromoData[]>('promo_list');
       if(localData === null) {
-        return promoListApi(shopId).then(handleResponse(localStorage, shopId));
+        return promoListApi().then(handleResponse(localStorage));
       }else return {
         promos: localData,
         error: null
