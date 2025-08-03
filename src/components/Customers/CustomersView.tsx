@@ -217,7 +217,6 @@ const CustomersView: React.FC = () => {
           <div
             key={customer.id}
             className="glass-card p-6 group animate-fade-in-up"
-            style={{animationDelay: `${customers.indexOf(customer) * 0.1}s`}}
           >
             {/* Customer Header */}
             <div className="flex items-start justify-between mb-4">
