@@ -60,7 +60,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
   const handleScanResult = (result: IDetectedBarcode[]) => {
     const scannedData = result.map((r) => r.rawValue).join('');
     setScanResult(scannedData);
-    setSuccess(t('scanner.scanSuccess'));
+    setSuccess("QR Code scanned successfully!");
     setError(null);
     
     // Try to parse as coupon data and call success handler
@@ -69,7 +69,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
       const couponData = JSON.parse(scannedData);
       onScanSuccess(couponData);
     } catch (parseError: unknown) {
-      setError(t('scanner.invalidQrcode'));
+      setError("Invalid qrcode!");
       console.log('Scanned non-JSON QR code:', parseError);
     }
   };
@@ -85,7 +85,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
       if (cameraConstraints.facingMode === 'environment') {
         // Fallback from rear to front camera
         setCameraConstraints({ facingMode: 'user' });
-        setError("Camera constraint failed, trying fallback...");
+        setError("Rear camera unavailable, switching to front camera...");
         
         // Retry scanner initialization after constraint change
         setTimeout(() => {
@@ -97,7 +97,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
       } else {
         // Final fallback: remove facingMode constraint entirely
         setCameraConstraints({});
-        setError("Trying default camera...");
+        setError("Specific camera unavailable, using default...");
         
         setTimeout(() => {
           setError(null);
@@ -108,8 +108,8 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
       }
     }
     
-    setError(t('scanner.scanFailed'));
-    onScanError(error.message || t('scanner.scanFailed'));
+    setError("Scan failed. Please try again.");
+    onScanError(error.message || "Scan failed");
   };
 
   const startScanning = () => {
