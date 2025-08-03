@@ -23,11 +23,11 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   
-  // 🔧 Race condition fix: Add mounting delay state
+  // Race condition fix: Add mounting delay state
   const [isScannerReady, setIsScannerReady] = useState(false);
   const [cameraConstraints, setCameraConstraints] = useState<MediaTrackConstraints>({});
 
-  // 🎯 Initialize camera constraints with mobile/desktop fallback logic
+  // Initialize camera constraints with mobile/desktop fallback logic
   useEffect(() => {
     const initializeCameraConstraints = () => {
       // Detect if we're likely on a mobile device
@@ -46,7 +46,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
     initializeCameraConstraints();
   }, []);
 
-  // 🚀 Delayed scanner mounting to prevent race condition
+  // Delayed scanner mounting to prevent race condition
   const initializeScanner = useCallback(() => {
     // Use requestAnimationFrame to ensure DOM is fully rendered
     requestAnimationFrame(() => {
@@ -77,7 +77,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
   const handleScanError = (error: any) => {
     console.error('QR Scan Error:', error);
     
-    // 🔄 Handle OverconstrainedError with fallback logic
+    // Handle OverconstrainedError with fallback logic
     if (error.name === 'OverconstrainedError' || error.message?.includes('constraint')) {
       console.log('Camera constraint failed, attempting fallback...');
       
@@ -119,7 +119,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
     setScanResult('');
     setIsScannerReady(false);
     
-    // 🎯 Initialize scanner with proper timing
+    // Initialize scanner with proper timing
     initializeScanner();
   };
 
@@ -143,13 +143,14 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col" role="main" aria-labelledby="scanner-title">
-      <div className="bg-white rounded-xl max-w-md w-full mx-4 mt-4 overflow-hidden shadow-lg">
+    // Full screen overlay modal
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" role="main" aria-labelledby="scanner-title">
+      <div className="bg-white rounded-xl max-w-md w-full mx-auto overflow-hidden shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white">
           <h2 id="scanner-title" className="text-lg font-semibold text-[#2B2C34] font-['Inter'] flex items-center">
             <QrCode className="w-5 h-5 mr-2 text-[#6C63FF]" />
-            Scan QR Code
+            {t('scanner.title')}
           </h2>
           <button
             onClick={handleClose}
@@ -161,11 +162,11 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
         </div>
 
         {/* Scanner Area */}
-        <div className="p-4">
-          <div className="relative bg-gray-900 rounded-lg overflow-hidden aspect-video mb-4">
+        <div className="p-4 bg-white">
+          <div className="relative bg-gray-900 rounded-lg overflow-hidden aspect-square mb-4">
             {isScanning && isScannerReady ? (
               <div className="w-full h-full relative">
-                {/* 🎯 Scanner component with race condition fix */}
+                {/* Scanner component with race condition fix */}
                 <Scanner
                   onScan={handleScanResult}
                   onError={handleScanError}
@@ -211,7 +212,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
                 </div>
               </div>
             ) : isScanning && !isScannerReady ? (
-              // 🔄 Loading state while scanner initializes
+              // Loading state while scanner initializes
               <div className="flex items-center justify-center h-full">
                 <div className="text-center text-white">
                   <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
@@ -279,6 +280,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
             
             <button
               onClick={handleCancel}
+              className="px-6 py-3 border-2 border-[#6C63FF] text-[#6C63FF] rounded-lg font-medium hover:bg-[#6C63FF] hover:text-white transition-all duration-200"
               aria-label={t('common.close')}
             >
               {t('common.cancel')}
