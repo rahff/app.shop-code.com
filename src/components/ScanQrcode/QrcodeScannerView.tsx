@@ -85,7 +85,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
       if (cameraConstraints.facingMode === 'environment') {
         // Fallback from rear to front camera
         setCameraConstraints({ facingMode: 'user' });
-        setError("Rear camera unavailable, switching to front camera...");
+        setError("Camera constraint failed, trying fallback...");
         
         // Retry scanner initialization after constraint change
         setTimeout(() => {
@@ -97,7 +97,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
       } else {
         // Final fallback: remove facingMode constraint entirely
         setCameraConstraints({});
-        setError("Specific camera unavailable, using default...");
+        setError("Trying default camera...");
         
         setTimeout(() => {
           setError(null);
@@ -108,8 +108,8 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
       }
     }
     
-    setError("Scan failed. Please try again.");
-    onScanError(error.message || "Scan failed");
+    setError(t('scanner.scanFailed'));
+    onScanError(error.message || t('scanner.scanFailed'));
   };
 
   const startScanning = () => {
