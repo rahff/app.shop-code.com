@@ -183,22 +183,27 @@ const CustomersView: React.FC = () => {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 p-4 sm:p-6 lg:p-8">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-[#2B2C34] font-['Inter'] mb-2">Customer Profiles</h1>
+        <div className="flex items-center space-x-3 mb-4">
+          <div className="w-10 h-10 bg-gradient-to-r from-[#6C63FF] to-[#5845E9] rounded-xl flex items-center justify-center shadow-lg">
+            <User className="w-6 h-6 text-white" />
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-bold gradient-text font-['Inter']">Customer Profiles</h1>
+        </div>
         <p className="text-[#A0A0A8] text-sm sm:text-base">Manage your customer database and export data</p>
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
+      <div className="glass-card p-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
         <div className="text-sm text-[#A0A0A8]">
           <span className="font-medium text-[#2B2C34]">{customers.length}</span> customers
         </div>
         
         <button
           onClick={handleExportCSV}
-          className="flex items-center space-x-2 bg-[#6C63FF] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#5845E9] focus:outline-none focus:ring-2 focus:ring-[#6C63FF]/20 transition-all duration-200 shadow-lg hover:shadow-xl"
+          className="btn-primary flex items-center space-x-2 px-4 py-2"
           aria-label="Export customer data as CSV"
         >
           <Download className="w-4 h-4" />
@@ -211,17 +216,18 @@ const CustomersView: React.FC = () => {
         {customers.map((customer) => (
           <div
             key={customer.id}
-            className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 hover:border-[#6C63FF]/20 group"
+            className="glass-card p-6 group animate-fade-in-up"
+            style={{animationDelay: `${customers.indexOf(customer) * 0.1}s`}}
           >
             {/* Customer Header */}
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1 min-w-0">
                 <button
                   onClick={() => handleAccountLinkClick(customer)}
-                  className="flex items-center space-x-2 text-[#2B2C34] hover:text-[#6C63FF] transition-colors group-hover:text-[#6C63FF] focus:outline-none focus:text-[#6C63FF]"
+                  className="flex items-center space-x-2 text-[#2B2C34] hover:text-[#6C63FF] transition-all duration-300 group-hover:text-[#6C63FF] focus:outline-none focus:text-[#6C63FF] transform hover:scale-105"
                   aria-label={`Open ${customer.username}'s ${customer.id_provider} profile`}
                 >
-                  <div className="w-10 h-10 bg-gradient-to-br from-[#6C63FF] to-[#5845E9] rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#6C63FF] to-[#5845E9] rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
                     <span className="text-white text-sm font-semibold">
                       {customer.username.charAt(0).toUpperCase()}
                     </span>
@@ -240,7 +246,7 @@ const CustomersView: React.FC = () => {
               {/* Action Button */}
               <button
                 onClick={() => handleAccountLinkClick(customer)}
-                className="p-2 text-[#A0A0A8] hover:text-[#6C63FF] hover:bg-[#6C63FF]/10 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100"
+                className="p-2 text-[#A0A0A8] hover:text-[#6C63FF] hover:bg-[#6C63FF]/10 rounded-2xl transition-all duration-300 opacity-0 group-hover:opacity-100 focus:opacity-100 transform hover:scale-110"
                 aria-label={`Open ${customer.username}'s profile`}
               >
                 {customer.id_provider === 'email' ? (
@@ -255,7 +261,7 @@ const CustomersView: React.FC = () => {
             <div className="flex items-center justify-between">
               <button
                 onClick={() => handleAccountLinkClick(customer)}
-                className={`inline-flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium border transition-all duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-current focus:ring-opacity-20 ${getPlatformColor(customer.id_provider)}`}
+                className={`inline-flex items-center space-x-2 px-3 py-2 rounded-2xl text-sm font-medium border transition-all duration-300 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-current focus:ring-opacity-20 transform hover:scale-105 ${getPlatformColor(customer.id_provider)}`}
                 title={`Click to open ${customer.id_provider} profile`}
                 aria-label={`Open ${customer.username}'s ${customer.id_provider} profile`}
               >
@@ -270,7 +276,7 @@ const CustomersView: React.FC = () => {
             </div>
 
             {/* Account Link Preview */}
-            <div className="mt-4 pt-4 border-t border-gray-100">
+            <div className="mt-4 pt-4 border-t border-white/20">
               <p className="text-xs text-[#A0A0A8] truncate font-mono">
                 {customer.account_link}
               </p>

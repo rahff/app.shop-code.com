@@ -106,9 +106,14 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
   ];
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 p-4 sm:p-6 lg:p-8">
       <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-[#2B2C34] font-['Inter'] mb-2">{t('settings.title')}</h1>
+        <div className="flex items-center space-x-3 mb-4">
+          <div className="w-10 h-10 bg-gradient-to-r from-[#6C63FF] to-[#5845E9] rounded-xl flex items-center justify-center shadow-lg">
+            <Settings className="w-6 h-6 text-white" />
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-bold gradient-text font-['Inter']">{t('settings.title')}</h1>
+        </div>
         <p className="text-[#A0A0A8] text-sm sm:text-base">{t('settings.description')}</p>
       </div>
 
@@ -116,10 +121,10 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
       <div className="flex justify-start md:justify-center">
         <div className="w-full max-w-2xl">
           {/* Language Settings Section */}
-          <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:border-[#6C63FF]/20 mb-8">
+          <div className="glass-card p-4 sm:p-6 mb-8 animate-fade-in-up">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-indigo-50 rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
                   <Globe className="w-6 h-6 text-indigo-600" />
                 </div>
                 <div className="flex-1">
@@ -131,7 +136,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
                 <select
                   value={i18n.resolvedLanguage}
                   onChange={handleLanguageChange}
-                  className="px-4 py-2 border border-[#A0A0A8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6C63FF]/20 focus:border-[#6C63FF] transition-colors bg-white text-[#2B2C34] font-medium"
+                  className="modern-input px-4 py-2 text-[#2B2C34] font-medium"
                   aria-label={t('settings.selectLanguage')}
                 >
                   <option value="en">🇬🇧 English</option>
@@ -142,10 +147,10 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
           </div>
 
           {/* Cashier List Section - positioned first */}
-          <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:border-[#6C63FF]/20 mb-8">
+          <div className="glass-card p-4 sm:p-6 mb-8 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
                   <Users className="w-6 h-6 text-purple-600" />
                 </div>
                 <div className="flex-1">
@@ -155,7 +160,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
               </div>
               <button 
                 onClick={toggleDropdown}
-                className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm flex items-center space-x-2"
+                className="btn-primary px-4 py-2 text-sm flex items-center space-x-2"
               >
                 {isDropdownOpen ? (
                   <ChevronUp className="w-4 h-4" />
@@ -186,9 +191,9 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
                 ) : cashiers.length > 0 ? (
                   <div className="space-y-2">
                     {cashiers.map((cashier) => (
-                      <div key={cashier.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                      <div key={cashier.id} className="flex items-center justify-between p-3 bg-white/50 rounded-2xl hover:bg-white/80 transition-all duration-300 transform hover:scale-105">
                         <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-[#6C63FF] rounded-full flex items-center justify-center">
+                          <div className="w-8 h-8 bg-gradient-to-br from-[#6C63FF] to-[#5845E9] rounded-full flex items-center justify-center shadow-lg">
                             <span className="text-white text-sm font-semibold">
                               {cashier.username.charAt(0).toUpperCase()}
                             </span>
@@ -200,7 +205,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
                         </div>
                         <button
                           onClick={() => deleteCashier(cashier.id)}
-                          className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all duration-200"
+                          className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-2xl transition-all duration-300 transform hover:scale-110"
                           aria-label={`Delete cashier ${cashier.username}`}
                         >
                           <Trash2 className="w-4 h-4" />
@@ -213,7 +218,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
                     <p className="text-[#A0A0A8] text-sm mb-2">{t('settings.noCashiers')}</p>
                     <button 
                       onClick={handleAddCashier}
-                      className="text-[#6C63FF] hover:text-[#5845E9] text-sm font-medium"
+                      className="text-[#6C63FF] hover:text-[#5845E9] text-sm font-medium transition-colors duration-300"
                     >
                       {t('settings.addFirstCashier')}
                     </button>
@@ -224,14 +229,14 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
           </div>
 
           {/* Settings Options */}
-          <div className="space-y-3 sm:space-y-4">
+          <div className="space-y-4 sm:space-y-6">
             {settingsOptions.map((option, index) => {
               const Icon = option.icon;
               return (
-                <div key={index} className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:border-[#6C63FF]/20">
+                <div key={index} className="glass-card p-4 sm:p-6 animate-fade-in-up" style={{animationDelay: `${(index + 2) * 0.1}s`}}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      <div className={`w-12 h-12 ${option.bgColor} rounded-lg flex items-center justify-center`}>
+                      <div className={`w-12 h-12 bg-gradient-to-br ${option.bgColor} rounded-2xl flex items-center justify-center shadow-lg`}>
                         <Icon className={`w-6 h-6 ${option.color}`} />
                       </div>
                       <div className="flex-1">
@@ -241,7 +246,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
                     </div>
                     <button 
                       onClick={option.onClick}
-                      className="bg-[#6C63FF] hover:bg-[#5845E9] text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm"
+                      className="btn-primary px-4 py-2 text-sm"
                     >
                       {t(`settings.${option.action.toLowerCase().replace(/\s+/g, '')}`)}
                     </button>
