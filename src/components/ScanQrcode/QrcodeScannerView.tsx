@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Camera, AlertCircle, CheckCircle, QrCode, X } from 'lucide-react';
 import {IDetectedBarcode, Scanner} from '@yudiel/react-qr-scanner';
 import { CouponData } from '../../core/ScanQrcode/api/data';
+import { useTranslation } from 'react-i18next';
 
 interface QrcodeScannerViewProps {
   onScanSuccess: (coupon: CouponData) => void;
@@ -16,6 +17,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
   onScanError,
   onClose
 }) => {
+  const { t } = useTranslation('global');
   const [scanResult, setScanResult] = useState('');
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -58,7 +60,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
   const handleScanResult = (result: IDetectedBarcode[]) => {
     const scannedData = result.map((r) => r.rawValue).join('');
     setScanResult(scannedData);
-    setSuccess("QR Code scanned successfully!");
+    setSuccess(t('scanner.scanSuccess'));
     setError(null);
     
     // Try to parse as coupon data and call success handler
@@ -67,7 +69,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
       const couponData = JSON.parse(scannedData);
       onScanSuccess(couponData);
     } catch (parseError: unknown) {
-      setError("Invalid qrcode!")
+      setError(t('scanner.invalidQrcode'));
       console.log('Scanned non-JSON QR code:', parseError);
     }
   };
@@ -83,7 +85,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
       if (cameraConstraints.facingMode === 'environment') {
         // Fallback from rear to front camera
         setCameraConstraints({ facingMode: 'user' });
-        setError("Rear camera unavailable, switching to front camera...");
+        setError("Camera constraint failed, trying fallback...");
         
         // Retry scanner initialization after constraint change
         setTimeout(() => {
@@ -95,7 +97,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
       } else {
         // Final fallback: remove facingMode constraint entirely
         setCameraConstraints({});
-        setError("Specific camera unavailable, using default...");
+        setError("Trying default camera...");
         
         setTimeout(() => {
           setError(null);
@@ -106,8 +108,8 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
       }
     }
     
-    setError("Scan failed. Please try again.");
-    onScanError(error.message || "Scan failed");
+    setError(t('scanner.scanFailed'));
+    onScanError(error.message || t('scanner.scanFailed'));
   };
 
   const startScanning = () => {
@@ -141,8 +143,8 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="scanner-title">
-      <div className="bg-white rounded-xl max-w-md w-full mx-4 overflow-hidden">
+    <div className="min-h-screen bg-gray-50 flex flex-col" role="main" aria-labelledby="scanner-title">
+      <div className="bg-white rounded-xl max-w-md w-full mx-4 mt-4 overflow-hidden shadow-lg">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <h2 id="scanner-title" className="text-lg font-semibold text-[#2B2C34] font-['Inter'] flex items-center">
@@ -160,13 +162,14 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
 
         {/* Scanner Area */}
         <div className="p-4">
-          <div className="relative bg-gray-900 rounded-lg overflow-hidden aspect-square mb-4">
+          <div className="relative bg-gray-900 rounded-lg overflow-hidden aspect-video mb-4">
             {isScanning && isScannerReady ? (
               <div className="w-full h-full relative">
                 {/* 🎯 Scanner component with race condition fix */}
                 <Scanner
                   onScan={handleScanResult}
                   onError={handleScanError}
+                  allowMultiple={false}
                   constraints={{
                     ...cameraConstraints,
                     // Additional constraints for better mobile experience
@@ -203,7 +206,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
                 <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
                   <div className="flex items-center space-x-2 bg-black bg-opacity-50 text-white px-3 py-2 rounded-lg">
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    <span className="text-sm">Scanning...</span>
+                    <span className="text-sm">{t('scanner.scanning')}</span>
                   </div>
                 </div>
               </div>
@@ -220,7 +223,7 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
               <div className="flex items-center justify-center h-full">
                 <div className="text-center text-white">
                   <Camera className="w-16 h-16 mx-auto mb-4 text-[#A0A0A8]" />
-                  <p className="text-[#A0A0A8]">Camera not active</p>
+                  <p className="text-[#A0A0A8]">{t('scanner.cameraNotActive')}</p>
                 </div>
               </div>
             )}
@@ -244,15 +247,15 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
           {/* Scan Result Display */}
           {scanResult && (
             <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-blue-800 text-sm font-medium mb-1">Scanned result:</p>
+              <p className="text-blue-800 text-sm font-medium mb-1">{t('scanner.scannedResult')}</p>
               <p className="text-blue-700 text-xs break-all">{scanResult}</p>
             </div>
           )}
 
           {/* Instructions */}
           <div className="text-center text-[#A0A0A8] text-sm mb-4">
-            <p>Position the QR code within the frame to scan</p>
-            <p className="mt-1">Make sure the code is clearly visible and well-lit</p>
+            <p>{t('scanner.instructions')}</p>
+            <p className="mt-1">{t('scanner.instructionsDetail')}</p>
           </div>
 
           {/* Action Buttons */}
@@ -263,22 +266,22 @@ const QrcodeScannerView: React.FC<QrcodeScannerViewProps> = ({
                 className="flex-1 bg-[#6C63FF] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#5845E9] focus:outline-none focus:ring-2 focus:ring-[#6C63FF]/20 transition-all duration-200 flex items-center justify-center space-x-2"
               >
                 <Camera className="w-5 h-5" />
-                <span>Start Scanning</span>
+                <span>{t('scanner.startScanning')}</span>
               </button>
             ) : (
               <button
                 onClick={stopScanning}
                 className="flex-1 bg-red-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600/20 transition-all duration-200"
               >
-                Stop Scanning
+                {t('scanner.stopScanning')}
               </button>
-            )}
+              {t('scanner.title')}
             
             <button
               onClick={handleCancel}
-              className="px-6 py-3 border-2 border-[#6C63FF] text-[#6C63FF] rounded-lg font-medium hover:bg-[#6C63FF] hover:text-white transition-all duration-200"
+              aria-label={t('common.close')}
             >
-              Cancel
+              {t('common.cancel')}
             </button>
           </div>
         </div>

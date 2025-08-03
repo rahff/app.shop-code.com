@@ -196,14 +196,12 @@ function App() {
                 return <CustomersView />;
             case 'scan':
                 return (
-                    <div className="h-full">
-                        <QrcodeScannerView
-                            onScanSuccess={handleScanSuccess}
-                            onScanError={handleScanError}
-                            isActive={true}
-                            onClose={handleScanClose}
-                        />
-                    </div>
+                    <QrcodeScannerView
+                        onScanSuccess={handleScanSuccess}
+                        onScanError={handleScanError}
+                        isActive={true}
+                        onClose={handleScanClose}
+                    />
                 );
             case 'settings':
                 return <Settings
