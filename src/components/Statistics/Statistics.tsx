@@ -1,4 +1,5 @@
 import React from 'react';
+import { BarChart3 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import SortControls, { SortOption } from './SortControls';
 import PromoStatsList from './PromoStatsList';
