@@ -1,6 +1,7 @@
 // src/components/AddCashier/AddCashierForm.tsx
 import React, { useState } from 'react';
 import { User, Lock, AlertCircle, UserPlus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface AddCashierFormProps {
   onSubmit: (credentials: { username: string; password: string }) => void;
@@ -13,6 +14,7 @@ const AddCashierForm: React.FC<AddCashierFormProps> = ({
   isLoading = false,
   error
 }) => {
+  const { t } = useTranslation('global');
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -26,19 +28,19 @@ const AddCashierForm: React.FC<AddCashierFormProps> = ({
     const errors: Record<string, string> = {};
     
     if (!formData.username.trim()) {
-      errors.username = 'Username is required';
+      errors.username = t('addCashier.usernameRequired');
     } else if (formData.username.length < 3) {
-      errors.username = 'Username must be at least 3 characters';
+      errors.username = t('addCashier.usernameMinLength');
     }
     
     if (!formData.password) {
-      errors.password = 'Password is required';
+      errors.password = t('addCashier.passwordRequired');
     } else if (formData.password.length < 6) {
-      errors.password = 'Password must be at least 6 characters';
+      errors.password = t('addCashier.passwordMinLength');
     }
     
     if (formData.password !== formData.confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match';
+      errors.confirmPassword = t('addCashier.passwordsDoNotMatch');
     }
     
     setValidationErrors(errors);
@@ -62,8 +64,8 @@ const AddCashierForm: React.FC<AddCashierFormProps> = ({
         <div className="w-16 h-16 bg-gradient-to-br from-[#6C63FF] to-[#5845E9] rounded-xl flex items-center justify-center mx-auto mb-4">
           <UserPlus className="w-8 h-8 text-white" />
         </div>
-        <h1 className="text-2xl font-bold text-[#2B2C34] font-['Inter'] mb-2">Add Cashier</h1>
-        <p className="text-[#A0A0A8]">Create credentials for a new cashier user</p>
+        <h1 className="text-2xl font-bold text-[#2B2C34] font-['Inter'] mb-2">{t('addCashier.title')}</h1>
+        <p className="text-[#A0A0A8]">{t('addCashier.description')}</p>
       </div>
 
       {/* Error Alert */}
@@ -78,7 +80,7 @@ const AddCashierForm: React.FC<AddCashierFormProps> = ({
         {/* Username */}
         <div>
           <label htmlFor="username" className="block text-sm font-medium text-[#2B2C34] mb-2">
-            Username *
+            {t('addCashier.username')} *
           </label>
           <div className="relative">
             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#A0A0A8]" />
@@ -90,7 +92,7 @@ const AddCashierForm: React.FC<AddCashierFormProps> = ({
               className={`w-full pl-12 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6C63FF]/20 focus:border-[#6C63FF] transition-colors ${
                 validationErrors.username ? 'border-red-300 bg-red-50' : 'border-[#A0A0A8]'
               }`}
-              placeholder="Enter username"
+              placeholder={t('addCashier.usernamePlaceholder')}
               aria-describedby={validationErrors.username ? "username-error" : undefined}
               aria-invalid={!!validationErrors.username}
             />
@@ -105,7 +107,7 @@ const AddCashierForm: React.FC<AddCashierFormProps> = ({
         {/* Password */}
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-[#2B2C34] mb-2">
-            Password *
+            {t('addCashier.password')} *
           </label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#A0A0A8]" />
@@ -117,7 +119,7 @@ const AddCashierForm: React.FC<AddCashierFormProps> = ({
               className={`w-full pl-12 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6C63FF]/20 focus:border-[#6C63FF] transition-colors ${
                 validationErrors.password ? 'border-red-300 bg-red-50' : 'border-[#A0A0A8]'
               }`}
-              placeholder="Enter password"
+              placeholder={t('addCashier.passwordPlaceholder')}
               aria-describedby={validationErrors.password ? "password-error" : undefined}
               aria-invalid={!!validationErrors.password}
             />
@@ -132,7 +134,7 @@ const AddCashierForm: React.FC<AddCashierFormProps> = ({
         {/* Confirm Password */}
         <div>
           <label htmlFor="confirm-password" className="block text-sm font-medium text-[#2B2C34] mb-2">
-            Confirm Password *
+            {t('addCashier.confirmPassword')} *
           </label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#A0A0A8]" />
@@ -144,7 +146,7 @@ const AddCashierForm: React.FC<AddCashierFormProps> = ({
               className={`w-full pl-12 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6C63FF]/20 focus:border-[#6C63FF] transition-colors ${
                 validationErrors.confirmPassword ? 'border-red-300 bg-red-50' : 'border-[#A0A0A8]'
               }`}
-              placeholder="Confirm password"
+              placeholder={t('addCashier.confirmPasswordPlaceholder')}
               aria-describedby={validationErrors.confirmPassword ? "confirm-password-error" : undefined}
               aria-invalid={!!validationErrors.confirmPassword}
             />
@@ -165,10 +167,10 @@ const AddCashierForm: React.FC<AddCashierFormProps> = ({
           {isLoading ? (
             <div className="flex items-center justify-center space-x-2">
               <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              <span>Adding Cashier...</span>
+              <span>{t('addCashier.addingCashier')}</span>
             </div>
           ) : (
-            'Add Cashier'
+            t('addCashier.addCashier')
           )}
         </button>
       </form>

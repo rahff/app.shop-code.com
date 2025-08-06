@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import AddCashierForm from './AddCashierForm';
 import {AddCashier} from "../../core/AddCashier/api/AddCashier.ts";
 
@@ -12,6 +13,7 @@ interface AddCashierViewProps {
 }
 
 const AddCashierView: React.FC<AddCashierViewProps> = ({onComplete, onCancel, addCashier, userPoolId}) => {
+  const { t } = useTranslation('global');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,13 +40,13 @@ const AddCashierView: React.FC<AddCashierViewProps> = ({onComplete, onCancel, ad
           <button
             onClick={handleGoBack}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            aria-label="Go back to dashboard"
+            aria-label={t('addCashier.backToDashboard')}
           >
             <ArrowLeft className="w-5 h-5 text-[#A0A0A8]" />
           </button>
           <div>
-            <h1 className="text-xl font-bold text-[#2B2C34] font-['Inter']">Add Cashier</h1>
-            <p className="text-sm text-[#A0A0A8]">Create a new cashier account for your staff</p>
+            <h1 className="text-xl font-bold text-[#2B2C34] font-['Inter']">{t('addCashier.title')}</h1>
+            <p className="text-sm text-[#A0A0A8]">{t('addCashier.createAccount')}</p>
           </div>
         </div>
       </header>

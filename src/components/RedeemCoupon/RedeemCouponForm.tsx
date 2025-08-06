@@ -1,6 +1,7 @@
 // src/components/RedeemCoupon/RedeemCouponForm.tsx
 import React, { useState } from 'react';
 import { Euro, User, Calendar, AlertCircle, CheckCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { CouponData } from '../../core/ScanQrcode/api/data';
 import { TransactionInfo } from '../../core/RedeemCoupon/api/data';
 
@@ -19,6 +20,7 @@ const RedeemCouponForm: React.FC<RedeemCouponFormProps> = ({
   error,
   onCancel
 }) => {
+  const { t } = useTranslation('global');
   const [transactionAmount, setTransactionAmount] = useState<string>('');
   const [isCustomerNew, setIsCustomerNew] = useState<boolean>(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
@@ -27,11 +29,11 @@ const RedeemCouponForm: React.FC<RedeemCouponFormProps> = ({
     const errors: Record<string, string> = {};
     
     if (!transactionAmount.trim()) {
-      errors.amount = 'Transaction amount is required';
+      errors.amount = t('redeemCoupon.transactionAmountRequired');
     } else {
       const amount = parseFloat(transactionAmount);
       if (isNaN(amount) || amount <= 0) {
-        errors.amount = 'Please enter a valid amount';
+        errors.amount = t('redeemCoupon.validAmountRequired');
       }
     }
     
@@ -63,8 +65,8 @@ const RedeemCouponForm: React.FC<RedeemCouponFormProps> = ({
   return (
     <div className="max-w-md mx-auto p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#2B2C34] font-['Inter'] mb-2">Redeem Coupon</h1>
-        <p className="text-[#A0A0A8]">Complete the transaction details</p>
+        <h1 className="text-2xl font-bold text-[#2B2C34] font-['Inter'] mb-2">{t('redeemCoupon.title')}</h1>
+        <p className="text-[#A0A0A8]">{t('redeemCoupon.completeTransaction')}</p>
       </div>
 
       {/* Coupon Details Card */}
@@ -81,13 +83,13 @@ const RedeemCouponForm: React.FC<RedeemCouponFormProps> = ({
           />
           <div className="flex-1">
             <h3 className="font-semibold text-[#2B2C34] font-['Inter']">{coupon.name}</h3>
-            <p className="text-sm text-[#A0A0A8]">Customer: {coupon.customer_id}</p>
+            <p className="text-sm text-[#A0A0A8]">{t('redeemCoupon.customer')}: {coupon.customer_id}</p>
           </div>
         </div>
         
         <div className="flex items-center space-x-2 text-sm text-[#A0A0A8]">
           <Calendar className="w-4 h-4 text-[#6C63FF]" />
-          <span>Valid: {formatDate(coupon.validity_date_range.start)} - {formatDate(coupon.validity_date_range.end)}</span>
+          <span>{t('redeemCoupon.validPeriod')}: {formatDate(coupon.validity_date_range.start)} - {formatDate(coupon.validity_date_range.end)}</span>
         </div>
       </div>
 
@@ -103,7 +105,7 @@ const RedeemCouponForm: React.FC<RedeemCouponFormProps> = ({
         {/* Transaction Amount */}
         <div>
           <label htmlFor="amount" className="block text-sm font-medium text-[#2B2C34] mb-2">
-            Transaction Amount *
+            {t('redeemCoupon.transactionAmount')} *
           </label>
           <div className="relative">
             <Euro className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#A0A0A8]" />
@@ -133,7 +135,7 @@ const RedeemCouponForm: React.FC<RedeemCouponFormProps> = ({
         <div className="bg-gray-50 rounded-lg p-4">
           <h3 className="text-sm font-medium text-[#2B2C34] mb-3 flex items-center">
             <User className="w-4 h-4 mr-2 text-[#6C63FF]" />
-            Customer Status
+            {t('redeemCoupon.customerStatus')}
           </h3>
           
           <div className="space-y-2">
@@ -145,7 +147,7 @@ const RedeemCouponForm: React.FC<RedeemCouponFormProps> = ({
                 onChange={() => setIsCustomerNew(false)}
                 className="w-4 h-4 text-[#6C63FF] border-[#A0A0A8] focus:ring-[#6C63FF]/20"
               />
-              <span className="text-sm text-[#2B2C34]">Returning Customer</span>
+              <span className="text-sm text-[#2B2C34]">{t('redeemCoupon.returningCustomer')}</span>
             </label>
             
             <label className="flex items-center space-x-3 cursor-pointer">
@@ -156,7 +158,7 @@ const RedeemCouponForm: React.FC<RedeemCouponFormProps> = ({
                 onChange={() => setIsCustomerNew(true)}
                 className="w-4 h-4 text-[#6C63FF] border-[#A0A0A8] focus:ring-[#6C63FF]/20"
               />
-              <span className="text-sm text-[#2B2C34]">New Customer</span>
+              <span className="text-sm text-[#2B2C34]">{t('redeemCoupon.newCustomer')}</span>
             </label>
           </div>
         </div>
@@ -169,7 +171,7 @@ const RedeemCouponForm: React.FC<RedeemCouponFormProps> = ({
               onClick={onCancel}
               className="flex-1 px-4 py-3 border-2 border-[#6C63FF] text-[#6C63FF] rounded-lg font-medium hover:bg-[#6C63FF] hover:text-white transition-all duration-200"
             >
-              Cancel
+              {t('redeemCoupon.cancel')}
             </button>
           )}
           
@@ -181,12 +183,12 @@ const RedeemCouponForm: React.FC<RedeemCouponFormProps> = ({
             {isLoading ? (
               <div className="flex items-center justify-center space-x-2">
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                <span>Processing...</span>
+                <span>{t('redeemCoupon.processing')}</span>
               </div>
             ) : (
               <div className="flex items-center justify-center space-x-2">
                 <CheckCircle className="w-5 h-5" />
-                <span>Redeem Coupon</span>
+                <span>{t('redeemCoupon.redeemCoupon')}</span>
               </div>
             )}
           </button>

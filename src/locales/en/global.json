@@ -263,5 +263,49 @@
     "uploading": "Uploading...",
     "uploadComplete": "Upload Complete",
     "uploadFailed": "Upload failed. Please try again."
+  },
+  "customers": {
+    "title": "Customer Profiles",
+    "description": "Manage your customer database and export data",
+    "exportCsv": "Export CSV",
+    "customersCount": "{{count}} customers",
+    "noCustomersFound": "No customer profiles found",
+    "noCustomersDescription": "No customers have signed up yet. Share your promotional campaigns to start collecting customer profiles.",
+    "showingResults": "Showing {{count}} customer profiles",
+    "openProfile": "Open {{username}}'s {{platform}} profile",
+    "clickToOpen": "Click to open {{platform}} profile",
+    "summary": "Summary",
+    "shopCustomers": "Shop Customers"
+  },
+  "addCashier": {
+    "title": "Add Cashier",
+    "description": "Create credentials for a new cashier user",
+    "backToDashboard": "Go back to dashboard",
+    "createAccount": "Create a new cashier account for your staff",
+    "usernameRequired": "Username is required",
+    "usernameMinLength": "Username must be at least 3 characters",
+    "passwordRequired": "Password is required",
+    "passwordMinLength": "Password must be at least 6 characters",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "addingCashier": "Adding Cashier...",
+    "addCashier": "Add Cashier"
+  },
+  "redeemCoupon": {
+    "title": "Redeem Coupon",
+    "description": "Complete the transaction",
+    "backToDashboard": "Go back to dashboard",
+    "completeTransaction": "Complete the transaction details",
+    "scannedCoupon": "Scanned Coupon",
+    "customer": "Customer",
+    "validPeriod": "Valid Period",
+    "transactionAmount": "Transaction Amount",
+    "transactionAmountRequired": "Transaction amount is required",
+    "validAmountRequired": "Please enter a valid amount",
+    "customerStatus": "Customer Status",
+    "returningCustomer": "Returning Customer",
+    "newCustomer": "New Customer",
+    "processing": "Processing...",
+    "redeemCoupon": "Redeem Coupon",
+    "cancel": "Cancel"
   }
 }

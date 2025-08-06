@@ -271,5 +271,49 @@
     "uploading": "Téléchargement...",
     "uploadComplete": "Téléchargement Terminé",
     "uploadFailed": "Échec du téléchargement. Veuillez réessayer."
+  },
+  "customers": {
+    "title": "Profils Clients",
+    "description": "Gérez votre base de données clients et exportez les données",
+    "exportCsv": "Exporter CSV",
+    "customersCount": "{{count}} clients",
+    "noCustomersFound": "Aucun profil client trouvé",
+    "noCustomersDescription": "Aucun client ne s'est encore inscrit. Partagez vos campagnes promotionnelles pour commencer à collecter des profils clients.",
+    "showingResults": "Affichage de {{count}} profils clients",
+    "openProfile": "Ouvrir le profil {{platform}} de {{username}}",
+    "clickToOpen": "Cliquer pour ouvrir le profil {{platform}}",
+    "summary": "Résumé",
+    "shopCustomers": "Clients de la Boutique"
+  },
+  "addCashier": {
+    "title": "Ajouter un Caissier",
+    "description": "Créez des identifiants pour un nouvel utilisateur caissier",
+    "backToDashboard": "Retour au tableau de bord",
+    "createAccount": "Créer un nouveau compte caissier pour votre personnel",
+    "usernameRequired": "Le nom d'utilisateur est requis",
+    "usernameMinLength": "Le nom d'utilisateur doit contenir au moins 3 caractères",
+    "passwordRequired": "Le mot de passe est requis",
+    "passwordMinLength": "Le mot de passe doit contenir au moins 6 caractères",
+    "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+    "addingCashier": "Ajout du Caissier...",
+    "addCashier": "Ajouter un Caissier"
+  },
+  "redeemCoupon": {
+    "title": "Échanger le Coupon",
+    "description": "Complétez la transaction",
+    "backToDashboard": "Retour au tableau de bord",
+    "completeTransaction": "Complétez les détails de la transaction",
+    "scannedCoupon": "Coupon Scanné",
+    "customer": "Client",
+    "validPeriod": "Période de Validité",
+    "transactionAmount": "Montant de la Transaction",
+    "transactionAmountRequired": "Le montant de la transaction est requis",
+    "validAmountRequired": "Veuillez entrer un montant valide",
+    "customerStatus": "Statut du Client",
+    "returningCustomer": "Client Fidèle",
+    "newCustomer": "Nouveau Client",
+    "processing": "Traitement...",
+    "redeemCoupon": "Échanger le Coupon",
+    "cancel": "Annuler"
   }
 }

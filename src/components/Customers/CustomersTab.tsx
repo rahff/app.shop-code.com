@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BarChart3, Users } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import CustomersView from './CustomersView';
 
 type TabKey = 'summary' | 'shop-customers';
@@ -11,11 +12,12 @@ interface Tab {
 }
 
 const CustomersTab: React.FC = () => {
+  const { t } = useTranslation('global');
   const [activeTab, setActiveTab] = useState<TabKey>('summary');
 
   const tabs: Tab[] = [
-    { label: 'Summary', key: 'summary', icon: null },
-    { label: 'Shop Customers', key: 'shop-customers', icon: Users }
+    { label: t('customers.summary'), key: 'summary', icon: null },
+    { label: t('customers.shopCustomers'), key: 'shop-customers', icon: Users }
   ];
 
   const renderTabContent = () => {
@@ -26,9 +28,9 @@ const CustomersTab: React.FC = () => {
             <div className="w-16 h-16 bg-gradient-to-br from-[#6C63FF] to-[#5845E9] rounded-xl flex items-center justify-center mx-auto mb-6">
               <BarChart3 className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-xl font-semibold text-[#2B2C34] mb-2">Customer Summary</h3>
+            <h3 className="text-xl font-semibold text-[#2B2C34] mb-2">{t('customers.summary')}</h3>
             <p className="text-[#A0A0A8] max-w-md mx-auto">
-              Customer analytics and summary metrics will be displayed here.
+              {t('customers.description')}
             </p>
           </div>
         );
