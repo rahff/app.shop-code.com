@@ -235,7 +235,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
             {settingsOptions.map((option, index) => {
               const Icon = option.icon;
               return (
-                <div key={index} className="glass-card p-4 sm:p-6 animate-fade-in-up" style={{animationDelay: `${(index + 2) * 0.1}s`}}>
+                <div key={index} className="glass-card p-4 sm:p-6 animate-fade-in-up">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       <div className={`w-12 h-12 bg-gradient-to-br ${option.bgColor} rounded-2xl flex items-center justify-center shadow-lg`}>
