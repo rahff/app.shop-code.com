@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ListCashiers } from '../../core/ListCashiers/api/ListCashiers';
 import { CashierData } from '../../core/AddCashier/api/data';
 import { localStorageApi } from '../../services/browser/LocalStorageBrowserApi';
-import {AppRoute} from "../../core/Common/api/CommonTypes.ts";
+import { AppRoute } from "../../core/Common/api/CommonTypes.ts";
 
 
 interface SettingsProps {
@@ -20,23 +20,21 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
   const [cashierError, setCashierError] = useState<string | null>(null);
 
   const handleUpgradePlan = () => {
-    // Navigate to upgrade plan page using redirectUser
     redirectUser('upgrade-plan');
   };
 
   const handleAddCashier = () => {
-    // Navigate to add cashier page using redirectUser
     redirectUser('add-cashier');
   };
 
   const handleHelpSupport = () => {
-    // Navigate to help support page using redirectUser
     redirectUser('help-support');
   };
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     i18n.changeLanguage(e.target.value);
   };
+
   const toggleDropdown = () => {
     if (!isDropdownOpen) {
       loadCashiers();
@@ -45,28 +43,35 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
   };
 
   const loadCashiers = () => {
+    if (isLoadingCashiers) return; // Prevent multiple simultaneous calls
+    
     setIsLoadingCashiers(true);
     setCashierError(null);
-    listCashiers().then((state) => {
-      setCashiers(state.cashier_list);
-      setCashierError(state.error?.message || null);
-      setIsLoadingCashiers(false);
-    })
+    
+    listCashiers()
+      .then((state) => {
+        setCashiers(state.cashier_list);
+        setCashierError(state.error?.message || null);
+      })
+      .catch((error) => {
+        console.error('Failed to load cashiers:', error);
+        setCashierError('Failed to load cashiers');
+      })
+      .finally(() => {
+        setIsLoadingCashiers(false);
+      });
   };
 
   const deleteCashier = (cashierId: string) => {
-    // Simulate delete operation
-    setCashiers(prevCashiers => prevCashiers.filter(cashier => cashier.id !== cashierId));
-    
-    // In a real implementation, you would call the delete API here
-    console.log('Deleting cashier:', cashierId);
-    
-    // Update local storage
-    const updatedCashiers = cashiers.filter(cashier => cashier.id !== cashierId);
-    localStorageApi.set_item('cashier_list', updatedCashiers);
+    try {
+      const updatedCashiers = cashiers.filter(cashier => cashier.id !== cashierId);
+      setCashiers(updatedCashiers);
+      localStorageApi.set_item('cashier_list', updatedCashiers);
+    } catch (error) {
+      console.error('Failed to delete cashier:', error);
+    }
   };
 
-  // Reordered settings options according to specified order
   const settingsOptions = [
     {
       icon: CreditCard,
@@ -110,17 +115,15 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
       <div className="mb-6 sm:mb-8">
         <div className="flex items-center space-x-3 mb-4">
           <div className="w-10 h-10 bg-gradient-to-r from-[#6C63FF] to-[#5845E9] rounded-xl flex items-center justify-center shadow-lg">
-            <Settings className="w-6 h-6 text-white" />
+            <Shield className="w-6 h-6 text-white" />
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-[#2B2C34] font-['Inter']">{t('settings.title')}</h1>
         </div>
         <p className="text-[#A0A0A8] text-sm sm:text-base">{t('settings.description')}</p>
       </div>
 
-      {/* Responsive centering wrapper - centers on desktop, left-aligned on mobile */}
       <div className="flex justify-start md:justify-center">
         <div className="w-full max-w-2xl">
-          {/* Language Settings Section */}
           <div className="glass-card p-4 sm:p-6 mb-8 animate-fade-in-up">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
@@ -146,7 +149,6 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
             </div>
           </div>
 
-          {/* Cashier List Section - positioned first */}
           <div className="glass-card p-4 sm:p-6 mb-8 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
@@ -160,6 +162,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
               </div>
               <button 
                 onClick={toggleDropdown}
+                disabled={isLoadingCashiers}
                 className="btn-primary px-4 py-2 text-sm flex items-center space-x-2"
               >
                 {isDropdownOpen ? (
@@ -170,7 +173,6 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
               </button>
             </div>
 
-            {/* Dropdown Content */}
             {isDropdownOpen && (
               <div className="mt-4 pt-4 border-t border-gray-200">
                 {isLoadingCashiers ? (
@@ -183,6 +185,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
                     <p className="text-red-600 text-sm">{cashierError}</p>
                     <button 
                       onClick={loadCashiers}
+                      disabled={isLoadingCashiers}
                       className="mt-2 text-[#6C63FF] hover:text-[#5845E9] text-sm font-medium"
                     >
                       {t('common.tryAgain')}
@@ -228,7 +231,6 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
             )}
           </div>
 
-          {/* Settings Options */}
           <div className="space-y-4 sm:space-y-6">
             {settingsOptions.map((option, index) => {
               const Icon = option.icon;
