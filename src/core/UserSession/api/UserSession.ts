@@ -1,7 +1,6 @@
 import {LocalStorageApi} from '../../Common/spi/LocalStorageApi';
 import {
-  LOGIN_ROUTE,
-  MY_SHOPS_ROUTE, REFRESH_SESSION_ROUTE, USER_PROFILE_KEY
+  LOGIN_ROUTE, REFRESH_SESSION_ROUTE, USER_PROFILE_KEY, DASHBOARD_ROUTE
 } from '../../Common/constants';
 import {Redirection} from '../../Common/api/CommonTypes';
 import {UserProfile} from './data';

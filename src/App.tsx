@@ -18,7 +18,7 @@ import RegionPickerComponentPage from './components/RegionPicker/RegionPickerCom
 import { CouponData } from './core/ScanQrcode/api/data';
 import {Authentication} from "./core/Model/Authentication.ts";
 import {
-  APP_ROUTE, CREATE_PROMO_ROUTE, CREATE_SHOP_ROUTE,
+  APP_ROUTE, CREATE_PROMO_ROUTE,
   DASHBOARD_ROUTE,
   ERROR_PAGE_ROUTE,
   REFRESH_SESSION_ROUTE, SET_CONFIG_ROUTE
@@ -216,7 +216,6 @@ function App() {
             default:
                 return <PromoListComponent
                     redirectUser={redirectUser}
-                    shopId={shop!.id}
                     getPromoList={
                         getPromoListCreator(
                             getPromoListApiCreator(
