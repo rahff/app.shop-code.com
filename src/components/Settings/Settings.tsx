@@ -128,7 +128,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center shadow-lg">
-                  <Globe className="w-6 h-6 text-[#A0A0A8]" />
+                  <Globe className="w-6 h-6 text-red-600" />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-[#2B2C34] font-['Inter']">{t('settings.language')}</h3>
@@ -153,7 +153,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center shadow-lg">
-                  <Users className="w-6 h-6 text-[#A0A0A8]" />
+                  <Users className="w-6 h-6 text-blue-600" />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-[#2B2C34] font-['Inter']">{t('settings.cashierList')}</h3>
