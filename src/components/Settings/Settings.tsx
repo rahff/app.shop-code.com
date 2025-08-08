@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CreditCard, Shield, HelpCircle, UserPlus, Users, Trash2, ChevronDown, ChevronUp, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import WarningModal from '../UI/WarningModal';
 import { ListCashiers } from '../../core/ListCashiers/api/ListCashiers';
 import { CashierData } from '../../core/AddCashier/api/data';
 import { localStorageApi } from '../../services/browser/LocalStorageBrowserApi';
@@ -18,6 +19,8 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
   const [cashiers, setCashiers] = useState<CashierData[]>([]);
   const [isLoadingCashiers, setIsLoadingCashiers] = useState(false);
   const [cashierError, setCashierError] = useState<string | null>(null);
+  const [pendingRemoval, setPendingRemoval] = useState<null | { id: string; name: string }>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleUpgradePlan = () => {
     redirectUser('upgrade-plan');
@@ -62,7 +65,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
       });
   };
 
-  const deleteCashier = (cashierId: string) => {
+  const deleteCashier = async (cashierId: string) => {
     try {
       const updatedCashiers = cashiers.filter(cashier => cashier.id !== cashierId);
       setCashiers(updatedCashiers);
@@ -70,6 +73,26 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
     } catch (error) {
       console.error('Failed to delete cashier:', error);
     }
+  };
+
+  const handleRemoveClick = (cashier: CashierData) => {
+    setPendingRemoval({ id: cashier.id, name: cashier.username });
+  };
+
+  const handleConfirmRemoval = async () => {
+    if (!pendingRemoval) return;
+    
+    setIsProcessing(true);
+    try {
+      await deleteCashier(pendingRemoval.id);
+    } finally {
+      setIsProcessing(false);
+      setPendingRemoval(null);
+    }
+  };
+
+  const handleCancelRemoval = () => {
+    setPendingRemoval(null);
   };
 
   const settingsOptions = [
@@ -207,8 +230,9 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
                           </div>
                         </div>
                         <button
-                          onClick={() => deleteCashier(cashier.id)}
-                          className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-2xl transition-all duration-300 transform hover:scale-110"
+                          onClick={() => handleRemoveClick(cashier)}
+                          disabled={isProcessing}
+                          className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-2xl transition-all duration-300 transform hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed min-w-[40px] min-h-[40px] flex items-center justify-center"
                           aria-label={`Delete cashier ${cashier.username}`}
                         >
                           <Trash2 className="w-4 h-4" />
@@ -259,6 +283,23 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
           </div>
         </div>
       </div>
+
+      {/* Warning Modal */}
+      <WarningModal
+        open={!!pendingRemoval}
+        title={t('settings.removeCashier')}
+        description={
+          pendingRemoval
+            ? t('settings.removeCashierDescription', { name: pendingRemoval.name })
+            : ''
+        }
+        confirmLabel={t('settings.removeCashierConfirm')}
+        cancelLabel={t('settings.removeCashierCancel')}
+        danger
+        isProcessing={isProcessing}
+        onConfirm={handleConfirmRemoval}
+        onCancel={handleCancelRemoval}
+      />
     </div>
   );
 };

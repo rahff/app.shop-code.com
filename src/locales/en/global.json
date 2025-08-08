@@ -162,7 +162,11 @@
     "selectLanguage": "Select language",
     "manage": "Manage",
     "upgrade": "Upgrade",
-    "gethelp": "Get Help"
+    "gethelp": "Get Help",
+    "removeCashier": "Remove cashier?",
+    "removeCashierDescription": "This action will remove {{name}} from your cashier list. You can't undo this.",
+    "removeCashierConfirm": "Remove",
+    "removeCashierCancel": "Keep cashier"
   },
   "addCashier": {
     "title": "Add Cashier",
