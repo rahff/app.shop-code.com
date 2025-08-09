@@ -32,6 +32,11 @@ export class LocalStorageBrowserApi implements LocalStorageApi {
     const items: T[] = JSON.parse(localStorage.getItem(key) || "[]");
     this.set_item(key, items.concat(values));
   }
+
+  public remove_item<T extends {id: string}>(key: string, valueId: string): void {
+    const items: T[] = JSON.parse(localStorage.getItem(key) || "[]");
+    this.set_item(key, items.filter((item) => item.id !== valueId));
+  }
 }
 
 export const localStorageApi = new LocalStorageBrowserApi();

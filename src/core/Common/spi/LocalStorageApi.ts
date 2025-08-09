@@ -3,5 +3,6 @@ export interface LocalStorageApi {
   set_item<T>(key: string, value: T): void;
   add_item<T>(key: string, value: T): void;
   add_items<T>(key: string, value: T[]): void;
+  remove_item(key: string, value_id: string): void;
   clear(): void;
 }

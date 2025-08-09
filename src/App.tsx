@@ -56,30 +56,17 @@ import {getUploadUrlApiCreator} from "./services/external/getUploadUrlApi.ts";
 import {uploadFileApi} from "./services/external/uploadFileApi.ts";
 import {sendHelpSupportMessageCreator} from "./core/HelpSupport Message/api/HelpSupportMessage.ts";
 import {helpSupportMessageApi} from "./services/external/helpSupportMessageApi.ts";
+import {removeCashierCreator} from "./core/RemoveCashier/api/RemoveCashier.ts";
+import {removeCashierApiCreator} from "./services/external/removecashierApi.ts";
 
 
-const nullConfig = {
-    "userPoolId": "",
-    "cognito": {
-        "authority": "",
-        "client_id": "",
-        "redirect_uri": "",
-        "response_type": "code",
-        "scope": "email openid profile",
-        "automaticSilentRenew": true
-    },
-    "apiEndpoints": {
-        "userSide": "",
-        "shopPromo": ""
-    }
-} as const;
 
 function App() {
     const [appRoute, setAppRoute] = useState<AppRoute>(SET_CONFIG_ROUTE);
-    const [activeRoute, setActiveRoute] = useState('promos');
+    const [dashboardRoute, setDashboardRoute] = useState('promos');
     const [scannedCoupon, setScannedCoupon] = useState<CouponData | null>(null);
     const [authentication, setAuthentication] = useState<Authentication | null>(null);
-    const [config, setConfig] = useState<Config>(nullConfig);
+    const [config, setConfig] = useState<Config | null>(null);
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
 
@@ -130,43 +117,43 @@ function App() {
 
     // Handle scan close/cancel - return to promos
     const handleScanClose = () => {
-        setActiveRoute('promos');
+        setDashboardRoute('promos');
     };
 
     // Handle redeem completion - return to dashboard
     const handleRedeemComplete = () => {
         setScannedCoupon(null);
         setAppRoute(DASHBOARD_ROUTE);
-        setActiveRoute('promos');
+        setDashboardRoute('promos');
     };
 
     // Handle redeem cancel - return to dashboard
     const handleRedeemCancel = () => {
         setScannedCoupon(null);
         setAppRoute(DASHBOARD_ROUTE);
-        setActiveRoute('promos');
+        setDashboardRoute('promos');
     };
 
     // Handle add cashier actions
     const handleAddCashierComplete = () => {
         setAppRoute(DASHBOARD_ROUTE);
-        setActiveRoute('settings');
+        setDashboardRoute('settings');
     };
 
     const handleAddCashierCancel = () => {
         setAppRoute(DASHBOARD_ROUTE);
-        setActiveRoute('settings');
+        setDashboardRoute('settings');
     };
 
     // Handle help support actions
     const handleHelpSupportCancel = () => {
         setAppRoute(DASHBOARD_ROUTE);
-        setActiveRoute('settings');
+        setDashboardRoute('settings');
     };
 
     // Render dashboard content based on active route
-    const renderDashboardContent = () => {
-        switch (activeRoute) {
+    const DashboardViewComponent = (config: Config, authentication: Authentication) => {
+        switch (dashboardRoute) {
             case 'promos':
                 return <PromoListComponent
                     redirectUser={redirectUser}
@@ -205,6 +192,13 @@ function App() {
                 );
             case 'settings':
                 return <Settings
+                  userPoolId={config.userPoolId}
+                  removeCashier={
+                  removeCashierCreator(
+                    removeCashierApiCreator(
+                      config.apiEndpoints.userSide,
+                      authentication!.token),
+                    sessionStorageBrowserApi)}
                     redirectUser={redirectUser}
                     listCashiers={
                         listCashierCreator(
@@ -230,150 +224,176 @@ function App() {
     };
 
     // Main app rendering logic
-    switch (appRoute) {
+    if(config) {
+      switch (appRoute) {
 
         case APP_ROUTE:
-            if(config === nullConfig) {
-                return <RegionPickerComponentPage
-                    redirectUser={redirectUser}
-                    onConfigReceived={onConfigReceived}
-                    fetchConfig={fetchConfig}
-                />;
-            }else {
-                return <AuthProvider {...config.cognito}>
-                    <BootstrapComponent
-                        setUserProfile={onUserProfileLoaded}
-                        redirectUser={redirectUser}
-                        onAuthentication={onAuthentication}
-                        loadUserSession={
-                            loadUserSessionCreator(
-                                userProfileApiCreator(
-                                    config.apiEndpoints.userSide),
-                                localStorageApi)
-                        }
-                    />;
-                </AuthProvider>
-            }
+
+          return <AuthProvider {...config.cognito}>
+            <BootstrapComponent
+              setUserProfile={onUserProfileLoaded}
+              redirectUser={redirectUser}
+              onAuthentication={onAuthentication}
+              loadUserSession={
+                loadUserSessionCreator(
+                  userProfileApiCreator(
+                    config.apiEndpoints.userSide),
+                  localStorageApi)
+              }
+            />;
+          </AuthProvider>
+
 
 
         case REFRESH_SESSION_ROUTE:
-            return <RefreshSessionComponent
-                redirectUser={redirectUser}
-                onAuthentication={onAuthentication}
-            />;
+          return <RefreshSessionComponent
+            redirectUser={redirectUser}
+            onAuthentication={onAuthentication}
+          />;
 
         case CREATE_PROMO_ROUTE:
-            return <CreatePromoPage
-                uploadFile={uploadFileCreator(uploadFileApi)}
-                getUploadUrl={getUploadUrlCreator(getUploadUrlApiCreator(config.apiEndpoints.userSide, authentication!.token), cryptoIdGenerator)}
-                redirectUser={redirectUser}
-                createPromo={createPromoCreator(
-                    savePromoApiCreator(
-                        config.apiEndpoints.shopPromo,
-                        authentication!.token
-                    ),
-                    promoValidatorCreator(nativeDateProvider),
-                    sessionStorageBrowserApi)}
-            />;
-
-    case 'redeem-coupon':
-      return (
-        <RedeemCouponView
-          couponData={scannedCoupon!}
-          onComplete={handleRedeemComplete}
-          onCancel={handleRedeemCancel}
-          redeemCoupon={
-          redeemCouponCreator(
-              cashDrawerApiCreator(
-                  config.apiEndpoints.shopPromo,
-                  authentication!.token
-              ),
-              punch_couponCreator(nativeDateTimeProvider, cryptoIdGenerator)
-          )
-        }
-        />
-      );
-
-    case 'upgrade-plan':
-      return (
-        <UpgradePlanView
-            redirectUser={redirectUser}
-            userPlan={userProfile!.userPlan}
-            getCheckoutUrl={
-                getCheckoutUrlCreator(checkoutApiCreator(
-                    config.apiEndpoints.userSide,
-                    authentication!.token)
-                )
+          return <CreatePromoPage
+            uploadFile={uploadFileCreator(uploadFileApi)}
+            getUploadUrl={
+              getUploadUrlCreator(
+                getUploadUrlApiCreator(
+                  config.apiEndpoints.userSide,
+                  authentication!.token),
+                cryptoIdGenerator)
             }
-        />
-      );
+            redirectUser={redirectUser}
+            createPromo={createPromoCreator(
+              savePromoApiCreator(
+                config.apiEndpoints.shopPromo,
+                authentication!.token
+              ),
+              promoValidatorCreator(nativeDateProvider),
+              sessionStorageBrowserApi)}
+          />;
 
-    case 'add-cashier':
-      return (
-        <AddCashierView
-          userPoolId={config.userPoolId}
-          onComplete={handleAddCashierComplete}
-          onCancel={handleAddCashierCancel}
-          addCashier={
-            addCashierCreator(
-                addCashierApiCreator(
+        case 'redeem-coupon':
+          return (
+            <RedeemCouponView
+              couponData={scannedCoupon!}
+              onComplete={handleRedeemComplete}
+              onCancel={handleRedeemCancel}
+              redeemCoupon={
+                redeemCouponCreator(
+                  cashDrawerApiCreator(
                     config.apiEndpoints.shopPromo,
                     authentication!.token
-                ),
-                sessionStorageBrowserApi,
-                cryptoIdGenerator
-            )
+                  ),
+                  punch_couponCreator(nativeDateTimeProvider, cryptoIdGenerator)
+                )
+              }
+            />
+          );
+
+        case 'upgrade-plan':
+          return (
+            <UpgradePlanView
+              redirectUser={redirectUser}
+              userPlan={userProfile!.userPlan}
+              getCheckoutUrl={
+                getCheckoutUrlCreator(checkoutApiCreator(
+                  config.apiEndpoints.userSide,
+                  authentication!.token)
+                )
+              }
+            />
+          );
+
+        case 'add-cashier':
+          return (
+            <AddCashierView
+              userPoolId={config.userPoolId}
+              onComplete={handleAddCashierComplete}
+              onCancel={handleAddCashierCancel}
+              addCashier={
+                addCashierCreator(
+                  addCashierApiCreator(
+                    config.apiEndpoints.shopPromo,
+                    authentication!.token
+                  ),
+                  sessionStorageBrowserApi,
+                  cryptoIdGenerator
+                )
+              }
+            />
+          );
+
+        case 'help-support':
+          return (
+            <HelpSupportView
+              sendHelpSupportMessage={
+                sendHelpSupportMessageCreator(
+                  helpSupportMessageApi(config.apiEndpoints.userSide)
+                )
+              }
+              onCancel={handleHelpSupportCancel}
+            />
+          );
+
+        case SET_CONFIG_ROUTE:
+          return <RegionPickerComponentPage
+            redirectUser={redirectUser}
+            onConfigReceived={onConfigReceived}
+            fetchConfig={fetchConfig}
+          />;
+
+        case ERROR_PAGE_ROUTE:
+          return (
+            <ErrorPage
+              redirectUser={redirectUser}
+            />
+          );
+
+        case DASHBOARD_ROUTE:
+          if(authentication){
+            return (
+              <div className="flex flex-col h-screen bg-gray-50">
+                <Header
+                  userProfile={userProfile!}
+                />
+                <main className="flex-1 overflow-auto pb-20">
+                  {DashboardViewComponent(config, authentication)}
+                </main>
+                <BottomNavigation
+                  activeRoute={dashboardRoute}
+                  onRouteChange={setDashboardRoute}
+                />
+              </div>
+            );
+          }else {
+            return <AuthProvider {...config.cognito}>
+              <BootstrapComponent
+                setUserProfile={onUserProfileLoaded}
+                redirectUser={redirectUser}
+                onAuthentication={onAuthentication}
+                loadUserSession={
+                  loadUserSessionCreator(
+                    userProfileApiCreator(
+                      config.apiEndpoints.userSide),
+                    localStorageApi)
+                }
+              />;
+            </AuthProvider>
           }
-        />
-      );
 
-    case 'help-support':
-      return (
-        <HelpSupportView
-            sendHelpSupportMessage={
-            sendHelpSupportMessageCreator(
-                helpSupportMessageApi(config.apiEndpoints.userSide)
-            )
-        }
-          onCancel={handleHelpSupportCancel}
-        />
-      );
 
-    case SET_CONFIG_ROUTE:
+        default:
+          // Fallback to region check
+          checkConfig();
+          return null;
+      }
+    }else {
       return <RegionPickerComponentPage
-          redirectUser={redirectUser}
-          onConfigReceived={onConfigReceived}
-          fetchConfig={fetchConfig}
+        redirectUser={redirectUser}
+        onConfigReceived={onConfigReceived}
+        fetchConfig={fetchConfig}
       />;
+    }
 
-    case ERROR_PAGE_ROUTE:
-      return (
-        <ErrorPage
-          redirectUser={redirectUser}
-        />
-      );
-
-    case DASHBOARD_ROUTE:
-      return (
-        <div className="flex flex-col h-screen bg-gray-50">
-          <Header
-              userProfile={userProfile!}
-          />
-          <main className="flex-1 overflow-auto pb-20">
-            {renderDashboardContent()}
-          </main>
-          <BottomNavigation
-              activeRoute={activeRoute}
-              onRouteChange={setActiveRoute}
-          />
-        </div>
-      );
-
-    default:
-      // Fallback to region check
-      checkConfig();
-      return null;
-  }
 }
 
 export default App;

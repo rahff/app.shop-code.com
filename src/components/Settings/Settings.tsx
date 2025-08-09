@@ -4,22 +4,24 @@ import { useTranslation } from 'react-i18next';
 import WarningModal from '../UI/WarningModal';
 import { ListCashiers } from '../../core/ListCashiers/api/ListCashiers';
 import { CashierData } from '../../core/AddCashier/api/data';
-import { localStorageApi } from '../../services/browser/LocalStorageBrowserApi';
 import { AppRoute } from "../../core/Common/api/CommonTypes.ts";
+import {RemoveCashier} from "../../core/RemoveCashier/api/RemoveCashier.ts";
 
 
 interface SettingsProps {
   redirectUser: (destination: AppRoute) => void;
   listCashiers: ListCashiers;
+  removeCashier: RemoveCashier;
+  userPoolId: string
 }
 
-const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
+const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers, removeCashier, userPoolId }) => {
   const { t, i18n } = useTranslation('global');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [cashiers, setCashiers] = useState<CashierData[]>([]);
   const [isLoadingCashiers, setIsLoadingCashiers] = useState(false);
   const [cashierError, setCashierError] = useState<string | null>(null);
-  const [pendingRemoval, setPendingRemoval] = useState<null | { id: string; name: string }>(null);
+  const [pendingRemoval, setPendingRemoval] = useState<null | CashierData>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleUpgradePlan = () => {
@@ -47,10 +49,10 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
 
   const loadCashiers = () => {
     if (isLoadingCashiers) return; // Prevent multiple simultaneous calls
-    
+
     setIsLoadingCashiers(true);
     setCashierError(null);
-    
+
     listCashiers()
       .then((state) => {
         setCashiers(state.cashier_list);
@@ -65,26 +67,28 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
       });
   };
 
-  const deleteCashier = async (cashierId: string) => {
-    try {
-      const updatedCashiers = cashiers.filter(cashier => cashier.id !== cashierId);
-      setCashiers(updatedCashiers);
-      localStorageApi.set_item('cashier_list', updatedCashiers);
-    } catch (error) {
-      console.error('Failed to delete cashier:', error);
-    }
+  const deleteCashier = async (cashier: CashierData) => {
+    removeCashier(cashier.username, cashier.id, userPoolId).then((ok) => {
+      if (ok.success) {
+        const updatedCashiers = cashiers.filter(item => item.id !== cashier.id);
+        setCashiers(updatedCashiers);
+      } else {
+        // show an error status
+        console.error('Failed to delete cashier:', cashier);
+      }
+    })
   };
 
   const handleRemoveClick = (cashier: CashierData) => {
-    setPendingRemoval({ id: cashier.id, name: cashier.username });
+    setPendingRemoval(cashier);
   };
 
   const handleConfirmRemoval = async () => {
     if (!pendingRemoval) return;
-    
+
     setIsProcessing(true);
     try {
-      await deleteCashier(pendingRemoval.id);
+      await deleteCashier(pendingRemoval);
     } finally {
       setIsProcessing(false);
       setPendingRemoval(null);
@@ -183,7 +187,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
                   <p className="text-[#A0A0A8] text-sm">{t('settings.cashierListDescription')}</p>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={toggleDropdown}
                 disabled={isLoadingCashiers}
                 className="btn-primary px-4 py-2 text-sm flex items-center space-x-2"
@@ -206,7 +210,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
                 ) : cashierError ? (
                   <div className="text-center py-4">
                     <p className="text-red-600 text-sm">{cashierError}</p>
-                    <button 
+                    <button
                       onClick={loadCashiers}
                       disabled={isLoadingCashiers}
                       className="mt-2 text-[#6C63FF] hover:text-[#5845E9] text-sm font-medium"
@@ -243,7 +247,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
                 ) : (
                   <div className="text-center py-4">
                     <p className="text-[#A0A0A8] text-sm mb-2">{t('settings.noCashiers')}</p>
-                    <button 
+                    <button
                       onClick={handleAddCashier}
                       className="text-[#6C63FF] hover:text-[#5845E9] text-sm font-medium transition-colors duration-300"
                     >
@@ -270,7 +274,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
                         <p className="text-[#A0A0A8] text-sm">{t(`settings.${option.title.toLowerCase().replace(/\s+/g, '')}Description`)}</p>
                       </div>
                     </div>
-                    <button 
+                    <button
                       onClick={option.onClick}
                       className="btn-primary px-4 py-2 text-sm"
                     >
@@ -290,7 +294,7 @@ const Settings: React.FC<SettingsProps> = ({ redirectUser, listCashiers }) => {
         title={t('settings.removeCashier')}
         description={
           pendingRemoval
-            ? t('settings.removeCashierDescription', { name: pendingRemoval.name })
+            ? t('settings.removeCashierDescription', { name: pendingRemoval.username })
             : ''
         }
         confirmLabel={t('settings.removeCashierConfirm')}
